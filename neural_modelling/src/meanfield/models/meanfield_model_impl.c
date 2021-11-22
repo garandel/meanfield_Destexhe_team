@@ -56,7 +56,7 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
     REAL step = argument/mathsbox->error_func_sample;
     REAL x;
     REAL t;
-    REAL Pi = REAL_CONST(3.1415927);// here was a k
+    //REAL Pi = REAL_CONST(3.1415927);// here was a k
     REAL two_over_sqrt_Pi = REAL_CONST(1.128379167); //APPROXIMATION
     REAL Erf = ZERO;
     REAL Erfc = ZERO;
@@ -125,13 +125,13 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     */
    
     REAL muV0 = pNetwork->muV0;
-    REAL DmuV0 = pNetwork->DmuV0;
+    REAL iDmuV0 = pNetwork->iDmuV0;
 
     REAL sV0 = pNetwork->sV0;
-    REAL DsV0 = pNetwork->DsV0;
+    REAL iDsV0 = pNetwork->iDsV0;
 
     REAL TvN0 = pNetwork->TvN0;
-    REAL DTvN0 = pNetwork->DTvN0;
+    REAL iDTvN0 = pNetwork->iDTvN0;
 
     REAL muV = pNetwork->muV;
     REAL sV = pNetwork->sV;
@@ -154,16 +154,17 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
 
     //        + 0.\ //P4*np.log(muGn)
     
+    //overflowed if put multiplication instead of division, wird!!!
     Vthre = P0\
-        + P1*(muV-muV0)/DmuV0\
-        + P2*(sV-sV0)/DsV0\
-        + P3*(TvN-TvN0)/DTvN0\
-        + P5*((muV-muV0)/DmuV0)*((muV-muV0)/DmuV0)\
-        + P6*((sV-sV0)/DsV0)*((sV-sV0)/DsV0)\
-        + P7*((TvN-TvN0)/DTvN0)*((TvN-TvN0)/DTvN0)\
-        + P8*((muV-muV0)/DmuV0)*((sV-sV0)/DsV0)\
-        + P9*((muV-muV0)/DmuV0)*((TvN-TvN0)/DTvN0)\
-        + P10*((sV-sV0)/DsV0)*((TvN-TvN0)/DTvN0);
+        + P1*(muV-muV0)/iDmuV0\
+        + P2*(sV-sV0)/iDsV0\
+        + P3*(TvN-TvN0)/iDTvN0\
+        + P5*((muV-muV0)/iDmuV0)*((muV-muV0)/iDmuV0)\
+        + P6*((sV-sV0)/iDsV0)*((sV-sV0)/iDsV0)\
+        + P7*((TvN-TvN0)/iDTvN0)*((TvN-TvN0)/iDTvN0)\
+        + P8*((muV-muV0)/iDmuV0)*((sV-sV0)/iDsV0)\
+        + P9*((muV-muV0)/iDmuV0)*((TvN-TvN0)/iDTvN0)\
+        + P10*((sV-sV0)/iDsV0)*((TvN-TvN0)/iDTvN0);
 
     pNetwork->Vthre = Vthre;
 
@@ -224,7 +225,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     
     REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 1272 bytes over
     
-    pNetwork->sV = sV_sqr; // square_root_of(sV_sqr);
+    pNetwork->sV = sV_sqr; // sqrtk(sV_sqr);//square_root_of(sV_sqr); //
 
     
     

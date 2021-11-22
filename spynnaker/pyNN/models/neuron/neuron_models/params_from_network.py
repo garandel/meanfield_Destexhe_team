@@ -40,17 +40,17 @@ EL = "El"
 
 MUV = "muV"
 MUV0 = "muV0"
-DMUV0 = "DmuV0"
+ONE_OVER_DMUV0 = "one_over_DmuV0"
 
 SV = "sV"
 SV0 = "sV0"
-DSV0 = "DsV0"
+ONE_OVER_DSV0 = "one_over_DsV0"
 
 MUGN = "muGn"
 
 TVN = "TvN"
 TVN0 = "TvN0"
-DTVN0 = "DTvN0"
+ONE_OVER_DTVN0 = "one_over_DTvN0"
 
 VTHRE = "Vthre"
 
@@ -75,14 +75,14 @@ UNITS = {
     VTHRE: "mV",
     MUV : "",
     MUV0 : "",
-    DMUV0 : "",
+    ONE_OVER_DMUV0 : "",
     SV : "",
     SV0 : "",
-    DSV0 : "",
+    ONE_OVER_DSV0 : "",
     MUGN : "",
     TVN : "",
     TVN0 : "",
-    DTVN0 : "",
+    ONE_OVER_DTVN0 : "",
     VTHRE : "",
     FOUT_TH : "",
 }
@@ -96,8 +96,9 @@ class ParamsFromNetwork(AbstractInputType):
         "_Erev_exc", "_Erev_inh", "_Ntot",
         "_gei", "_ext_drive", "_afferent_exc_fraction",
         "_Gl", "_Cm", "_El",
-        "_Vthre", "_muV", "_muV0", "_DmuV0", "_sV", "_sV0", "_DsV0",
-        "_muGn", "_TvN", "_TvN0", "_DTvN0", "_Vthre", "_Fout_th",
+        "_Vthre", "_muV", "_muV0", "_one_over_DmuV0", "_sV",
+        "_sV0", "_one_over_DsV0",
+        "_muGn", "_TvN", "_TvN0", "_one_over_DTvN0", "_Vthre", "_Fout_th",
     ]
 
     def __init__(self, pconnec,
@@ -137,14 +138,14 @@ class ParamsFromNetwork(AbstractInputType):
              DataType.S1615, #El
              DataType.S1615,   # muV
              DataType.S1615,   # muV0
-             DataType.S1615,   # DmuV0
+             DataType.S1615,   # one_over_DmuV0
              DataType.S1615,   # sV
              DataType.S1615,   # sV0
-             DataType.S1615,   # DsV0
+             DataType.S1615,   # one_over_DsV0
              DataType.S1615,   # muGn
              DataType.S1615,   # TvN
              DataType.S1615,   # TvN0
-             DataType.S1615,   # DTvN0
+             DataType.S1615,   # one_over_DTvN0
              DataType.S1615,   # Vthre
              DataType.S1615])   # Fout_th
         
@@ -164,14 +165,14 @@ class ParamsFromNetwork(AbstractInputType):
         self._El = El        
         self._muV = muV
         self._muV0 = muV0
-        self._DmuV0 = DmuV0
+        self._one_over_DmuV0 = one_over_DmuV0
         self._sV = sV
         self._sV0 = sV0
-        self._DsV0 = DsV0
+        self._one_over_DsV0 = one_over_DsV0
         self._muGn = muGn
         self._TvN = TvN
         self._TvN0 = TvN0
-        self._DTvN0 = DTvN0
+        self._one_over_DTvN0 = one_over_DTvN0
         self._Vthre = Vthre
         self._Fout_th = Fout_th
 
@@ -199,11 +200,11 @@ class ParamsFromNetwork(AbstractInputType):
         parameters[EL] = self._El
         #parameters[MUV] = self._muV
         parameters[MUV0] = self._muV0
-        parameters[DMUV0] = self._DmuV0
+        parameters[ONE_OVER_DMUV0] = self._one_over_DmuV0
         parameters[SV0] = self._sV0
-        parameters[DSV0] = self._DsV0
+        parameters[ONE_OVER_DSV0] = self._one_over_DsV0
         parameters[TVN0] = self._TvN0
-        parameters[DTVN0] = self._DTvN0
+        parameters[ONE_OVER_DTVN0] = self._one_over_DTvN0
 
     @overrides(AbstractStandardNeuronComponent.add_state_variables)
     def add_state_variables(self, state_variables):
@@ -251,14 +252,14 @@ class ParamsFromNetwork(AbstractInputType):
                 parameters[EL],
                 state_variables[MUV],
                 parameters[MUV0],
-                parameters[DMUV0],
+                parameters[ONE_OVER_DMUV0],
                 state_variables[SV],
                 parameters[SV0],
-                parameters[DSV0],
+                parameters[ONE_OVER_DSV0],
                 state_variables[MUGN],
                 state_variables[TVN],
                 parameters[TVN0],
-                parameters[DTVN0],
+                parameters[ONE_OVER_DTVN0],
                 state_variables[VTHRE],
                 state_variables[FOUT_TH]
         ]
@@ -271,10 +272,10 @@ class ParamsFromNetwork(AbstractInputType):
         _Erev_exc, _Erev_inh, _Ntot, _gei, _ext_drive,
         _afferent_exc_fraction,
         _Gl, _Cm, _El,
-        muV, _muV0, _DmuV0,
-        sV, _sV0, _DsV0,
+        muV, _muV0, _one_over_DmuV0,
+        sV, _sV0, _one_over_DsV0,
         muGn,
-        TvN, _TvN0, _DTvN0,
+        TvN, _TvN0, _one_over_DTvN0,
         Vthre, Fout_th) = values
 
         # Copy the changed data only
@@ -369,12 +370,12 @@ class ParamsFromNetwork(AbstractInputType):
         return self._muV0
 
     @property
-    def DmuV0(self):
+    def one_over_DmuV0(self):
         """ Settable model parameter: :math:`c`
 
         :rtype: float
         """
-        return self._DmuV0
+        return self._one_over_DmuV0
 
     @property
     def sV(self):
@@ -393,12 +394,12 @@ class ParamsFromNetwork(AbstractInputType):
         return self._sV0
     
     @property
-    def DsV0(self):
+    def one_over_DsV0(self):
         """ Settable model parameter: :math:`d`
 
         :rtype: float
         """
-        return self._DsV0
+        return self._one_over_DsV0
 
     @property
     def muGn(self):
@@ -425,12 +426,12 @@ class ParamsFromNetwork(AbstractInputType):
         return self._TvN0
     
     @property
-    def DTvN0(self):
+    def one_over_DTvN0(self):
         """ Settable model parameter: :math:`d`
 
         :rtype: float
         """
-        return self._DTvN0
+        return self._one_over_DTvN0
     
     @property
     def Vthre(self):

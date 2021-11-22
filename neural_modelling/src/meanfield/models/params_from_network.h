@@ -28,17 +28,17 @@ typedef struct ParamsFromNetwork_t {
     REAL muV;
     REAL muV0;
     
-    REAL DmuV0;
+    REAL iDmuV0;//inverse one
     
     REAL sV;
     REAL sV0;
-    REAL DsV0;
+    REAL iDsV0;//inverse one
         
     REAL muGn;
     
     REAL TvN;
     REAL TvN0;
-    REAL DTvN0;
+    REAL iDTvN0; //inverse one
     
     REAL Vthre;
     
