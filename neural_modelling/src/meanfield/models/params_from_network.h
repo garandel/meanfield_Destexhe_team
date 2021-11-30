@@ -18,7 +18,7 @@ typedef struct ParamsFromNetwork_t {
     REAL afferent_exc_fraction;
     
     REAL Gl;
-    REAL Cm;
+    REAL Cm;//inverse one-> nop bcs otherwise need to add two variables instead of one
     REAL El;
     
     // Variable-state parameters

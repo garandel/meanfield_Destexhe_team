@@ -127,6 +127,8 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
         one_over_DmuV0 = 1/DmuV0
         one_over_DsV0 = 1/DsV0
         one_over_DTvN0 = 1/DTvN0
+        one_over_Cm = 1/Cm
+        one_over_Gl = 1/Gl
        
         
         neuron_model = MeanfieldOfAdexNetwork(a, b, tauw, Trefrac,

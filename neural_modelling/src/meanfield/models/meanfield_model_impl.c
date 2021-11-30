@@ -75,17 +75,17 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 
 }
 
-/*
-double square_root_of(REAL number)
+
+/*double square_root_of(REAL number)
 {
-     /*! square root method take from Quake III Arena 
-     * source code, attribute to John Carmack.
-     * Under GNU GPL licence.
-     *
-     * Implement here just to see if something was lighter than sqrt.c
-     *
-     */
-/*    
+     //!! square root method take from Quake III Arena 
+     //! source code, attribute to John Carmack.
+     //! Under GNU GPL licence.
+     //!
+     //! Implement here just to see if something was lighter than sqrt.c
+     //!
+     //!
+  
     REAL x, y, f;
     REAL i;
     f = REAL_CONST(1.5);
@@ -101,6 +101,30 @@ double square_root_of(REAL number)
     
     return number*y;
     
+}*/
+
+
+//! \brief Multiplies an accum by an accum giving an integer answer.
+//! \param[in] y: An s16.15 accum
+//! \param[in] x: An s16.15 accum
+//! \return The integer part of y*x.
+static inline int mulkk(
+    s1615 y,
+    s1615 x)
+{
+    return __I((__I64(bitsk(y)) * __I64(bitsk(x))) >> 15);    
+}
+
+/*
+//! \brief Multiplies an accum by an accum giving an integer answer.
+//! \param[in] x: An s0.31 accum
+//! \param[in] y: An s16.15 accum
+//! \return The integer part of y*x.
+static inline int mulrk(
+    s031 x,
+    s1615 y)
+{
+    return __I((__I32(bitslr(x)) * __I32(bitsk(y))) >> 8);    
 }
 */
 
@@ -109,12 +133,12 @@ double square_root_of(REAL number)
 
 void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *restrict Pfit)
 {
-    /*
-        threshold function coming from :
-        Neural Computation 31, 653–680 (2019) doi:10.1162/neco_a_01173
-        where P's are polynomials parameters involve in a 
-        voltage-effective threshold.
-    */
+    
+    //!    threshold function coming from :
+    //!    Neural Computation 31, 653–680 (2019) doi:10.1162/neco_a_01173
+    //!    where P's are polynomials parameters involve in a 
+    //!    voltage-effective threshold.
+    
     /*
     setting by default to True the square
     because when use by external modules, coeff[5:]=np.zeros(3)
@@ -155,7 +179,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     //        + 0.\ //P4*np.log(muGn)
     
     //overflowed if put multiplication instead of division, wird!!!
-    Vthre = P0\
+/*    Vthre = P0\
         + P1*(muV-muV0)/iDmuV0\
         + P2*(sV-sV0)/iDsV0\
         + P3*(TvN-TvN0)/iDTvN0\
@@ -167,8 +191,39 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         + P10*((sV-sV0)/iDsV0)*((TvN-TvN0)/iDTvN0);
 
     pNetwork->Vthre = Vthre;
+    
 
     }
+    */
+/*
+    Vthre = P0\
+        + P1*(muV-muV0)*iDmuV0\
+        + P2*(sV-sV0)*iDsV0\
+        + P3*(TvN-TvN0)*iDTvN0\
+        + P5*((muV-muV0)*iDmuV0)*((muV-muV0)*iDmuV0)\
+        + P6*((sV-sV0)*iDsV0)*((sV-sV0)*iDsV0)\
+        + P7*((TvN-TvN0)*iDTvN0)*((TvN-TvN0)*iDTvN0)\
+        + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
+        + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
+        + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
+*/
+
+        Vthre = P0\
+        + P1*mulkk(muV-muV0,iDmuV0)\
+        + P2*(sV-sV0)*iDsV0\
+        + P3*(TvN-TvN0)*iDTvN0\
+        + P5*((muV-muV0)*iDmuV0)*((muV-muV0)*iDmuV0)\
+        + P6*((sV-sV0)*iDsV0)*((sV-sV0)*iDsV0)\
+        + P7*((TvN-TvN0)*iDTvN0)*((TvN-TvN0)*iDTvN0)\
+        + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
+        + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
+        + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
+        
+    
+    pNetwork->Vthre = Vthre;
+
+    }
+    
 
 void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *restrict pNetwork)
 {
@@ -223,9 +278,9 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     */
     
     
-    REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 1272 bytes over
+    REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
     
-    pNetwork->sV = sV_sqr; // sqrtk(sV_sqr);//square_root_of(sV_sqr); //
+    pNetwork->sV = sV_sqr; //square_root_of(sV_sqr); //  sqrtk(sV_sqr);//
 
     
     
