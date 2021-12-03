@@ -108,10 +108,10 @@ class ParamsFromNetwork(AbstractInputType):
                  Ntot, gei, ext_drive,
                  afferent_exc_fraction,
                  Gl, Cm, El,
-                 muV, muV0,DmuV0,
-                 sV, sV0, DsV0,
+                 muV, muV0,one_over_DmuV0,
+                 sV, sV0, one_over_DsV0,
                  muGn,
-                 TvN, TvN0, DTvN0,
+                 TvN, TvN0, one_over_DTvN0,
                  Vthre, Fout_th):
         """
         :param a: :math:`a`

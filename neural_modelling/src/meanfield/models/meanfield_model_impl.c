@@ -76,7 +76,7 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 }
 
 
-/*double square_root_of(REAL number)
+static inline double square_root_of(REAL number)
 {
      //!! square root method take from Quake III Arena 
      //! source code, attribute to John Carmack.
@@ -101,7 +101,7 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
     
     return number*y;
     
-}*/
+}
 
 
 //! \brief Multiplies an accum by an accum giving an integer answer.
@@ -148,35 +148,36 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         but not for now
     */
    
-    REAL muV0 = pNetwork->muV0;
-    REAL iDmuV0 = pNetwork->iDmuV0;
+    int muV0 = bitsk(pNetwork->muV0);
+    int iDmuV0 = bitsk(pNetwork->iDmuV0);
 
-    REAL sV0 = pNetwork->sV0;
-    REAL iDsV0 = pNetwork->iDsV0;
+    int sV0 = bitsk(pNetwork->sV0;)
+    int iDsV0 = bitsk(pNetwork->iDsV0);
 
-    REAL TvN0 = pNetwork->TvN0;
-    REAL iDTvN0 = pNetwork->iDTvN0;
+    int TvN0 = bitsk(pNetwork->TvN0);
+    int iDTvN0 = bitsk(pNetwork->iDTvN0);
 
-    REAL muV = pNetwork->muV;
-    REAL sV = pNetwork->sV;
-    //REAL muGn = pNetwork->muGn;
-    REAL TvN = pNetwork->TvN;
-    REAL Vthre = pNetwork->Vthre;
-    //REAL Fout_th = pNetwork->Fout_th;
+    int muV = bitsk(pNetwork->muV);
+    int sV = bitsk(pNetwork->sV);
+ 
+    int TvN = bitsk(pNetwork->TvN);
+    int Vthre = bitsk(pNetwork->Vthre);
     
+    
+    /*
     REAL P0 = Pfit->P0;
     REAL P1 = Pfit->P1;
     REAL P2 = Pfit->P2;
     REAL P3 = Pfit->P3;
-    //REAL P4 = Pfit->P4;
     REAL P5 = Pfit->P5;
     REAL P6 = Pfit->P6;
     REAL P7 = Pfit->P7;
     REAL P8 = Pfit->P8;
     REAL P9 = Pfit->P9;
     REAL P10 = Pfit->P10;
+    */
 
-    //        + 0.\ //P4*np.log(muGn)
+    
     
     //overflowed if put multiplication instead of division, wird!!!
 /*    Vthre = P0\
@@ -195,7 +196,22 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
 
     }
     */
-/*
+    
+    //! Rounding params from polynome
+    //!  __stdfix_round_s32(int32_t x, int n )
+    //!  don't know which n put, how rounding the number??
+    
+    int P0 = __stdfix_round_s32(bitslr(Pfit->P0),4);
+    int P1 = __stdfix_round_s32(bitslr(Pfit->P1),4);
+    int P2 = __stdfix_round_s32(bitslr(Pfit->P2),4);
+    int P3 = __stdfix_round_s32(bitslr(Pfit->P3),4);
+    int P5 = __stdfix_round_s32(bitslr(Pfit->P5),4);
+    int P6 = __stdfix_round_s32(bitslr(Pfit->P6),4);
+    int P7 = __stdfix_round_s32(bitslr(Pfit->P7),4);
+    int P8 = __stdfix_round_s32(bitslr(Pfit->P8),4);
+    int P9 = __stdfix_round_s32(bitslr(Pfit->P9),4);
+    int P10 = __stdfix_round_s32(bitslr(Pfit->P10),4);
+
     Vthre = P0\
         + P1*(muV-muV0)*iDmuV0\
         + P2*(sV-sV0)*iDsV0\
@@ -206,21 +222,25 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
         + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
         + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
-*/
 
-        Vthre = P0\
-        + P1*mulkk(muV-muV0,iDmuV0)\
-        + P2*(sV-sV0)*iDsV0\
-        + P3*(TvN-TvN0)*iDTvN0\
-        + P5*((muV-muV0)*iDmuV0)*((muV-muV0)*iDmuV0)\
-        + P6*((sV-sV0)*iDsV0)*((sV-sV0)*iDsV0)\
-        + P7*((TvN-TvN0)*iDTvN0)*((TvN-TvN0)*iDTvN0)\
-        + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
-        + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
-        + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
+
         
+
     
-    pNetwork->Vthre = Vthre;
+    /*
+    Vthre = bitslr(P0)\
+        + mulilr(mulik(iDmuV0, muV-muV0),P1)\
+        + mulilr(mulik(iDsV0, sV-sV0),P2)\
+        + mulilr(mulik(iDTvN0, TvN-TvN0),P3)\
+        + mulilr(mulik(iDmuV0, muV-muV0)*mulik(iDmuV0, muV-muV0),P5)\
+        + mulilr(mulik(iDsV0, sV-sV0)*mulik(iDsV0, sV-sV0),P6)\
+        + mulilr(mulik(iDTvN0, TvN-TvN0)*mulik(iDTvN0, TvN-TvN0),P7)\
+        + mulilr(mulik(iDmuV0, muV-muV0)*mulik(iDsV0, sV-sV0),P8)\
+        + mulilr(mulik(iDmuV0,muV-muV0)*mulik(iDTvN0, TvN-TvN0),P9)\
+        + mulilr(mulik(iDsV0, sV-sV0)*mulik(iDTvN0, TvN-TvN0),P10);
+     */   
+    
+    pNetwork->Vthre = lrbits(Vthre);
 
     }
     
@@ -261,26 +281,23 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
 
     pNetwork->muV = (muGe*Ee + muGi*Ei + Gl*El - W)/muG; //Thomas : maybe will add explicitely a and b?
 
-
+    /*
+    pNetwork->muGn = kbits(idivk(muG,Gl));
+    REAL Tm = kbits(idivk(Cm,muG));
+    REAL Ue = kbits(idivk(Qe*(Ee-pNetwork->muV),muG));
+    REAL Ui = kbits(idivk(Qi*(Ei-pNetwork->muV),muG));
+    */
+    
     pNetwork->muGn = muG/Gl;
-
     REAL Tm = Cm/muG;
-
     REAL Ue = Qe*(Ee-pNetwork->muV)/muG;
     REAL Ui = Qi*(Ei-pNetwork->muV)/muG;
     
-
-   /*
-   normaly sqrt(REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm)))
-   
-   need find a good sqrt function ...
-   |->sqrtk() takes too much ITCM !!!
-    */
-    
+     
     
     REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
     
-    pNetwork->sV = sV_sqr; //square_root_of(sV_sqr); //  sqrtk(sV_sqr);//
+    pNetwork->sV = sV_sqr;//  sqrtk(sV_sqr);// square_root_of(sV_sqr); //
 
     
     
