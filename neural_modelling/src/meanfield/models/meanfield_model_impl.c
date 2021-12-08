@@ -108,12 +108,14 @@ static inline double square_root_of(REAL number)
 //! \param[in] y: An s16.15 accum
 //! \param[in] x: An s16.15 accum
 //! \return The integer part of y*x.
+/*
 static inline int mulkk(
     s1615 y,
     s1615 x)
 {
     return __I((__I64(bitsk(y)) * __I64(bitsk(x))) >> 15);    
 }
+*/
 
 /*
 //! \brief Multiplies an accum by an accum giving an integer answer.
@@ -127,6 +129,23 @@ static inline int mulrk(
     return __I((__I32(bitslr(x)) * __I32(bitsk(y))) >> 8);    
 }
 */
+
+//! \brief convert an long frac in integer for rounding giving an accum answer.
+//! \param[in] y: An s16.15 accum
+//! \param[in] x: An s16.15 accum
+//! \return The integer part of y*x.
+
+static inline int_k_t lrkbits( const s031 f)
+{
+    union { s1615 r; int_k_t inter_k; int_lr_t inter_lr; s031 fx; } x;
+    
+    x.fx = f;
+    int32_t round = __stdfix_round_s32(x.inter_lr, 15);
+    x.inter_k = round;
+      
+    return x.inter_k;
+}
+    
 
 
 
@@ -148,20 +167,20 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         but not for now
     */
    
-    int muV0 = bitsk(pNetwork->muV0);
-    int iDmuV0 = bitsk(pNetwork->iDmuV0);
+    int_k_t muV0 = bitsk(pNetwork->muV0);
+    int_k_t iDmuV0 = bitsk(pNetwork->iDmuV0);
 
-    int sV0 = bitsk(pNetwork->sV0;)
-    int iDsV0 = bitsk(pNetwork->iDsV0);
+    int_k_t sV0 = bitsk(pNetwork->sV0);
+    int_k_t iDsV0 = bitsk(pNetwork->iDsV0);
 
-    int TvN0 = bitsk(pNetwork->TvN0);
-    int iDTvN0 = bitsk(pNetwork->iDTvN0);
+    int_k_t TvN0 = bitsk(pNetwork->TvN0);
+    int_k_t iDTvN0 = bitsk(pNetwork->iDTvN0);
 
-    int muV = bitsk(pNetwork->muV);
-    int sV = bitsk(pNetwork->sV);
+    int_k_t muV = bitsk(pNetwork->muV);
+    int_k_t sV = bitsk(pNetwork->sV);
  
-    int TvN = bitsk(pNetwork->TvN);
-    int Vthre = bitsk(pNetwork->Vthre);
+    int_k_t TvN = bitsk(pNetwork->TvN);
+    int_k_t Vthre = bitsk(pNetwork->Vthre);
     
     
     /*
@@ -201,16 +220,29 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     //!  __stdfix_round_s32(int32_t x, int n )
     //!  don't know which n put, how rounding the number??
     
-    int P0 = __stdfix_round_s32(bitslr(Pfit->P0),4);
-    int P1 = __stdfix_round_s32(bitslr(Pfit->P1),4);
-    int P2 = __stdfix_round_s32(bitslr(Pfit->P2),4);
-    int P3 = __stdfix_round_s32(bitslr(Pfit->P3),4);
-    int P5 = __stdfix_round_s32(bitslr(Pfit->P5),4);
-    int P6 = __stdfix_round_s32(bitslr(Pfit->P6),4);
-    int P7 = __stdfix_round_s32(bitslr(Pfit->P7),4);
-    int P8 = __stdfix_round_s32(bitslr(Pfit->P8),4);
-    int P9 = __stdfix_round_s32(bitslr(Pfit->P9),4);
-    int P10 = __stdfix_round_s32(bitslr(Pfit->P10),4);
+    /*
+    int32_t P0 = __stdfix_round_s32(bitslr(Pfit->P0),4);
+    int32_t P1 = __stdfix_round_s32(bitslr(Pfit->P1),4);
+    int32_t P2 = __stdfix_round_s32(bitslr(Pfit->P2),4);
+    int32_t P3 = __stdfix_round_s32(bitslr(Pfit->P3),4);
+    int32_t P5 = __stdfix_round_s32(bitslr(Pfit->P5),4);
+    int32_t P6 = __stdfix_round_s32(bitslr(Pfit->P6),4);
+    int32_t P7 = __stdfix_round_s32(bitslr(Pfit->P7),4);
+    int32_t P8 = __stdfix_round_s32(bitslr(Pfit->P8),4);
+    int32_t P9 = __stdfix_round_s32(bitslr(Pfit->P9),4);
+    int32_t P10 = __stdfix_round_s32(bitslr(Pfit->P10),4);
+    */
+    
+    int_k_t P0 = bitsk(Pfit->P0);
+    int_k_t P1 = bitsk(Pfit->P1);
+    int_k_t P2 = bitsk(Pfit->P2);
+    int_k_t P3 = bitsk(Pfit->P3);
+    int_k_t P5 = bitsk(Pfit->P5);
+    int_k_t P6 = bitsk(Pfit->P6);
+    int_k_t P7 = bitsk(Pfit->P7);
+    int_k_t P8 = bitsk(Pfit->P8);
+    int_k_t P9 = bitsk(Pfit->P9);
+    int_k_t P10 = bitsk(Pfit->P10);
 
     Vthre = P0\
         + P1*(muV-muV0)*iDmuV0\
@@ -240,7 +272,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         + mulilr(mulik(iDsV0, sV-sV0)*mulik(iDTvN0, TvN-TvN0),P10);
      */   
     
-    pNetwork->Vthre = lrbits(Vthre);
+    pNetwork->Vthre = kbits(Vthre);
 
     }
     
@@ -297,7 +329,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     
     REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
     
-    pNetwork->sV = sV_sqr;//  sqrtk(sV_sqr);// square_root_of(sV_sqr); //
+    pNetwork->sV = sV_sqr;// sqrtk(sV_sqr);// square_root_of(sV_sqr); //
 
     
     
