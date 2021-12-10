@@ -281,37 +281,45 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
 {
     // Need some comments
     
-    REAL gei = pNetwork->gei;
-    REAL pconnec = pNetwork->pconnec;
-    REAL Ntot = pNetwork->Ntot;
-    REAL Qe = pNetwork->Qe;
-    REAL Qi = pNetwork->Qi;
-    REAL Te = pNetwork->Te;
-    REAL Ti = pNetwork->Ti;
-    REAL Gl = pNetwork->Gl;
-    REAL El = pNetwork->El;
-    REAL Ei = pNetwork->Ei;
-    REAL Ee = pNetwork->Ee;
-    REAL Cm = pNetwork->Cm;
+    int_k_t gei = bitsk(pNetwork->gei);
+    int_k_t pconnec = bitsk(pNetwork->pconnec);
+    int_k_t Ntot = bitsk(pNetwork->Ntot);
+    int_k_t Qe = bitsk(pNetwork->Qe);
+    int_k_t Qi = bitsk(pNetwork->Qi);
+    int_k_t Te = bitsk(pNetwork->Te);
+    int_k_t Ti = bitsk(pNetwork->Ti);
+    int_k_t Gl = bitsk(pNetwork->Gl);
+    int_k_t El = bitsk(pNetwork->El);
+    int_k_t Ei = bitsk(pNetwork->Ei);
+    int_k_t Ee = bitsk(pNetwork->Ee);
+    int_k_t Cm = bitsk(pNetwork->Cm);
     
         
-    REAL Fe = Ve * (REAL_CONST(1.)-gei)*pconnec*Ntot; // default is 1 !!
-    REAL Fi = Vi * gei*pconnec*Ntot;
+    int_k_t Ve_k = bitsk(Ve);
+    int_k_t Vi_k = bitsk(Vi);
+    int_k_t W_k = bitsk(W);
+    
+    int_k_t Fe = Ve_k * (bitsk(REAL_CONST(1.))-gei)*pconnec*Ntot; // default is 1 !!
+    int_k_t Fi = Vi_k * gei*pconnec*Ntot;
     
     /* normaly = Ve*Te*Qe*Ke with Ke = p*N_exc what it is?
         -> here N_exc = (1-gei)*Ntot*pconnec
         So give the same
     */
-    REAL muGe = Qe*Te*Fe; //=Ve*Qe*Te*Ke
-    REAL muGi = Qi*Ti*Fi;
+    int_k_t muGe = Qe*Te*Fe;
+    int_k_t muGi = Qi*Ti*Fi;
 
-    REAL muG = Gl + muGe + muGi;
+    int_k_t muG = Gl + muGe + muGi;
     
-    if (muG < ACS_DBL_TINY){
-        muG += ACS_DBL_TINY;
+    if (muG < 1){
+        muG += 1;
     }
-
-    pNetwork->muV = (muGe*Ee + muGi*Ei + Gl*El - W)/muG; //Thomas : maybe will add explicitely a and b?
+    
+    
+    int_k_t muV_k;
+    muV_k = (muGe*Ee + muGi*Ei + Gl*El - W_k)/muG; //Thomas : maybe will add explicitely a and b?
+    
+    pNetwork->muV = kbits(muV_k);
 
     /*
     pNetwork->muGn = kbits(idivk(muG,Gl));
@@ -320,36 +328,34 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     REAL Ui = kbits(idivk(Qi*(Ei-pNetwork->muV),muG));
     */
     
-    pNetwork->muGn = muG/Gl;
-    REAL Tm = Cm/muG;
-    REAL Ue = Qe*(Ee-pNetwork->muV)/muG;
-    REAL Ui = Qi*(Ei-pNetwork->muV)/muG;
+    pNetwork->muGn = kbits(muG/Gl);
+    int_k_t Tm = Cm/muG;
+    int_k_t Ue = Qe*(Ee-muV_k)/muG;
+    int_k_t Ui = Qi*(Ei-muV_k)/muG;
     
      
     
-    REAL sV_sqr = REAL_HALF(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
+    int_k_t sV_sqr = bitsk(REAL_CONST(0.50000))*(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
     
-    pNetwork->sV = sV_sqr;// sqrtk(sV_sqr);// square_root_of(sV_sqr); //
+    pNetwork->sV = kbits(square_root_of(sV_sqr)); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
 
     
     
-    if (Fe<ACS_DBL_TINY)//just to insure a non zero division,
+    if (Fe<1)//just to insure a non zero division,
     {
-        Fe += ACS_DBL_TINY;
+        Fe += 1;
     }
-    else if (Fi<ACS_DBL_TINY)
+    else if (Fi<1)
     {
-        Fi += ACS_DBL_TINY;
+        Fi += 1;
     }
     
-    REAL Tv = ( Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui))\
+
+    int_k_t Tv = ( Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui))\
         /(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));
-    
-    if (Tv < ACS_DBL_TINY){
-        Tv += ACS_DBL_TINY;
-    }
-    
-    pNetwork->TvN = Tv*Gl/Cm; // Thomas : Heu, useless no?? |resp-> TvN is a dimensional so usefull var
+    int_k_t TvN_k = Tv*Gl/Cm;
+        
+    pNetwork->TvN = kbits(TvN_k); // Thomas : Heu, useless no?? |resp-> TvN is a dimensional so usefull var
     
     
 
