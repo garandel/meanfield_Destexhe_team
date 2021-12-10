@@ -350,9 +350,11 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         Fi += 1;
     }
     
+    int_k_t Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;
+    int_k_t Tv_num = Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);
 
-    int_k_t Tv = ( Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui))\
-        /(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));
+    int_k_t Tv = Tv_denom / Tv_num ;
+    
     int_k_t TvN_k = Tv*Gl/Cm;
         
     pNetwork->TvN = kbits(TvN_k); // Thomas : Heu, useless no?? |resp-> TvN is a dimensional so usefull var
