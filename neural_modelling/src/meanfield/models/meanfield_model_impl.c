@@ -76,7 +76,7 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 }
 
 
-static inline double square_root_of(REAL number)
+static inline s1615 square_root_of(REAL number)
 {
      //!! square root method take from Quake III Arena 
      //! source code, attribute to John Carmack.
@@ -306,20 +306,37 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         -> here N_exc = (1-gei)*Ntot*pconnec
         So give the same
     */
-    int_k_t muGe = Qe*Te*Fe;
-    int_k_t muGi = Qi*Ti*Fi;
+    int_lk_t muGe = Qe*Te*Fe;
+    int_lk_t muGi = Qi*Ti*Fi;
 
     int_k_t muG = Gl + muGe + muGi;
     
-    if (muG < 1){
-        muG += 1;
+
+    if (muG<1 && muG>=0){
+        muG = 1;
+    }  
+    else if (muG>-1 && muG<0)
+    {
+        muG = -1;
     }
     
+    if (muG>-1 && muG <1)
+    {
+        log_error("muG env 0");
+    }
     
-    int_k_t muV_k;
-    muV_k = (muGe*Ee + muGi*Ei + Gl*El - W_k)/muG; //Thomas : maybe will add explicitely a and b?
+    int_lk_t muV_k = (muGe*Ee + muGi*Ei + Gl*El);//muG;//(muGe*Ee + muGi*Ei + Gl*El - W_k)/muG; 
+    /*
+    if (muV_k>-1 && muV_k <1)
+    {
+        log_error("muV_k env 0");
+    }*/
+    if (muV_k==0)
+    {
+        log_error("muV_k = 0");
+    }
     
-    pNetwork->muV = kbits(muV_k);
+    pNetwork->muV = lkbits(muV_k);
 
     /*
     pNetwork->muGn = kbits(idivk(muG,Gl));
@@ -328,38 +345,63 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     REAL Ui = kbits(idivk(Qi*(Ei-pNetwork->muV),muG));
     */
     
+    //double problem muV_k et  Qe*(Ee+1)/muG
+    
     pNetwork->muGn = kbits(muG/Gl);
     int_k_t Tm = Cm/muG;
-    int_k_t Ue = Qe*(Ee-muV_k)/muG;
-    int_k_t Ui = Qi*(Ei-muV_k)/muG;
+    int_k_t Ue = Qe*(Ee-muV_k);//muG;
+    int_k_t Ui = Qi*(Ei-muV_k);//muG;
     
-     
-    
-    int_k_t sV_sqr = bitsk(REAL_CONST(0.50000))*(Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm));//ITCM with err_func also, 560 bytes overflowed with multiplication
-    
-    pNetwork->sV = kbits(square_root_of(sV_sqr)); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
-
-    
-    
-    if (Fe<1)//just to insure a non zero division,
+    if (Fe<1 && Fe>0)//just to insure a non zero division,
     {
-        Fe += 1;
+        Fe = 1;
     }
-    else if (Fi<1)
+    else if (Fe>-1 && Fe<0)
     {
-        Fi += 1;
+        Fe = -1 ;
     }
     
-    int_k_t Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;
-    int_k_t Tv_num = Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);
-
-    int_k_t Tv = Tv_denom / Tv_num ;
+    if (Fi<1 && Fi>0) 
+    {
+        Fi = 1;    
+    }
+    else if (Fi>-1 && Fi<0)
+    {
+        Fi = -1;
+    }
     
-    int_k_t TvN_k = Tv*Gl/Cm;
+    //problem is not Fe or Fi
+    //maybe conversion of muV_k
+
+    int_lk_t Tv_num = muG;//Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);
+    int_lk_t Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;
+    
+    if (Tv_denom<1){
+        Tv_denom += 1;
+    }
+    
+    if (Tv_num<1 && Tv_num>0)
+    {
+        Tv_num=1;
+    }
+    if (Tv_num>-1 && Tv_num<0)
+    {
+        Tv_num=-1;
+    }
+    
+    //Tv_num give Error so maybe egal to zero
+    //Tv_denom aswell
+
+    int_lk_t Tv = Tv_num ;// Tv_denom;
+    //int_k_t TvN_k = Tv*Gl/Cm;
+    
+    //ERROR : With this method TvN is egal to zero Tv*Gl/Cm
         
-    pNetwork->TvN = kbits(TvN_k); // Thomas : Heu, useless no?? |resp-> TvN is a dimensional so usefull var
+    pNetwork->TvN = lkbits(Tv*Gl/Cm); // TvN is adimensional so usefull var
     
+    int_lk_t sV_sqr = bitsk(REAL_CONST(0.50000))*(Tv_denom);
     
+    pNetwork->sV = square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
 
 }
 
@@ -400,7 +442,8 @@ void TF(REAL Ve, REAL Vi, REAL W,
         pNetwork->sV += ACS_DBL_TINY;
     }
     //factor = REAL_HALF(Gl/(pNetwork->TvN * Cm));
-    REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV);
+    //REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV);
+    REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)+pNetwork->sV);
     
 
     error_function(argument, mathsbox);
@@ -410,10 +453,14 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL Cm = pNetwork->Cm;
     /*
     pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);// In fact = 1/(2.*Tv) * err_func , that's it'!!!
-    If remove that's will do less instruction
+    If remove that's will do less instruction->NOP
     
     Put TvN<-:Tv because Tv not in pNetwork
     REMOVE this correction bcs TvN adimensional so usefull
+    
+    Some problem with sqrt type give a DIVBY0 error when compil with python
+    
+    pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
     */
     pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
 
