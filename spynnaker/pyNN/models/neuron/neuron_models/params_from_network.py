@@ -129,7 +129,7 @@ class ParamsFromNetwork(AbstractInputType):
              DataType.S1615, #Tsyn_inh
              DataType.S1615, #Erev_exc
              DataType.S1615, #Erev_inh
-             DataType.UINT32, #Ntot
+             DataType.S1615, #Ntot
              DataType.S1615, #gei
              DataType.S1615, #ext_drive
              DataType.S1615, #afferent_exc_fraction

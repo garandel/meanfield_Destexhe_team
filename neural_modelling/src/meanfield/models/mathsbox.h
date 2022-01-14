@@ -4,6 +4,7 @@
 //#include <sqrt.h>
 #include <math.h>
 #include <stdfix-exp.h>
+#include <round.h>
 #include <stdfix-full-iso.h>
 //#include "../../common/maths-util.h"
 

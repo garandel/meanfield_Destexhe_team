@@ -48,7 +48,7 @@ class Mathsbox(AbstractInputType):
         
         """
         super().__init__(
-            [DataType.UINT32, #sample
+            [DataType.S1615, #sample
             DataType.S1615]) # error fonction
         self._sample = sample
         self._err_func = err_func

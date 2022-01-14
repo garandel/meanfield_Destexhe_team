@@ -103,12 +103,12 @@ static inline s1615 square_root_of(REAL number)
     
 }
 
-
+/*
 //! \brief Multiplies an accum by an accum giving an integer answer.
 //! \param[in] y: An s16.15 accum
 //! \param[in] x: An s16.15 accum
 //! \return The integer part of y*x.
-/*
+
 static inline int mulkk(
     s1615 y,
     s1615 x)
@@ -117,9 +117,10 @@ static inline int mulkk(
 }
 */
 
+
 /*
-//! \brief Multiplies an accum by an accum giving an integer answer.
-//! \param[in] x: An s0.31 accum
+//! \brief Multiplies a frac by an accum giving an integer answer.
+//! \param[in] x: An s0.31 frac
 //! \param[in] y: An s16.15 accum
 //! \return The integer part of y*x.
 static inline int mulrk(
@@ -130,6 +131,7 @@ static inline int mulrk(
 }
 */
 
+/*
 //! \brief convert an long frac in integer for rounding giving an accum answer.
 //! \param[in] y: An s16.15 accum
 //! \param[in] x: An s16.15 accum
@@ -145,6 +147,7 @@ static inline int_k_t lrkbits( const s031 f)
       
     return x.inter_k;
 }
+*/
     
 
 
@@ -163,8 +166,10 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     because when use by external modules, coeff[5:]=np.zeros(3)
     in the case of a linear threshold
     */
-    /*NEED TO AVOID DIVISION AS POSSIBLE
-        but not for now
+    /*
+        If add other inv_constante, this go on DTCM so a priori no problem.
+        
+    
     */
    
     int_k_t muV0 = bitsk(pNetwork->muV0);
@@ -182,56 +187,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     int_k_t TvN = bitsk(pNetwork->TvN);
     int_k_t Vthre = bitsk(pNetwork->Vthre);
     
-    
-    /*
-    REAL P0 = Pfit->P0;
-    REAL P1 = Pfit->P1;
-    REAL P2 = Pfit->P2;
-    REAL P3 = Pfit->P3;
-    REAL P5 = Pfit->P5;
-    REAL P6 = Pfit->P6;
-    REAL P7 = Pfit->P7;
-    REAL P8 = Pfit->P8;
-    REAL P9 = Pfit->P9;
-    REAL P10 = Pfit->P10;
-    */
 
-    
-    
-    //overflowed if put multiplication instead of division, wird!!!
-/*    Vthre = P0\
-        + P1*(muV-muV0)/iDmuV0\
-        + P2*(sV-sV0)/iDsV0\
-        + P3*(TvN-TvN0)/iDTvN0\
-        + P5*((muV-muV0)/iDmuV0)*((muV-muV0)/iDmuV0)\
-        + P6*((sV-sV0)/iDsV0)*((sV-sV0)/iDsV0)\
-        + P7*((TvN-TvN0)/iDTvN0)*((TvN-TvN0)/iDTvN0)\
-        + P8*((muV-muV0)/iDmuV0)*((sV-sV0)/iDsV0)\
-        + P9*((muV-muV0)/iDmuV0)*((TvN-TvN0)/iDTvN0)\
-        + P10*((sV-sV0)/iDsV0)*((TvN-TvN0)/iDTvN0);
-
-    pNetwork->Vthre = Vthre;
-    
-
-    }
-    */
-    
-    //! Rounding params from polynome
-    //!  __stdfix_round_s32(int32_t x, int n )
-    //!  don't know which n put, how rounding the number??
-    
-    /*
-    int32_t P0 = __stdfix_round_s32(bitslr(Pfit->P0),4);
-    int32_t P1 = __stdfix_round_s32(bitslr(Pfit->P1),4);
-    int32_t P2 = __stdfix_round_s32(bitslr(Pfit->P2),4);
-    int32_t P3 = __stdfix_round_s32(bitslr(Pfit->P3),4);
-    int32_t P5 = __stdfix_round_s32(bitslr(Pfit->P5),4);
-    int32_t P6 = __stdfix_round_s32(bitslr(Pfit->P6),4);
-    int32_t P7 = __stdfix_round_s32(bitslr(Pfit->P7),4);
-    int32_t P8 = __stdfix_round_s32(bitslr(Pfit->P8),4);
-    int32_t P9 = __stdfix_round_s32(bitslr(Pfit->P9),4);
-    int32_t P10 = __stdfix_round_s32(bitslr(Pfit->P10),4);
-    */
     
     int_k_t P0 = bitsk(Pfit->P0);
     int_k_t P1 = bitsk(Pfit->P1);
@@ -254,24 +210,13 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
         + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
         + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
-
-
-        
-
-    
     /*
-    Vthre = bitslr(P0)\
-        + mulilr(mulik(iDmuV0, muV-muV0),P1)\
-        + mulilr(mulik(iDsV0, sV-sV0),P2)\
-        + mulilr(mulik(iDTvN0, TvN-TvN0),P3)\
-        + mulilr(mulik(iDmuV0, muV-muV0)*mulik(iDmuV0, muV-muV0),P5)\
-        + mulilr(mulik(iDsV0, sV-sV0)*mulik(iDsV0, sV-sV0),P6)\
-        + mulilr(mulik(iDTvN0, TvN-TvN0)*mulik(iDTvN0, TvN-TvN0),P7)\
-        + mulilr(mulik(iDmuV0, muV-muV0)*mulik(iDsV0, sV-sV0),P8)\
-        + mulilr(mulik(iDmuV0,muV-muV0)*mulik(iDTvN0, TvN-TvN0),P9)\
-        + mulilr(mulik(iDsV0, sV-sV0)*mulik(iDTvN0, TvN-TvN0),P10);
-     */   
-    
+    int_k_t test;
+    test = P1*(muV-muV0)*iDmuV0;
+    log_info("Vthre = %3.4k", test);
+    */
+
+  
     pNetwork->Vthre = kbits(Vthre);
 
     }
@@ -294,24 +239,42 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     int_k_t Ee = bitsk(pNetwork->Ee);
     int_k_t Cm = bitsk(pNetwork->Cm);
     
+    //log_info("gei_k = %1.2k", gei);
+    //log_info("Gl_k = %2.4k", Gl);
+    //log_info("El_k = %2.4k", El);
+        
         
     int_k_t Ve_k = bitsk(Ve);
     int_k_t Vi_k = bitsk(Vi);
     int_k_t W_k = bitsk(W);
     
-    int_k_t Fe = Ve_k * (bitsk(REAL_CONST(1.))-gei)*pconnec*Ntot; // default is 1 !!
-    int_k_t Fi = Vi_k * gei*pconnec*Ntot;
+    //log_info("Ve_k=%3.6k", Ve_k);
+    //log_info("gei=%1.2k", gei);
+    //log_info("pconnec=%2.6k", pconnec);
+    //log_info("Ntot=%6.1k", Ntot);
+    
+    
+    int_k_t Fe;
+    Fe = Ve_k * (1-gei)*pconnec*Ntot; // default is 1 !!
+    int_k_t Fi;
+    Fi = Vi_k * gei*pconnec*Ntot;
+    //log_info("Fe=%3.6k", Fe);
     
     /* normaly = Ve*Te*Qe*Ke with Ke = p*N_exc what it is?
         -> here N_exc = (1-gei)*Ntot*pconnec
         So give the same
+        
+        Avec muGi=Qi*Ti*Fi+1 ça marche!!????!!  No comprendo!! bcs multiplication give zero
     */
-    int_lk_t muGe = Qe*Te*Fe;
-    int_lk_t muGi = Qi*Ti*Fi;
+    int_k_t muGe;
+    muGe = Qe*Te*Fe;
+    int_k_t muGi;
+    muGi = Qi*Ti*Fi;
 
-    int_k_t muG = Gl + muGe + muGi;
-    
-
+    int_k_t muG;
+    muG = Gl + muGe + muGi;
+    //log_info("muG = %6.6k", muG);
+    /*
     if (muG<1 && muG>=0){
         muG = 1;
     }  
@@ -319,39 +282,60 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     {
         muG = -1;
     }
+    */
     
-    if (muG>-1 && muG <1)
+    
+    if (muG==0)
     {
         log_error("muG env 0");
+        muG=1;
     }
     
-    int_lk_t muV_k = (muGe*Ee + muGi*Ei + Gl*El);//muG;//(muGe*Ee + muGi*Ei + Gl*El - W_k)/muG; 
+    /*
+    int_k_t test = Gl*El;
+    if (test==0)
+    {
+        log_error("test=0");
+        //log_info("%11.4k",Fi); 
+    }
+    */
+    
+    //int_k_t var_test = __stdfix_smul_k(Gl,El); //(muGe*Ee + muGi*Ei + Gl*El - W_k)/muG;
+    int_k_t muV_k;
+    muV_k = Gl*gei;//__stdfix_smul_k(Gl,gei);//bitsk(pNetwork->gei*pNetwork->Gl);//(muGe*Ee + muGi*Ei + Gl*El)/muG;
+    //int_k_t muV_kk = var_test + muV_k;
+    REAL var_test = pNetwork->Gl * pNetwork->gei;
     /*
     if (muV_k>-1 && muV_k <1)
     {
         log_error("muV_k env 0");
     }*/
+    //log_info("muV_k = %3.4k", muV_k);
+    log_info("var_test = %3.4k", var_test);
+    
+    
+   
+    
+    
+    pNetwork->muV = kbits(muV_k);
+    /*
     if (muV_k==0)
     {
-        log_error("muV_k = 0");
+        log_error("muV_k Gl = 0");
+        //muV_k=1;
     }
-    
-    pNetwork->muV = lkbits(muV_k);
-
-    /*
-    pNetwork->muGn = kbits(idivk(muG,Gl));
-    REAL Tm = kbits(idivk(Cm,muG));
-    REAL Ue = kbits(idivk(Qe*(Ee-pNetwork->muV),muG));
-    REAL Ui = kbits(idivk(Qi*(Ei-pNetwork->muV),muG));
     */
+    //log_info("muV = %11.4k", pNetwork->muV);
+
+
     
     //double problem muV_k et  Qe*(Ee+1)/muG
     
     pNetwork->muGn = kbits(muG/Gl);
     int_k_t Tm = Cm/muG;
-    int_k_t Ue = Qe*(Ee-muV_k);//muG;
-    int_k_t Ui = Qi*(Ei-muV_k);//muG;
-    
+    int_k_t Ue = Qe*(Ee-muV_k)/muG;
+    int_k_t Ui = Qi*(Ei-muV_k)/muG;
+    /*
     if (Fe<1 && Fe>0)//just to insure a non zero division,
     {
         Fe = 1;
@@ -369,12 +353,20 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     {
         Fi = -1;
     }
+    */
     
-    //problem is not Fe or Fi
-    //maybe conversion of muV_k
-
-    int_lk_t Tv_num = muG;//Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);
-    int_lk_t Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;
+    if (Fe==0)
+    {
+        Fe=1;
+    }
+    else if (Fi==0)
+    {
+        Fi=1;
+    }
+    
+    //problem is multiplication '*' that give 0 bcs not saturated arithm
+    int_k_t Tv_num = Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);//too long
+    int_k_t Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;// too long
     
     if (Tv_denom<1){
         Tv_denom += 1;
@@ -392,14 +384,16 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     //Tv_num give Error so maybe egal to zero
     //Tv_denom aswell
 
-    int_lk_t Tv = Tv_num ;// Tv_denom;
+    int_k_t Tv = Tv_num / Tv_denom;
     //int_k_t TvN_k = Tv*Gl/Cm;
+    
+    //log_info("Tv=%11.4k", Tv);
     
     //ERROR : With this method TvN is egal to zero Tv*Gl/Cm
         
-    pNetwork->TvN = lkbits(Tv*Gl/Cm); // TvN is adimensional so usefull var
+    pNetwork->TvN = kbits(Tv*Gl/Cm); // TvN is adimensional so usefull var
     
-    int_lk_t sV_sqr = bitsk(REAL_CONST(0.50000))*(Tv_denom);
+    int_k_t sV_sqr = bitsk(REAL_CONST(0.50000))*(Tv_denom);
     
     pNetwork->sV = square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
 
