@@ -41,7 +41,6 @@ static const global_neuron_params_t *global_params;
 //! Thanks to Mantas Mikaitis for this!
 //static const REAL MAGIC_MULTIPLIER = REAL_CONST(0.040008544921875);
 
-void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 /****************************************************************************
  *   Error function with integral computing by midpoint method OK
  *   Will do the Simpson if ITCM is ok
@@ -52,6 +51,9 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
  *    expk take  : ~ 570 bytes
       sqrtk take : ~1250 bytes
  *****************************************************************************/
+
+void error_function(REAL argument, mathsbox_t *restrict mathsbox){
+
     mathsbox->err_func = 0.;
     REAL step = argument/mathsbox->error_func_sample;
     REAL x;
@@ -74,7 +76,6 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
     mathsbox->err_func = Erfc;
 
 }
-
 
 static inline s1615 square_root_of(REAL number)
 {
@@ -273,6 +274,9 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
 
     int_k_t muG;
     muG = Gl + muGe + muGi;
+    
+    //SOME ERRORS
+
     //log_info("muG = %6.6k", muG);
     /*
     if (muG<1 && muG>=0){
@@ -284,34 +288,37 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     }
     */
     
-    
+    /*
     if (muG==0)
     {
         log_error("muG env 0");
         muG=1;
     }
+    */
     
-    /*
+    
     int_k_t test = Gl*El;
-    if (test==0)
+    log_info("%11.4k",test);
+    /*if (test==0)
     {
         log_error("test=0");
-        //log_info("%11.4k",Fi); 
+        log_info("%11.4k",test); 
     }
     */
     
+    
     //int_k_t var_test = __stdfix_smul_k(Gl,El); //(muGe*Ee + muGi*Ei + Gl*El - W_k)/muG;
     int_k_t muV_k;
-    muV_k = Gl*gei;//__stdfix_smul_k(Gl,gei);//bitsk(pNetwork->gei*pNetwork->Gl);//(muGe*Ee + muGi*Ei + Gl*El)/muG;
+    muV_k = __stdfix_smul_k(Gl,gei);// Gl*gei;//bitsk(pNetwork->gei*pNetwork->Gl);//(muGe*Ee + muGi*Ei + Gl*El)/muG;
     //int_k_t muV_kk = var_test + muV_k;
-    REAL var_test = pNetwork->Gl * pNetwork->gei;
+    //REAL var_test = pNetwork->Gl * pNetwork->gei;
     /*
     if (muV_k>-1 && muV_k <1)
     {
         log_error("muV_k env 0");
     }*/
     //log_info("muV_k = %3.4k", muV_k);
-    log_info("var_test = %3.4k", var_test);
+    //log_info("var_test = %3.4k", var_test);
     
     
    
@@ -325,7 +332,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         //muV_k=1;
     }
     */
-    //log_info("muV = %11.4k", pNetwork->muV);
+    log_info("muV = %11.4k", pNetwork->muV);
 
 
     

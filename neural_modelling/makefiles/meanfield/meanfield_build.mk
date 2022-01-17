@@ -278,9 +278,9 @@ $(BUILD_DIR)meanfield/synapses.o: $(MODIFIED_DIR)meanfield/synapses.c
 	$(SYNAPSE_TYPE_COMPILE) -o $@ $<
     
 $(BUILD_DIR)meanfield/meanfield.o: $(MODIFIED_DIR)meanfield/meanfield.c
-	#synapses.c
+	#meanfield.c change TEST_COMPILE by SYNAPSE_TYPE_COMPILE
 	-@mkdir -p $(dir $@)
-	$(TEST_COMPILE) -o $@ $<
+	$(SYNAPSE_TYPE_COMPILE) -o $@ $<
     
 $(BUILD_DIR)meanfield/direct_synapses.o: $(MODIFIED_DIR)meanfield/direct_synapses.c
 	#direct_synapses.c
