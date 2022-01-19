@@ -311,14 +311,14 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     int_k_t muV_k;
     muV_k = __stdfix_smul_k(Gl,gei);// Gl*gei;//bitsk(pNetwork->gei*pNetwork->Gl);//(muGe*Ee + muGi*Ei + Gl*El)/muG;
     //int_k_t muV_kk = var_test + muV_k;
-    //REAL var_test = pNetwork->Gl * pNetwork->gei;
+    REAL var_test = pNetwork->Gl * pNetwork->gei;
     /*
     if (muV_k>-1 && muV_k <1)
     {
         log_error("muV_k env 0");
     }*/
-    //log_info("muV_k = %3.4k", muV_k);
-    //log_info("var_test = %3.4k", var_test);
+    log_info("muV_k = %3.4k", muV_k);
+    log_info("var_test = %3.4k", var_test);
     
     
    
