@@ -67,8 +67,8 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
         
         //Erfc +=  factor*(2/sqrtk(Pi))*expk(-(t*t)); // the real one overflowed ITCM because of expk and sqrtk
         t = x + REAL_HALF(step);
-        Erf +=  step*two_over_sqrt_Pi*expk(-(t*t)); //working like this one
-        //Erf +=  step*two_over_sqrt_Pi*(-(t*t));//TEST
+        //Erf +=  step*two_over_sqrt_Pi*expk(-(t*t)); //working like this one
+        Erf +=  step*two_over_sqrt_Pi*(-(t*t));//TEST
         //Erf +=  step*(REAL_CONST(2.)/sqrtk(Pi))*expk(-(t*t)); // TEST sqrtk ONE
     }
     Erfc = ONE-Erf;
@@ -325,16 +325,17 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         //muV_k=1;
     }
     */
-    log_info("muV = %11.4k", pNetwork->muV);
+    //log_info("muV = %11.4k", pNetwork->muV);
 
 
     
     //double problem muV_k et  Qe*(Ee+1)/muG
     
-    pNetwork->muGn = muG/Gl;
+    REAL muGn = muG/Gl;
+    pNetwork->muGn = muGn;
     REAL Tm = Cm/muG;
-    REAL Ue = Qe*(Ee-muV)/muG;
-    REAL Ui = Qi*(Ei-muV)/muG;
+    REAL Ue = Qe*(Ee-muV)*muG;//Qe*(Ee-muV)/muG;
+    REAL Ui = Qi*(Ei-muV)*muG;//Qi*(Ei-muV)/muG;
     /*
     if (Fe<1 && Fe>0)//just to insure a non zero division,
     {
@@ -354,7 +355,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         Fi = -1;
     }
     */
-    
+    /*
     if (Fe==0)
     {
         Fe=1;
@@ -363,6 +364,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     {
         Fi=1;
     }
+    */
     
     //problem is multiplication '*' that give 0 bcs not saturated arithm
     REAL Tv_num = Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);//too long
@@ -395,7 +397,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     
     REAL sV_sqr = REAL_CONST(0.50000)*(Tv_denom);
     
-    pNetwork->sV = square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
+    pNetwork->sV = sV_sqr;//square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
 
 }
 
