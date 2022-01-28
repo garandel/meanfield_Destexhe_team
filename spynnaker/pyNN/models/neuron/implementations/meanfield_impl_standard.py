@@ -49,22 +49,18 @@ class MeanfieldImplStandard(AbstractNeuronImpl):
         "__n_steps_per_timestep"
     ]
 
-    _RECORDABLES = ["Ve", "Vi", "w", "gsyn_exc", "gsyn_inh"]
+    _RECORDABLES = ["Ve", "Vi", "w"]
 
     _RECORDABLE_DATA_TYPES = {
         "Ve": DataType.S1615,
         "Vi": DataType.S1615,
-        "w": DataType.S1615,
-        "gsyn_exc": DataType.S1615,
-        "gsyn_inh": DataType.S1615
+        "w": DataType.S1615
     }
 
     _RECORDABLE_UNITS = {
         'Ve': 'Hz',
         'Vi': 'Hz',
-        'w': "pA",
-        'gsyn_exc': "uS",
-        'gsyn_inh': "uS"
+        'w': "pA"
     }
 
     def __init__(

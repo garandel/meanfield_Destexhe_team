@@ -44,12 +44,8 @@ enum word_recording_indices {
     VE_RECORDING_INDEX = 0,
     VI_RECORDING_INDEX = 1,
     W_RECORDING_INDEX = 2,
-    //! Gsyn_exc (excitatory synaptic conductance/current) recording index
-    GSYN_EXC_RECORDING_INDEX = 3,
-    //! Gsyn_inh (excitatory synaptic conductance/current) recording index
-    GSYN_INH_RECORDING_INDEX = 4,
     //! Number of recorded word-sized state variables
-    N_RECORDED_VARS = 5
+    N_RECORDED_VARS = 3
 };
 
 //! Indices for recording of bitfields
@@ -158,7 +154,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
         }
     }
     
-    // Allocate DTCM for P fit from polyomial for exc array and copy block of data
+    // Allocate DTCM for P fit from polyomial for inh array and copy block of data
     if (sizeof(pFitPolynomial_t)) {
         Pfit_inh_array = spin1_malloc(n_meanfields * sizeof(pFitPolynomial_t));
         if (Pfit_inh_array == NULL) {
@@ -416,10 +412,11 @@ static void neuron_impl_do_timestep_update(
                         VI_RECORDING_INDEX, meanfield_index, firing_rate_Vi);
                 neuron_recording_record_accum(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
-                neuron_recording_record_accum(
+                /*neuron_recording_record_accum(
                         GSYN_EXC_RECORDING_INDEX, meanfield_index, total_exc);
                 neuron_recording_record_accum(
                         GSYN_INH_RECORDING_INDEX, meanfield_index, total_inh);
+                        */
             }
 
             // Call functions to convert exc_input and inh_input to current

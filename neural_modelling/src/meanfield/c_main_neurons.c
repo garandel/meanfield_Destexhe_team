@@ -32,10 +32,13 @@
  *
  * @image html spynnaker_c_code_flow.png
  */
+//#include <stdbool.h>
+//#include <stdint.h>
+#include "../meanfield/c_main_common.h"
+
 
 #include <tdma_processing.h>
 #include <spin1_api_params.h>
-#include "../meanfield/c_main_common.h"
 #include "../meanfield/c_main_neuron_common.h"
 #include "../meanfield/dma_common.h"
 #include "../meanfield/profile_tags.h"
