@@ -20,6 +20,7 @@
 #include "../../meanfield/models/meanfield_model_impl.h"
 
 #include <debug.h>
+#include <math.h>
 #include "../../meanfield/models/params_from_network.h"
 #include "../../meanfield/models/mathsbox.h"
 #include "../../meanfield/models/P_fit_polynomial.h"
@@ -54,6 +55,8 @@ static const global_neuron_params_t *global_params;
 
 void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 
+    REAL Erfc = ZERO;
+    /*
     mathsbox->err_func = 0.;
     REAL step = argument/mathsbox->error_func_sample;
     REAL x;
@@ -62,16 +65,25 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
     REAL two_over_sqrt_Pi = REAL_CONST(1.128379167); //APPROXIMATION
     REAL Erf = ZERO;
     REAL Erfc = ZERO;
+    REAL i=0.;
     
     for(x=0; x<=argument; x+=step){
         
         //Erfc +=  factor*(2/sqrtk(Pi))*expk(-(t*t)); // the real one overflowed ITCM because of expk and sqrtk
-        t = x + REAL_HALF(step);
+        //t = x + REAL_HALF(step);
         //Erf +=  step*two_over_sqrt_Pi*expk(-(t*t)); //working like this one
-        Erf +=  step*two_over_sqrt_Pi*(-(t*t));//TEST
+        //Erf +=  step*two_over_sqrt_Pi*(-(t*t));//TEST
         //Erf +=  step*(REAL_CONST(2.)/sqrtk(Pi))*expk(-(t*t)); // TEST sqrtk ONE
+        i+=1.;
+        Erf = ONE;
+        
     }
     Erfc = ONE-Erf;
+*/
+    Erfc = erfc(argument);
+    log_info("Erfc=%12.6k", Erfc);
+    //mathsbox->cycles_numbre+=1.;
+    //log_info("mathsbox->cycles_numbre=%12.4k", mathsbox->cycles_numbre);
 
     mathsbox->err_func = Erfc;
 
@@ -254,7 +266,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     Fe = Ve * (1-gei)*pconnec*Ntot; // default is 1 !!
     REAL Fi;
     Fi = Vi * gei*pconnec*Ntot;
-    //log_info("Fe=%3.6k", Fe);
+    
     
     /* normaly = Ve*Te*Qe*Ke with Ke = p*N_exc what it is?
         -> here N_exc = (1-gei)*Ntot*pconnec
@@ -270,9 +282,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     REAL muG;
     muG = Gl + muGe + muGi;
     
-    //SOME ERRORS
 
-    //log_info("muG = %6.6k", muG);
     /*
     if (muG<1 && muG>=0){
         muG = 1;
@@ -325,7 +335,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
         //muV_k=1;
     }
     */
-    //log_info("muV = %11.4k", pNetwork->muV);
+    
 
 
     
@@ -367,8 +377,11 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     */
     
     //problem is multiplication '*' that give 0 bcs not saturated arithm
-    REAL Tv_num = Fe*(Ue*Te)*(Ue*Te) + Fi*(Ti*Ui)*(Ti*Ui);//too long
-    REAL Tv_denom = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm) + Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm) ;// too long
+    REAL Tv_num_e = Fe*(Ue*Te)*(Ue*Te) ;
+    REAL Tv_num_i = Fi*(Ti*Ui)*(Ti*Ui) ;
+    REAL Tv_denom_e = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm);
+    REAL Tv_denom_i = Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm);
+    
     /*
     if (Tv_denom<1){
         Tv_denom += 1;
@@ -386,18 +399,30 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     //Tv_num give Error so maybe egal to zero
     //Tv_denom aswell
 
-    REAL Tv = Tv_num / Tv_denom;
+    REAL Tv = (Tv_num_e + Tv_num_i) / (Tv_denom_e + Tv_denom_i);
     //int_k_t TvN_k = Tv*Gl/Cm;
     
-    //log_info("Tv=%11.4k", Tv);
+    
     
     //ERROR : With this method TvN is egal to zero Tv*Gl/Cm
         
     pNetwork->TvN = Tv*Gl/Cm; // TvN is adimensional so usefull var
     
-    REAL sV_sqr = REAL_CONST(0.50000)*(Tv_denom);
+    REAL sV_sqr = REAL_CONST(0.50000)*((Tv_denom_e + Tv_denom_i));
     
     pNetwork->sV = sV_sqr;//square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
+    
+    //SOME ERRORS LOGS
+    
+    log_info("Fe=%3.6k", Fe);
+    /*
+    log_info("muG = %6.6k", muG);
+    log_info("muGe = %6.6k", muGe);
+    log_info("muGi = %6.6k", muGi);
+    log_info("Gl = %6.6k", Gl);
+    log_info("muV = %11.4k", pNetwork->muV);
+    log_info("TvN=%11.4k", pNetwork->TvN);
+    */
 
 }
 
@@ -438,8 +463,9 @@ void TF(REAL Ve, REAL Vi, REAL W,
         pNetwork->sV += ACS_DBL_TINY;
     }
     //factor = REAL_HALF(Gl/(pNetwork->TvN * Cm));
-    //REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV);
-    REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)+pNetwork->sV);
+    REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV);
+    //REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)+pNetwork->sV);//TEST
+    log_info("argument = %11.6k", argument);
     
 
     error_function(argument, mathsbox);
@@ -458,7 +484,11 @@ void TF(REAL Ve, REAL Vi, REAL W,
     
     pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
     */
+    log_info("Cm*pNetwork->TvN=%11.4k", Cm*pNetwork->TvN);
     pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
+    
+    
+    log_info("Fout_th=%11.4k\n", pNetwork->Fout_th);
 
 
     if (pNetwork->Fout_th < ACS_DBL_TINY){

@@ -120,7 +120,8 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  isyn_inh=0.0,
 
                  sample=1000,
-                 err_func=0.):
+                 err_func=0.):#,
+                 #cycles_numbre=0.):
         
                  #p0_exc=-0.0515518,
                  #p1_exc=0.00455197,
@@ -177,7 +178,7 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                                               p3_inh, p4_inh, p5_inh,
                                               p6_inh, p7_inh, p8_inh,
                                               p9_inh, p10_inh)
-        mathsbox = Mathsbox(sample, err_func)
+        mathsbox = Mathsbox(sample, err_func)#, cycles_numbre)
         synapse_type = SynapseTypeExponential(
             tau_syn_E, tau_syn_I, isyn_exc, isyn_inh)
         input_type = InputTypeConductance(e_rev_E, e_rev_I)

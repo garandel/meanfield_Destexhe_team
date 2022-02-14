@@ -19,9 +19,11 @@ typedef struct mathsbox_t {
     
     REAL err_func;
     
-    REAL var_sqrt;
+    
+    
 }mathsbox_t;
-
+//REAL cycles_numbre;
+//REAL var_sqrt;
 //typedef struct mathsbox_params_t* mathsbox_pointer_t;
 
 void error_function(REAL argument, mathsbox_t *restrict mathsbox);
