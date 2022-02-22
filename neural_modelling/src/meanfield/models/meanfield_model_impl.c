@@ -168,7 +168,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     }
     
 
-void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
+void get_fluct_regime_varsup(REAL Ve, REAL Vi,
                              ParamsFromNetwork_t *restrict pNetwork)
 {
     // Need some comments
@@ -260,7 +260,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
 }
 
 
-void TF(REAL Ve, REAL Vi, REAL W,
+void TF(REAL Ve, REAL Vi,
         ParamsFromNetwork_t *restrict pNetwork,
         pFitPolynomial_t *restrict Pfit,
         mathsbox_t *restrict mathsbox){
@@ -284,7 +284,7 @@ void TF(REAL Ve, REAL Vi, REAL W,
         Vi += ACS_DBL_TINY;
     }
 
-    get_fluct_regime_varsup(Ve, Vi, W, pNetwork);
+    get_fluct_regime_varsup(Ve, Vi, pNetwork);
     threshold_func(pNetwork, Pfit);
 
     
@@ -339,12 +339,12 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL b = meanfield->b;
                
     
-    TF(lastVe, lastVi, lastW, pNetwork, Pfit_exc, mathsbox);    
+    TF(lastVe, lastVi, pNetwork, Pfit_exc, mathsbox);    
     REAL lastTF_exc = pNetwork->Fout_th;
     //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
     
     
-    TF(lastVe, lastVi, lastW, pNetwork, Pfit_inh, mathsbox);
+    TF(lastVe, lastVi, pNetwork, Pfit_inh, mathsbox);
     REAL lastTF_inh = pNetwork->Fout_th;
     //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
     
@@ -355,7 +355,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *   NEED to give also the error of the method here :
  *   0.5*h^2*u''(t_n) + o(h^2)
  *******************************************************/
-    
+    /*
     h=h*0.001;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     meanfield->Ve =  lastVe + h*k1_exc ;
@@ -363,35 +363,15 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
     meanfield->Vi = lastVi + h*k1_inh ;
     
-    REAL k1_W = -lastW/tauw + meanfield->b * lastVe;
-    meanfield->w = lastW + h*k1_W;
-    
-    
-    
-
- /***********************************
- *  Euler do some test *
- ***********************************/
-    /*
-    h=h*0.001;
-    REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
-    meanfield->Ve = 1.0;//lastVe + h*k1_exc;
-    
-        
-    REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
-    meanfield->Vi = 1.0;//lastVi + h*k1_inh;
-        
     REAL k1_W = -lastW/tauw + b * lastVe;
-    meanfield->w = 1.0;//lastW + h*k1_W;
+    meanfield->w = lastW + h*k1_W;
     */
-        
-    
     
 /***********************************
  *  RUNGE-KUTTA 2nd order Midpoint *
  ***********************************/
-    /*
-    h=h*0.0001;
+    
+    h=h*0.01;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     REAL alpha_exc = lastVe + h*k1_exc;
     REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
@@ -409,7 +389,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL k2_W = -alpha_w/tauw + b * lastVe;
  
     meanfield->w += REAL_HALF(h*(k1_W+k2_W));
-    */
+    
     
 
 
@@ -462,7 +442,7 @@ state_t meanfield_model_state_update(
 
 
 
-void neuron_model_has_spiked(meanfield_t *restrict meanfield) {
+void neuron_model_has_spiked() { //meanfield_t *restrict meanfield
     log_debug("in neuron_model_has_spiked, time is ",
               global_params->machine_timestep_ms);
     // reset membrane voltage
@@ -495,7 +475,7 @@ void meanfield_model_print_state_variables(const meanfield_t *meanfield) {
     log_debug("W = %11.4k ", meanfield->w);
 }
 
-void meanfield_model_print_parameters(const meanfield_t *meanfield) {
+void meanfield_model_print_parameters() { //const meanfield_t *meanfield
     //log_debug("Ve = %11.4k ", meanfield->Ve);
     //log_debug("Vi = %11.4k ", meanfield->Vi);
     //log_debug("B = %11.4k ", neuron->B);

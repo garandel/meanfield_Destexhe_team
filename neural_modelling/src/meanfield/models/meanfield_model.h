@@ -91,7 +91,7 @@ state_t meanfield_model_state_update(
 //! \brief Indicates that the neuron has spiked
 //! \param[in, out] neuron pointer to a neuron parameter struct which contains
 //!     all the parameters for a specific neuron
-void neuron_model_has_spiked(meanfield_t *restrict meanfield);
+void neuron_model_has_spiked(); //meanfield_t *restrict meanfield
 
 //! \brief get the neuron membrane voltage for a given neuron parameter set
 //! \param[in] neuron: a pointer to a neuron parameter struct which contains
@@ -110,6 +110,6 @@ void meanfield_model_print_state_variables(const meanfield_t *meanfield);
 //! \brief printout of parameters i.e. those values that don't change
 //! \param[in] neuron: a pointer to a neuron parameter struct which contains all
 //!     the parameters for a specific neuron
-void meanfield_model_print_parameters(const meanfield_t *meanfield);
+void meanfield_model_print_parameters(); //const meanfield_t *meanfield
 
 #endif // _NEURON_MODEL_H_
