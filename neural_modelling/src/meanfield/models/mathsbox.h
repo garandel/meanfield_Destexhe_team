@@ -4,7 +4,7 @@
 //#include <sqrt.h>
 #include <math.h>
 #include <stdfix-exp.h>
-#include <round.h>
+//#include <round.h>
 #include <stdfix-full-iso.h>
 //#include "../../common/maths-util.h"
 
@@ -27,6 +27,8 @@ typedef struct mathsbox_t {
 //typedef struct mathsbox_params_t* mathsbox_pointer_t;
 
 void error_function(REAL argument, mathsbox_t *restrict mathsbox);
+
+//static inline REAL square_root_of(REAL number);
 
 /****************************************************************************
  *   Error function with integral computing by midpoint method OK

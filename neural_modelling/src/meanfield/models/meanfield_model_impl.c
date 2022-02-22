@@ -20,7 +20,7 @@
 #include "../../meanfield/models/meanfield_model_impl.h"
 
 #include <debug.h>
-#include <math.h>
+//#include <math.h>
 #include "../../meanfield/models/params_from_network.h"
 #include "../../meanfield/models/mathsbox.h"
 #include "../../meanfield/models/P_fit_polynomial.h"
@@ -56,30 +56,7 @@ static const global_neuron_params_t *global_params;
 void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 
     REAL Erfc = ZERO;
-    /*
-    mathsbox->err_func = 0.;
-    REAL step = argument/mathsbox->error_func_sample;
-    REAL x;
-    REAL t;
-    //REAL Pi = REAL_CONST(3.1415927);// here was a k
-    REAL two_over_sqrt_Pi = REAL_CONST(1.128379167); //APPROXIMATION
-    REAL Erf = ZERO;
-    REAL Erfc = ZERO;
-    REAL i=0.;
-    
-    for(x=0; x<=argument; x+=step){
-        
-        //Erfc +=  factor*(2/sqrtk(Pi))*expk(-(t*t)); // the real one overflowed ITCM because of expk and sqrtk
-        //t = x + REAL_HALF(step);
-        //Erf +=  step*two_over_sqrt_Pi*expk(-(t*t)); //working like this one
-        //Erf +=  step*two_over_sqrt_Pi*(-(t*t));//TEST
-        //Erf +=  step*(REAL_CONST(2.)/sqrtk(Pi))*expk(-(t*t)); // TEST sqrtk ONE
-        i+=1.;
-        Erf = ONE;
-        
-    }
-    Erfc = ONE-Erf;
-*/
+
     Erfc = erfc(argument);
     log_info("Erfc=%12.6k", Erfc);
     //mathsbox->cycles_numbre+=1.;
@@ -89,7 +66,7 @@ void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 
 }
 
-static inline s1615 square_root_of(REAL number)
+static inline REAL square_root_of(REAL number)
 {
      //!! square root method take from Quake III Arena 
      //! source code, attribute to John Carmack.
@@ -116,51 +93,7 @@ static inline s1615 square_root_of(REAL number)
     
 }
 
-/*
-//! \brief Multiplies an accum by an accum giving an integer answer.
-//! \param[in] y: An s16.15 accum
-//! \param[in] x: An s16.15 accum
-//! \return The integer part of y*x.
 
-static inline int mulkk(
-    s1615 y,
-    s1615 x)
-{
-    return __I((__I64(bitsk(y)) * __I64(bitsk(x))) >> 15);    
-}
-*/
-
-
-/*
-//! \brief Multiplies a frac by an accum giving an integer answer.
-//! \param[in] x: An s0.31 frac
-//! \param[in] y: An s16.15 accum
-//! \return The integer part of y*x.
-static inline int mulrk(
-    s031 x,
-    s1615 y)
-{
-    return __I((__I32(bitslr(x)) * __I32(bitsk(y))) >> 8);    
-}
-*/
-
-/*
-//! \brief convert an long frac in integer for rounding giving an accum answer.
-//! \param[in] y: An s16.15 accum
-//! \param[in] x: An s16.15 accum
-//! \return The integer part of y*x.
-
-static inline int_k_t lrkbits( const s031 f)
-{
-    union { s1615 r; int_k_t inter_k; int_lr_t inter_lr; s031 fx; } x;
-    
-    x.fx = f;
-    int32_t round = __stdfix_round_s32(x.inter_lr, 15);
-    x.inter_k = round;
-      
-    return x.inter_k;
-}
-*/
     
 
 
@@ -235,7 +168,8 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     }
     
 
-void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *restrict pNetwork)
+void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
+                             ParamsFromNetwork_t *restrict pNetwork)
 {
     // Need some comments
     
@@ -251,15 +185,9 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     REAL Ei = pNetwork->Ei;
     REAL Ee = pNetwork->Ee;
     REAL Cm = pNetwork->Cm;
-    
-    //log_info("gei_k = %1.2k", gei);
-    //log_info("Gl_k = %2.4k", Gl);
-    //log_info("El_k = %2.4k", El);
-        
-    //log_info("Ve_k=%3.6k", Ve_k);
-    //log_info("gei=%1.2k", gei);
-    //log_info("pconnec=%2.6k", pconnec);
-    //log_info("Ntot=%6.1k", Ntot);
+           
+    //log_info("Ve=%3.6k", Ve);
+ 
     
     
     REAL Fe;
@@ -268,12 +196,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     Fi = Vi * gei*pconnec*Ntot;
     
     
-    /* normaly = Ve*Te*Qe*Ke with Ke = p*N_exc what it is?
-        -> here N_exc = (1-gei)*Ntot*pconnec
-        So give the same
-        
-        Avec muGi=Qi*Ti*Fi+1 ça marche!!????!!  No comprendo!! bcs multiplication give zero
-    */
+
     REAL muGe;
     muGe = Qe*Te*Fe;
     REAL muGi;
@@ -283,48 +206,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     muG = Gl + muGe + muGi;
     
 
-    /*
-    if (muG<1 && muG>=0){
-        muG = 1;
-    }  
-    else if (muG>-1 && muG<0)
-    {
-        muG = -1;
-    }
-    */
-    
-    /*
-    if (muG==0)
-    {
-        log_error("muG env 0");
-        muG=1;
-    }
-    */
-    
-    /*
-    REAL test = Gl*El;
-    log_info("%11.4k",test);
-    */
-    /*if (test==0)
-    {
-        log_error("test=0");
-        log_info("%11.4k",test); 
-    }
-    */
-    
-    
-    //int_k_t var_test = __stdfix_smul_k(Gl,El); //(muGe*Ee + muGi*Ei + Gl*El - W_k)/muG;
-    //int_k_t muV_k;
-    //muV_k = __stdfix_smul_k(Gl,gei);// Gl*gei;//bitsk(pNetwork->gei*pNetwork->Gl);//(muGe*Ee + muGi*Ei + Gl*El)/muG;
-    //int_k_t muV_kk = var_test + muV_k;
-    //REAL var_test = pNetwork->Gl * pNetwork->gei;
-    /*
-    if (muV_k>-1 && muV_k <1)
-    {
-        log_error("muV_k env 0");
-    }*/
-    //log_info("muV_k = %3.4k", muV_k);
-    //log_info("var_test = %3.4k", var_test);
+
     
     REAL muV  = (muGe*Ee + muGi*Ei + Gl*El)/muG;
     pNetwork->muV = muV ;
@@ -339,42 +221,13 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
 
 
     
-    //double problem muV_k et  Qe*(Ee+1)/muG
     
     REAL muGn = muG/Gl;
     pNetwork->muGn = muGn;
     REAL Tm = Cm/muG;
-    REAL Ue = Qe*(Ee-muV)*muG;//Qe*(Ee-muV)/muG;
-    REAL Ui = Qi*(Ei-muV)*muG;//Qi*(Ei-muV)/muG;
-    /*
-    if (Fe<1 && Fe>0)//just to insure a non zero division,
-    {
-        Fe = 1;
-    }
-    else if (Fe>-1 && Fe<0)
-    {
-        Fe = -1 ;
-    }
+    REAL Ue = Qe*(Ee-muV)/muG;
+    REAL Ui = Qi*(Ei-muV)/muG;
     
-    if (Fi<1 && Fi>0) 
-    {
-        Fi = 1;    
-    }
-    else if (Fi>-1 && Fi<0)
-    {
-        Fi = -1;
-    }
-    */
-    /*
-    if (Fe==0)
-    {
-        Fe=1;
-    }
-    else if (Fi==0)
-    {
-        Fi=1;
-    }
-    */
     
     //problem is multiplication '*' that give 0 bcs not saturated arithm
     REAL Tv_num_e = Fe*(Ue*Te)*(Ue*Te) ;
@@ -382,39 +235,19 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, ParamsFromNetwork_t *rest
     REAL Tv_denom_e = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm);
     REAL Tv_denom_i = Fi*(Ti*Ui)*(Ti*Ui)/(Ti+Tm);
     
-    /*
-    if (Tv_denom<1){
-        Tv_denom += 1;
-    }
-    
-    if (Tv_num<1 && Tv_num>0)
-    {
-        Tv_num=1;
-    }
-    if (Tv_num>-1 && Tv_num<0)
-    {
-        Tv_num=-1;
-    }*/
-    
-    //Tv_num give Error so maybe egal to zero
-    //Tv_denom aswell
 
     REAL Tv = (Tv_num_e + Tv_num_i) / (Tv_denom_e + Tv_denom_i);
-    //int_k_t TvN_k = Tv*Gl/Cm;
-    
-    
-    
-    //ERROR : With this method TvN is egal to zero Tv*Gl/Cm
-        
+
     pNetwork->TvN = Tv*Gl/Cm; // TvN is adimensional so usefull var
     
     REAL sV_sqr = REAL_CONST(0.50000)*((Tv_denom_e + Tv_denom_i));
     
-    pNetwork->sV = sV_sqr;//square_root_of(sV_sqr); // //  sqrtk(sV_sqr);//  kbits(sV_sqr);
+    pNetwork->sV =  square_root_of(sV_sqr);  // sV_sqr; //  sqrtk(sV_sqr);//  kbits(sV_sqr);
     
     //SOME ERRORS LOGS
     
     log_info("Fe=%3.6k", Fe);
+    log_info("Fi=%3.6k", Fi);
     /*
     log_info("muG = %6.6k", muG);
     log_info("muGe = %6.6k", muGe);
@@ -442,6 +275,7 @@ void TF(REAL Ve, REAL Vi, REAL W,
     if (pNetwork->Fout_th != ZERO){
         pNetwork->Fout_th = ACS_DBL_TINY;
     }
+    //log_info("Fout_th_zero=%11.6k", pNetwork->Fout_th); //OK
 
     if (Ve < ACS_DBL_TINY){
         Ve += ACS_DBL_TINY;
@@ -454,18 +288,15 @@ void TF(REAL Ve, REAL Vi, REAL W,
     threshold_func(pNetwork, Pfit);
 
     
-    /*
-    normalement sqrt:
-        argument = (pNetwork->Vthre - pNetwork->muV)/sqrtk(REAL_CONST(2.))/pNetwork->sV;
-
-    */
     if (pNetwork->sV<ACS_DBL_TINY){
         pNetwork->sV += ACS_DBL_TINY;
     }
-    //factor = REAL_HALF(Gl/(pNetwork->TvN * Cm));
-    REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV);
-    //REAL argument = (pNetwork->Vthre - pNetwork->muV)/(REAL_CONST(1.4142137)+pNetwork->sV);//TEST
-    log_info("argument = %11.6k", argument);
+    
+    REAL argument = (pNetwork->Vthre - \
+                     pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
+    // REAL_CONST(1.4142137) = sqrtk(REAL_CONST(2.)
+    
+    //log_info("argument = %11.6k", argument);
     
 
     error_function(argument, mathsbox);
@@ -473,22 +304,12 @@ void TF(REAL Ve, REAL Vi, REAL W,
     
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
-    /*
-    pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);// In fact = 1/(2.*Tv) * err_func , that's it'!!!
-    If remove that's will do less instruction->NOP
     
-    Put TvN<-:Tv because Tv not in pNetwork
-    REMOVE this correction bcs TvN adimensional so usefull
-    
-    Some problem with sqrt type give a DIVBY0 error when compil with python
-    
-    pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
-    */
-    log_info("Cm*pNetwork->TvN=%11.4k", Cm*pNetwork->TvN);
-    pNetwork->Fout_th = (HALF*Gl) * mathsbox->err_func / (Cm*pNetwork->TvN);
+    //log_info("Cm*pNetwork->TvN=%11.4k", Cm*pNetwork->TvN);
+    pNetwork->Fout_th =  mathsbox->err_func * (HALF*Gl)/(Cm*pNetwork->TvN) ;
     
     
-    log_info("Fout_th=%11.4k\n", pNetwork->Fout_th);
+    //log_info("Fout_th=%11.4k\n", pNetwork->Fout_th);
 
 
     if (pNetwork->Fout_th < ACS_DBL_TINY){
@@ -507,6 +328,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     /* Propose for now a=0
     *
     */
+    //log_info("h=%11.4k\n", h);
 
     REAL lastVe = meanfield->Ve;
     REAL lastVi = meanfield->Vi;
@@ -519,10 +341,12 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     TF(lastVe, lastVi, lastW, pNetwork, Pfit_exc, mathsbox);    
     REAL lastTF_exc = pNetwork->Fout_th;
+    //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
     
     
     TF(lastVe, lastVi, lastW, pNetwork, Pfit_inh, mathsbox);
     REAL lastTF_inh = pNetwork->Fout_th;
+    //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
     
 /******************************************************
  *   EULER Explicite method
@@ -532,23 +356,42 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *   0.5*h^2*u''(t_n) + o(h^2)
  *******************************************************/
     
-    /*
-    
+    h=h*0.001;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
-    meanfield->Ve += h * k1_exc ;
-    
+    meanfield->Ve =  lastVe + h*k1_exc ;
+
     REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
-    meanfield->Vi += h * k1_inh ;
+    meanfield->Vi = lastVi + h*k1_inh ;
     
     REAL k1_W = -lastW/tauw + meanfield->b * lastVe;
-    meanfield->w += h * k1_W;
+    meanfield->w = lastW + h*k1_W;
     
+    
+    
+
+ /***********************************
+ *  Euler do some test *
+ ***********************************/
+    /*
+    h=h*0.001;
+    REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
+    meanfield->Ve = 1.0;//lastVe + h*k1_exc;
+    
+        
+    REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
+    meanfield->Vi = 1.0;//lastVi + h*k1_inh;
+        
+    REAL k1_W = -lastW/tauw + b * lastVe;
+    meanfield->w = 1.0;//lastW + h*k1_W;
     */
+        
+    
     
 /***********************************
  *  RUNGE-KUTTA 2nd order Midpoint *
  ***********************************/
-    
+    /*
+    h=h*0.0001;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     REAL alpha_exc = lastVe + h*k1_exc;
     REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
@@ -566,6 +409,8 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL k2_W = -alpha_w/tauw + b * lastVe;
  
     meanfield->w += REAL_HALF(h*(k1_W+k2_W));
+    */
+    
 
 
 }
@@ -600,7 +445,7 @@ state_t meanfield_model_state_update(
     }
 
     //input_t input_this_timestep = total_exc - total_inh
-    //        + external_bias + neuron->I_offset;
+    //        + external_bias + neuron->I_offset; LOOK HERE!!!!!
     */
 
     // the best AR update so far
@@ -612,7 +457,7 @@ state_t meanfield_model_state_update(
                     mathsbox);
     meanfield->this_h = global_params->machine_timestep_ms;
 
-    return meanfield->Ve;
+    return meanfield->this_h;//meanfield->Ve;
 }
 
 
