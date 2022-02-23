@@ -168,7 +168,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     }
     
 
-void get_fluct_regime_varsup(REAL Ve, REAL Vi,
+void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W, 
                              ParamsFromNetwork_t *restrict pNetwork)
 {
     // Need some comments
@@ -208,7 +208,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi,
 
 
     
-    REAL muV  = (muGe*Ee + muGi*Ei + Gl*El)/muG;
+    REAL muV  = (muGe*Ee + muGi*Ei + Gl*El - W)/muG;
     pNetwork->muV = muV ;
     /*
     if (muV_k==0)
@@ -260,7 +260,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi,
 }
 
 
-void TF(REAL Ve, REAL Vi,
+void TF(REAL Ve, REAL Vi, REAL W,
         ParamsFromNetwork_t *restrict pNetwork,
         pFitPolynomial_t *restrict Pfit,
         mathsbox_t *restrict mathsbox){
@@ -284,7 +284,7 @@ void TF(REAL Ve, REAL Vi,
         Vi += ACS_DBL_TINY;
     }
 
-    get_fluct_regime_varsup(Ve, Vi, pNetwork);
+    get_fluct_regime_varsup(Ve, Vi, W, pNetwork);
     threshold_func(pNetwork, Pfit);
 
     
@@ -339,12 +339,12 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL b = meanfield->b;
                
     
-    TF(lastVe, lastVi, pNetwork, Pfit_exc, mathsbox);    
+    TF(lastVe, lastVi, lastW, pNetwork, Pfit_exc, mathsbox);    
     REAL lastTF_exc = pNetwork->Fout_th;
     //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
     
     
-    TF(lastVe, lastVi, pNetwork, Pfit_inh, mathsbox);
+    TF(lastVe, lastVi, lastW, pNetwork, Pfit_inh, mathsbox);
     REAL lastTF_inh = pNetwork->Fout_th;
     //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
     
