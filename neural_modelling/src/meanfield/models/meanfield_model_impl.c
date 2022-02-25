@@ -329,14 +329,24 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     *
     */
     //log_info("h=%11.4k\n", h);
+    REAL a = meanfield->a;
+    REAL b = meanfield->b;
+    REAL El = pNetwork->El;
 
     REAL lastVe = meanfield->Ve;
     REAL lastVi = meanfield->Vi;
     REAL lastW = meanfield->w;
     
+    //REAL lastW_exc = meanfield->w;
+    //REAL lastW_inh = lastW_exc - b*lastVe;
+    
     REAL tauw = meanfield->tauw;
     REAL T_inv = meanfield->Timescale_inv;
-    REAL b = meanfield->b;
+    REAL muV = pNetwork->muV;
+    
+    
+    
+    
                
     
     TF(lastVe, lastVi, lastW, pNetwork, Pfit_exc, mathsbox);    
@@ -354,6 +364,11 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *   
  *   NEED to give also the error of the method here :
  *   0.5*h^2*u''(t_n) + o(h^2)
+ * 
+ * ERROR : overflowed for 936 ITCM when add adaptation W in 
+ *         get_fluct_regime_varsup() and TF()
+ *         AND reduce h don't give big changes
+ *      IF need memory will investigate but not now in 23 feb 2022
  *******************************************************/
     /*
     h=h*0.001;
@@ -371,7 +386,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *  RUNGE-KUTTA 2nd order Midpoint *
  ***********************************/
     
-    h=h*0.01;
+    h=h*0.001;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     REAL alpha_exc = lastVe + h*k1_exc;
     REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
@@ -384,14 +399,11 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
     
-    REAL k1_W = -lastW/tauw + b * lastVe;
+    REAL k1_W = -lastW/tauw + b * lastVe + a*(muV-El);
     REAL alpha_w = lastW + h*k1_W;
     REAL k2_W = -alpha_w/tauw + b * lastVe;
  
     meanfield->w += REAL_HALF(h*(k1_W+k2_W));
-    
-    
-
 
 }
 

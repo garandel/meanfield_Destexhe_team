@@ -147,13 +147,19 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  #p9_inh=0.00179862,
                  #p10_inh=-0.013830,
         # pylint: disable=too-many-arguments, too-many-locals
-        #muVV = ((muGe*Erev_exc + muGi*Erev_inh + Gl*El - Ve*tauw*(b) + a*El) /muG)/ (1+a/muG)
-        #w = Ve * b * tauw + a * (El-muV0)
         one_over_DmuV0 = 1/DmuV0
         one_over_DsV0 = 1/DsV0
         one_over_DTvN0 = 1/DTvN0
         one_over_Cm = 1/Cm
         one_over_Gl = 1/Gl
+        
+        muGe_0 = q_exc * Tsyn_exc * (Ve+ext_drive) * (1.-gei) * pconnec*Ntot
+        muGi_0 = q_inh * Tsyn_inh * Vi * gei * pconnec * Ntot
+        muG_0 = Gl + muGe_0 + muGi_0
+        muVV = ((muGe_0*Erev_exc + muGi_0*Erev_inh + Gl*El\
+                 - (Ve)*tauw*(b) + a*El) /muG_0)/ (1+a/muG_0)
+        w = Ve*tauw*b - a * (El-muVV)
+        
        
         
         neuron_model = MeanfieldOfAdexNetwork(a, b, tauw, Trefrac,
