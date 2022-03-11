@@ -166,7 +166,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
             return false;
         }
     }
-    
+    /*
     // Allocate DTCM for mathsbox array and copy block of data
     if (sizeof(mathsbox_t)) {
         mathsbox_array = spin1_malloc(n_meanfields * sizeof(mathsbox_t));
@@ -174,7 +174,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
             log_error("Unable to allocate mathsbox array - Out of DTCM");
             return false;
         }
-    }
+    }*/
 
     // Allocate DTCM for input type array and copy block of data
     if (sizeof(input_type_t)) {
@@ -357,7 +357,7 @@ static void neuron_impl_do_timestep_update(
         pFitPolynomial_t *Pfit_exc_types = &Pfit_exc_array[meanfield_index];
         pFitPolynomial_t *Pfit_inh_types = &Pfit_inh_array[meanfield_index];
         
-        mathsbox_t *mathsbox_types = &mathsbox_array[meanfield_index];
+        //mathsbox_t *mathsbox_types = &mathsbox_array[meanfield_index];
 
         // Get the input_type parameters and voltage for this neuron
         input_type_t *input_types = &input_type_array[meanfield_index];
@@ -436,8 +436,8 @@ static void neuron_impl_do_timestep_update(
             state_t result = meanfield_model_state_update(this_meanfield,
                                                           pNetwork_types,
                                                           Pfit_exc_types,
-                                                          Pfit_inh_types,
-                                                          mathsbox_types);
+                                                          Pfit_inh_types);
+                                                          //mathsbox_types);
 
             // determine if a spike should occur
             bool spike_now =

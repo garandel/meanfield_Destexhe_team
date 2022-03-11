@@ -19,7 +19,8 @@ typedef struct ParamsFromNetwork_t {
     
     REAL Gl;
     REAL Cm;//inverse one-> nop bcs otherwise need to add two variables instead of one
-    REAL El;
+    REAL El_exc;
+    REAL El_inh;
     
     // Variable-state parameters
     //REAL fe;

@@ -29,18 +29,23 @@ typedef struct meanfield_t {
     // get_neural_parameters.
 
     // 
-    REAL a;
-    REAL b;
-    REAL tauw;
+    REAL a_exc;
+    REAL b_exc;
+    REAL tauw_exc;
+    REAL a_inh;
+    REAL b_inh;
+    REAL tauw_inh;
     REAL Trefrac;
     REAL Vreset;
-    REAL delta_v;
+    REAL delta_v_exc;
+    REAL delta_v_inh;
     REAL ampnoise;
     REAL Timescale_inv;
     
     REAL Ve; 
     REAL Vi;
-    REAL w;
+    REAL w_exc;
+    REAL w_inh;
         
     REAL this_h;
         

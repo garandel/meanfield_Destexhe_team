@@ -85,8 +85,8 @@ state_t meanfield_model_state_update(
     meanfield_t *restrict meanfield,
     ParamsFromNetwork_t *restrict params_from_network,
     pFitPolynomial_t *restrict Pfit_exc,
-    pFitPolynomial_t *restrict Pfit_inh,
-    mathsbox_t *restrict mathsbox);
+    pFitPolynomial_t *restrict Pfit_inh);
+    //mathsbox_t *restrict mathsbox);
 
 //! \brief Indicates that the neuron has spiked
 //! \param[in, out] neuron pointer to a neuron parameter struct which contains

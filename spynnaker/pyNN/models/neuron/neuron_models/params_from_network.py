@@ -36,7 +36,8 @@ AFFERENT_EXC_FRACTION = "afferent_exc_fraction"
 
 GL = "Gl"
 CM = "Cm"
-EL = "El"
+EL_EXC = "El_exc"
+EL_INH = "El_inh"
 
 MUV = "muV"
 MUV0 = "muV0"
@@ -71,7 +72,8 @@ UNITS = {
     AFFERENT_EXC_FRACTION: "",
     GL: "Gl",
     CM: "pF",
-    EL: "mV",    
+    EL_EXC: "mV",
+    EL_INH: "mV",
     VTHRE: "mV",
     MUV : "",
     MUV0 : "",
@@ -95,7 +97,8 @@ class ParamsFromNetwork(AbstractInputType):
         "__pconnec", "_q_exc", "_q_inh", "_Tsyn_exc", "_Tsyn_inh",
         "_Erev_exc", "_Erev_inh", "_Ntot",
         "_gei", "_ext_drive", "_afferent_exc_fraction",
-        "_Gl", "_Cm", "_El",
+        "_Gl", "_Cm",
+        "_El_exc", "_El_inh",
         "_Vthre", "_muV", "_muV0", "_one_over_DmuV0", "_sV",
         "_sV0", "_one_over_DsV0",
         "_muGn", "_TvN", "_TvN0", "_one_over_DTvN0", "_Vthre", "_Fout_th",
@@ -107,7 +110,7 @@ class ParamsFromNetwork(AbstractInputType):
                  Erev_exc, Erev_inh,
                  Ntot, gei, ext_drive,
                  afferent_exc_fraction,
-                 Gl, Cm, El,
+                 Gl, Cm, El_exc, El_inh,
                  muV, muV0,one_over_DmuV0,
                  sV, sV0, one_over_DsV0,
                  muGn,
@@ -135,7 +138,8 @@ class ParamsFromNetwork(AbstractInputType):
              DataType.S1615, #afferent_exc_fraction
              DataType.S1615, #Gm
              DataType.S1615, #Cl
-             DataType.S1615, #El
+             DataType.S1615, #El_exc
+             DataType.S1615, #El_inh
              DataType.S1615,   # muV
              DataType.S1615,   # muV0
              DataType.S1615,   # one_over_DmuV0
@@ -162,7 +166,8 @@ class ParamsFromNetwork(AbstractInputType):
         self._afferent_exc_fraction = afferent_exc_fraction
         self._Gl = Gl
         self._Cm = Cm
-        self._El = El        
+        self._El_exc = El_exc  
+        self._El_inh = El_inh
         self._muV = muV
         self._muV0 = muV0
         self._one_over_DmuV0 = one_over_DmuV0
@@ -197,7 +202,8 @@ class ParamsFromNetwork(AbstractInputType):
         parameters[AFFERENT_EXC_FRACTION] = self._afferent_exc_fraction
         parameters[GL] = self._Gl
         parameters[CM] = self._Cm
-        parameters[EL] = self._El
+        parameters[EL_EXC] = self._El_exc
+        parameters[EL_INH] = self._El_inh
         #parameters[MUV] = self._muV
         parameters[MUV0] = self._muV0
         parameters[ONE_OVER_DMUV0] = self._one_over_DmuV0
@@ -249,7 +255,8 @@ class ParamsFromNetwork(AbstractInputType):
                 parameters[AFFERENT_EXC_FRACTION],
                 parameters[GL],
                 parameters[CM],
-                parameters[EL],
+                parameters[EL_EXC],
+                parameters[EL_INH],
                 state_variables[MUV],
                 parameters[MUV0],
                 parameters[ONE_OVER_DMUV0],
@@ -271,7 +278,7 @@ class ParamsFromNetwork(AbstractInputType):
         (__pconnec, _q_exc, _q_inh, _Tsyn_exc, _Tsyn_inh,
         _Erev_exc, _Erev_inh, _Ntot, _gei, _ext_drive,
         _afferent_exc_fraction,
-        _Gl, _Cm, _El,
+        _Gl, _Cm, _El_exc, _El_inh,
         muV, _muV0, _one_over_DmuV0,
         sV, _sV0, _one_over_DsV0,
         muGn,
@@ -350,8 +357,12 @@ class ParamsFromNetwork(AbstractInputType):
         return self._Cm
 
     @property
-    def El(self):
-        return self._El
+    def El_exc(self):
+        return self._El_exc
+    
+    @property
+    def El_inh(self):
+        return self._El_inh
         
     @property
     def muV(self):

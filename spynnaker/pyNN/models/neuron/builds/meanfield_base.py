@@ -36,22 +36,27 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
     """
 
     # noinspection PyPep8Naming
-    @default_initial_values({"Ve", "Vi", "w", "Fout_th",
+    @default_initial_values({"Ve", "Vi", "w_exc", "w_inh", "Fout_th",
                              "muV", "sV", "muGn",
                              "TvN", "Vthre",
                              "err_func", "isyn_exc", "isyn_inh"})
     def __init__(self,
-                 a=0.,
-                 b=60.,
-                 tauw=1.0,
+                 a_exc=0.,
+                 b_exc=60.,
+                 tauw_exc=100.0,
+                 a_inh=0.,
+                 b_inh=0.,
+                 tauw_inh=1.0,
                  Trefrac=5.0,
                  Vreset=-65.,
-                 delta_v=2.0,
+                 delta_v_exc=2.0,
+                 delta_v_inh=0.5,
                  ampnoise=0.0,
                  Timescale_inv=200.,
                  Ve=9.,
                  Vi=23.,
-                 w=0.25,
+                 w_exc=0.25,
+                 w_inh=0.00001, #arbitraire
 
                  pconnec=0.05,
                  q_exc=1.5,
@@ -62,12 +67,13 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  Erev_inh=-80.,
                  Ntot=10000.,
                  gei=0.2,
-                 ext_drive=0.0,#2.5,
+                 ext_drive=2.5,
                  afferent_exc_fraction=1.,
 
                  Gl=10.,
                  Cm=200.,
-                 El=-70.,
+                 El_exc=-70.,
+                 El_inh=-65.,
 
                  muV=0.,
                  muV0=-0.06,
@@ -156,21 +162,27 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
         muGe_0 = q_exc * Tsyn_exc * (Ve+ext_drive) * (1.-gei) * pconnec*Ntot
         muGi_0 = q_inh * Tsyn_inh * Vi * gei * pconnec * Ntot
         muG_0 = Gl + muGe_0 + muGi_0
-        muVV = ((muGe_0*Erev_exc + muGi_0*Erev_inh + Gl*El\
-                 - (Ve)*tauw*(b) + a*El) /muG_0)/ (1+a/muG_0)
-        w = Ve*tauw*b - a * (El-muVV)
+        muVV = ((muGe_0*Erev_exc + muGi_0*Erev_inh + Gl*El_exc\
+                 - (Ve)*tauw_exc*(b_exc) + a_exc*El_exc) /muG_0)/ (1+a_exc/muG_0)
+        w_exc = Ve*tauw_exc*b_exc - a_exc * (El_exc-muVV)
+        w_inh = 0.00001
         
        
         
-        neuron_model = MeanfieldOfAdexNetwork(a, b, tauw, Trefrac,
-                                              Vreset, delta_v, ampnoise,
-                                              Timescale_inv, Ve, Vi, w)
+        neuron_model = MeanfieldOfAdexNetwork(a_exc, b_exc, tauw_exc,
+                                              a_inh, b_inh, tauw_inh,
+                                              Trefrac, Vreset,
+                                              delta_v_exc, delta_v_inh,
+                                              ampnoise, Timescale_inv,
+                                              Ve, Vi,
+                                              w_exc, w_inh)
         params_from_network = ParamsFromNetwork(pconnec, q_exc, q_inh,
                                                 Tsyn_exc, Tsyn_inh,
                                                 Erev_exc, Erev_inh,
                                                 Ntot, gei, ext_drive,
                                                 afferent_exc_fraction,
-                                                Gl, Cm, El,
+                                                Gl, Cm,
+                                                El_exc, El_inh,
                                                 muV, muV0, one_over_DmuV0,
                                                 sV, sV0, one_over_DsV0,
                                                 muGn,

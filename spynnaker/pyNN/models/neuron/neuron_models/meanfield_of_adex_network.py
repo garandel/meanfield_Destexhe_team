@@ -22,32 +22,42 @@ from spynnaker.pyNN.models.neuron.implementations import (
 
 ###--Meanfield Params--###
 #NBR = "nbr"
-A = "a"
-B = "b"
-TAUW = "tauw"
+A_EXC = "a_exc"
+B_EXC = "b_exc"
+TAUW_EXC = "tauw_exc"
+A_INH = "a_inh"
+B_INH = "b_inh"
+TAUW_INH = "tauw_inh"
 TREFRAC = "Trefrac"
 VRESET = "Vreset"
-DELTA_V = "delta_v"
+DELTA_V_EXC = "delta_v_exc"
+DELTA_V_INH = "delta_v_inh"
 AMPNOISE = "ampnoise"
 TIMESCALE_INV = "Timescale_inv"
 VE = "Ve"
 VI = "Vi"
-W = "w"
+W_EXC = "w_exc"
+W_INH = "w_inh"
 
 UNITS = {
     ###--Meanfield--###
     #NBR: "",
-    A: "nS",
-    B: "nS",
-    TAUW: "ms",
+    A_EXC: "nS",
+    B_EXC: "nS",
+    TAUW_EXC: "ms",
+    A_INH: "nS",
+    B_INH: "nS",
+    TAUW_INH: "ms",
     TREFRAC: "ms",
     VRESET: "mV",
-    DELTA_V: "mV",
+    DELTA_V_EXC: "mV",
+    DELTA_V_INH: "mV",
     AMPNOISE: "Hz",
     TIMESCALE_INV: "Hz",
     VE: "Hz",
     VI: "Hz",
-    W: "pA",
+    W_EXC: "pA",
+    W_INH: "pA",
 }
 
 
@@ -55,14 +65,21 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
     """ Model of meanfield due to A.Destehexe et al
     """
     __slots__ = [
-        "_a", "_b", "_tauw", "_Trefrac", "_Vreset", "_delta_v",
-        "_ampnoise", "_Timescale_inv", "_Ve_init", "_Vi_init", "_w_init"
+        "_a_exc", "_b_exc", "_tauw_exc",
+        "_a_inh", "_b_inh", "_tauw_inh",
+        "_Trefrac", "_Vreset", "_delta_v_exc", "_delta_v_inh",
+        "_ampnoise", "_Timescale_inv",
+        "_Ve_init", "_Vi_init",
+        "_w_exc_init", "_w_inh_init"
     ]
 
-    def __init__(self, a, b, tauw,
-                 Trefrac, Vreset, delta_v,
+    def __init__(self,
+                 a_exc, b_exc, tauw_exc,
+                 a_inh, b_inh, tauw_inh,
+                 Trefrac, Vreset, delta_v_exc, delta_v_inh,
                  ampnoise, Timescale_inv,
-                 Ve_init, Vi_init, w_init):
+                 Ve_init, Vi_init,
+                 w_exc_init, w_inh_init):
         """
         :param a: :math:`a`
         :type a: float, iterable(float), ~pyNN.random.RandomDistribution or
@@ -70,30 +87,40 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
         
         """
         super().__init__(
-            [DataType.S1615, #a DataType.UINT32, #nbr
-            DataType.S1615, #b
-            DataType.S1615, #tauw
+            [DataType.S1615, #a_exc
+            DataType.S1615, #b_exc
+            DataType.S1615, #tauw_exc
+            DataType.S1615, #a_inh
+            DataType.S1615, #b_inh
+            DataType.S1615, #tauw_inh
             DataType.S1615, #Trefrac
             DataType.S1615, #Vreset
-            DataType.S1615, #delta_v
+            DataType.S1615, #delta_v_exc
+            DataType.S1615, #delta_v_inh
             DataType.S1615, #ampnoise
             DataType.S1615, #Timescale_inv
             DataType.S1615, #Ve
             DataType.S1615, #Vi
-            DataType.S1615, #W
+            DataType.S1615, #W_exc
+            DataType.S1615, #W_inh
             DataType.S1615],  # this_h (= machine_time_step)
             [DataType.S1615])  # machine_time_step
-        self._a = a
-        self._b = b
-        self._tauw = tauw
+        self._a_exc = a_exc
+        self._b_exc = b_exc
+        self._tauw_exc = tauw_exc
+        self._a_inh = a_inh
+        self._b_inh = b_inh
+        self._tauw_inh = tauw_inh
         self._Trefrac = Trefrac
         self._Vreset =Vreset
-        self._delta_v = delta_v
+        self._delta_v_exc = delta_v_exc
+        self._delta_v_inh = delta_v_inh
         self._ampnoise = ampnoise
         self._Timescale_inv = Timescale_inv
         self._Ve_init = Ve_init
         self._Vi_init = Vi_init
-        self._w_init = w_init
+        self._w_exc_init = w_exc_init
+        self._w_inh_init = w_inh_init
 
     @overrides(AbstractStandardNeuronComponent.get_n_cpu_cycles)
     def get_n_cpu_cycles(self, n_neurons):
@@ -104,12 +131,16 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
     def add_parameters(self, parameters):
         ###--neuron--###
         #parameters[NBR] = self._nbr
-        parameters[A] = self._a
-        parameters[B] = self._b
-        parameters[TAUW] = self._tauw
+        parameters[A_EXC] = self._a_exc
+        parameters[B_EXC] = self._b_exc
+        parameters[TAUW_EXC] = self._tauw_exc
+        parameters[A_INH] = self._a_inh
+        parameters[B_INH] = self._b_inh
+        parameters[TAUW_INH] = self._tauw_inh
         parameters[TREFRAC] = self._Trefrac
         parameters[VRESET] = self._Vreset
-        parameters[DELTA_V] = self._delta_v
+        parameters[DELTA_V_EXC] = self._delta_v_exc
+        parameters[DELTA_V_INH] = self._delta_v_inh
         parameters[AMPNOISE] = self._ampnoise
         parameters[TIMESCALE_INV] = self._Timescale_inv
 
@@ -117,7 +148,8 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
     def add_state_variables(self, state_variables):
         state_variables[VE] = self._Ve_init
         state_variables[VI] = self._Vi_init
-        state_variables[W] = self._w_init
+        state_variables[W_EXC] = self._w_exc_init
+        state_variables[W_INH] = self._w_inh_init
         
     @overrides(AbstractStandardNeuronComponent.get_units)
     def get_units(self, variable):
@@ -141,13 +173,15 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
 
         # Add the rest of the data
         return [
-            parameters[A],parameters[B],parameters[TAUW],
-            parameters[TREFRAC],
-            parameters[VRESET],parameters[DELTA_V],parameters[AMPNOISE],
-            parameters[TIMESCALE_INV],
+            parameters[A_EXC],parameters[B_EXC],parameters[TAUW_EXC],
+            parameters[A_INH],parameters[B_INH],parameters[TAUW_INH],
+            parameters[TREFRAC],parameters[VRESET],
+            parameters[DELTA_V_EXC],parameters[DELTA_V_INH],
+            parameters[AMPNOISE], parameters[TIMESCALE_INV],
             state_variables[VE],
             state_variables[VI],
-            state_variables[W],            
+            state_variables[W_EXC],
+            state_variables[W_INH],
             float(ts) / MICRO_TO_MILLISECOND_CONVERSION
         ]
 
@@ -156,14 +190,18 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
 
         # Decode the values
         #(#_nbr,
-        (_a, _b, _tauw,
-        _Trefrac, _Vreset, _delta_v,
-        _ampnoise, _Timescale_inv, Ve, Vi, w, _this_h) = values
+        (_a_exc, _b_exc, _tauw_exc,
+         _a_inh, _b_inh, _tauw_inh,
+        _Trefrac, _Vreset, _delta_v_exc, _delta_v_inh,
+        _ampnoise, _Timescale_inv,
+         Ve, Vi,
+         w_exc, w_inh, _this_h) = values
 
         # Copy the changed data only
         state_variables[VE] = Ve
         state_variables[VI] = Vi
-        state_variables[W] = w
+        state_variables[W_EXC] = w_exc
+        state_variables[W_INH] = w_inh
         #state_variables[U] = u
 
 ################
@@ -176,16 +214,28 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
 
 
     @property
-    def a(self):
-        return self._a
+    def a_exc(self):
+        return self._a_exc
 
     @property
-    def b(self):
-        return self._b
+    def b_exc(self):
+        return self._b_exc
 
     @property
-    def tauw(self):
-        return self._tauw
+    def tauw_exc(self):
+        return self._tauw_exc
+    
+    @property
+    def a_inh(self):
+        return self._a_inh
+
+    @property
+    def b_inh(self):
+        return self._b_inh
+
+    @property
+    def tauw_inh(self):
+        return self._tauw_inh
 
     @property
     def Trefrac(self):
@@ -196,8 +246,12 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
         return self._Vreset
 
     @property
-    def delta_v(self):
-        return self._delta_v
+    def delta_v_exc(self):
+        return self._delta_v_exc
+    
+    @property
+    def delta_v_inh(self):
+        return self._delta_v_inh
 
     @property
     def ampnoise(self):
@@ -224,9 +278,18 @@ class MeanfieldOfAdexNetwork(AbstractNeuronModel):
         return self._Vi_init    
 
     @property
-    def w_init(self):
+    def w_exc_init(self):
         """ Settable model parameter: :math:`w`
 
         :rtype: float
         """
-        return self._w_init    
+        return self._w_exc_init    
+    
+    @property
+    def w_inh_init(self):
+        """ Settable model parameter: :math:`w`
+
+        :rtype: float
+        """
+        return self._w_inh_init    
+

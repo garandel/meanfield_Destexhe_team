@@ -20,9 +20,10 @@
 #include "../../meanfield/models/meanfield_model_impl.h"
 
 #include <debug.h>
-//#include <math.h>
+#include <math.h>
+#include <stdfix-exp.h>
 #include "../../meanfield/models/params_from_network.h"
-#include "../../meanfield/models/mathsbox.h"
+//#include "../../meanfield/models/mathsbox.h"
 #include "../../meanfield/models/P_fit_polynomial.h"
 //#include "../../common/maths-util.h" // i.o to use SQRT(x) and SQR(a)
 
@@ -52,19 +53,18 @@ static const global_neuron_params_t *global_params;
  *    expk take  : ~ 570 bytes
       sqrtk take : ~1250 bytes
  *****************************************************************************/
-
+/*
 void error_function(REAL argument, mathsbox_t *restrict mathsbox){
 
     REAL Erfc = ZERO;
 
     Erfc = erfc(argument);
-    log_info("Erfc=%12.6k", Erfc);
-    //mathsbox->cycles_numbre+=1.;
-    //log_info("mathsbox->cycles_numbre=%12.4k", mathsbox->cycles_numbre);
-
+    
     mathsbox->err_func = Erfc;
 
 }
+*/
+
 
 static inline REAL square_root_of(REAL number)
 {
@@ -181,22 +181,19 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL Te = pNetwork->Te;
     REAL Ti = pNetwork->Ti;
     REAL Gl = pNetwork->Gl;
-    REAL El = pNetwork->El;
+    REAL El_exc = pNetwork->El_exc;
+    //REAL El_inh = pNetwork->El_inh;
     REAL Ei = pNetwork->Ei;
     REAL Ee = pNetwork->Ee;
     REAL Cm = pNetwork->Cm;
            
     //log_info("Ve=%3.6k", Ve);
- 
-    
-    
+
     REAL Fe;
     Fe = Ve * (1-gei)*pconnec*Ntot; // default is 1 !!
     REAL Fi;
     Fi = Vi * gei*pconnec*Ntot;
     
-    
-
     REAL muGe;
     muGe = Qe*Te*Fe;
     REAL muGi;
@@ -205,23 +202,14 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL muG;
     muG = Gl + muGe + muGi;
     
-
-
+    //Average population voltage
+    REAL muV  = (muGe*Ee + muGi*Ei + Gl*El_exc - W)/muG;
     
-    REAL muV  = (muGe*Ee + muGi*Ei + Gl*El - W)/muG;
     pNetwork->muV = muV ;
-    /*
-    if (muV_k==0)
-    {
-        log_error("muV_k Gl = 0");
-        //muV_k=1;
-    }
-    */
     
+    log_info("muV get fluct=%4.8k\n", muV);
+   
 
-
-    
-    
     REAL muGn = muG/Gl;
     pNetwork->muGn = muGn;
     REAL Tm = Cm/muG;
@@ -246,8 +234,8 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     
     //SOME ERRORS LOGS
     
-    log_info("Fe=%3.6k", Fe);
-    log_info("Fi=%3.6k", Fi);
+    //log_info("Fe=%3.6k", Fe);
+    //log_info("Fi=%3.6k", Fi);
     /*
     log_info("muG = %6.6k", muG);
     log_info("muGe = %6.6k", muGe);
@@ -262,8 +250,8 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
 
 void TF(REAL Ve, REAL Vi, REAL W,
         ParamsFromNetwork_t *restrict pNetwork,
-        pFitPolynomial_t *restrict Pfit,
-        mathsbox_t *restrict mathsbox){
+        pFitPolynomial_t *restrict Pfit){
+        //,        mathsbox_t *restrict mathsbox){
 
 /*
     State-variables are directly connected to the struct
@@ -274,6 +262,9 @@ void TF(REAL Ve, REAL Vi, REAL W,
     
     if (pNetwork->Fout_th != ZERO){
         pNetwork->Fout_th = ACS_DBL_TINY;
+    }
+    if (pNetwork->muV != ZERO){
+        pNetwork->muV = ACS_DBL_TINY;
     }
     //log_info("Fout_th_zero=%11.6k", pNetwork->Fout_th); //OK
 
@@ -294,19 +285,22 @@ void TF(REAL Ve, REAL Vi, REAL W,
     
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
-    // REAL_CONST(1.4142137) = sqrtk(REAL_CONST(2.)
+    
     
     //log_info("argument = %11.6k", argument);
     
 
-    error_function(argument, mathsbox);
+    //error_function(argument, mathsbox);
+    
 
     
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
     //log_info("Cm*pNetwork->TvN=%11.4k", Cm*pNetwork->TvN);
-    pNetwork->Fout_th =  mathsbox->err_func * (HALF*Gl)/(Cm*pNetwork->TvN) ;
+    //pNetwork->Fout_th =  mathsbox->err_func * (HALF*Gl)/(Cm*pNetwork->TvN) ; //this one give 1 order of magnitude less than direct method SO not the good result
+    pNetwork->Fout_th = erfc(argument) * (HALF*Gl)/(Cm*pNetwork->TvN) ;
+    
     
     
     //log_info("Fout_th=%11.4k\n", pNetwork->Fout_th);
@@ -322,43 +316,50 @@ void TF(REAL Ve, REAL Vi, REAL W,
 void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
                      ParamsFromNetwork_t *restrict pNetwork,
                      pFitPolynomial_t *restrict Pfit_exc,
-                     pFitPolynomial_t *restrict Pfit_inh,
-                     mathsbox_t *restrict mathsbox) {
+                     pFitPolynomial_t *restrict Pfit_inh){
+                     //mathsbox_t *restrict mathsbox) {
     
-    /* Propose for now a=0
+    /* will add exc_aff=0, inh_aff=0, pure_exc_aff=0
     *
     */
     //log_info("h=%11.4k\n", h);
-    REAL a = meanfield->a;
-    REAL b = meanfield->b;
-    REAL El = pNetwork->El;
+    REAL a_exc = meanfield->a_exc;
+    REAL b_exc = meanfield->b_exc;
+    REAL El_exc = pNetwork->El_exc;
+    REAL tauw_exc = meanfield->tauw_exc;
+    
+    /*REAL a_inh = meanfield->a_inh;
+    REAL b_inh = meanfield->b_inh;
+    REAL El_inh = pNetwork->El_inh;
+    REAL tauw_inh = meanfield->tauw_inh;
+    */
 
     REAL lastVe = meanfield->Ve;
     REAL lastVi = meanfield->Vi;
-    REAL lastW = meanfield->w;
+    REAL lastWe = meanfield->w_exc;
+    REAL lastWi = meanfield->w_inh;
     
     //REAL lastW_exc = meanfield->w;
     //REAL lastW_inh = lastW_exc - b*lastVe;
     
-    REAL tauw = meanfield->tauw;
+    
     REAL T_inv = meanfield->Timescale_inv;
-    REAL muV = pNetwork->muV;
-    
-    
-    
-    
-               
-    
-    TF(lastVe, lastVi, lastW, pNetwork, Pfit_exc, mathsbox);    
+        
+    TF(lastVe, lastVi, lastWe, pNetwork, Pfit_exc);//, mathsbox);
+    REAL lastmuV = pNetwork->muV;
     REAL lastTF_exc = pNetwork->Fout_th;
+    
+    log_info("muV RK2 local exc =%4.8k\n", lastmuV);
+    
     //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
     
+    //log_info("pNet->muV =%4.8k\n", pNetwork->muV);
     
-    TF(lastVe, lastVi, lastW, pNetwork, Pfit_inh, mathsbox);
+    TF(lastVe, lastVi, lastWi, pNetwork, Pfit_inh);//, mathsbox);
     REAL lastTF_inh = pNetwork->Fout_th;
     //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
     
-/******************************************************
+/***********************************************************************
  *   EULER Explicite method
  *   It's very instable if for now h<0.2 for 20ms
  *   
@@ -369,7 +370,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *         get_fluct_regime_varsup() and TF()
  *         AND reduce h don't give big changes
  *      IF need memory will investigate but not now in 23 feb 2022
- *******************************************************/
+ ***********************************************************************/
     /*
     h=h*0.001;
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
@@ -399,11 +400,19 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
     
-    REAL k1_W = -lastW/tauw + b * lastVe + a*(muV-El);
-    REAL alpha_w = lastW + h*k1_W;
-    REAL k2_W = -alpha_w/tauw + b * lastVe;
+    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
+    REAL alpha_we = lastWe + h*k1_We;
+    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
  
-    meanfield->w += REAL_HALF(h*(k1_W+k2_W));
+    meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
+    
+    /*
+    REAL k1_Wi = -lastWi/tauw_inh;// + b_inh * lastVi + a_inh*(muV-El_inh); overflowed otherwise
+    REAL alpha_wi = lastWi + h*k1_Wi;
+    REAL k2_Wi = -alpha_wi/tauw_inh ;//+ b_inh * lastVi;
+ 
+    meanfield->w_inh += REAL_HALF(h*(k1_Wi+k2_Wi));
+    */
 
 }
 
@@ -419,8 +428,8 @@ state_t meanfield_model_state_update(
     meanfield_t *restrict meanfield,
     ParamsFromNetwork_t *restrict pNetwork,
     pFitPolynomial_t *restrict Pfit_exc,
-    pFitPolynomial_t *restrict Pfit_inh,
-    mathsbox_t *restrict mathsbox){
+    pFitPolynomial_t *restrict Pfit_inh){
+    //mathsbox_t *restrict mathsbox){
     /*
         uint16_t num_excitatory_inputs, const input_t *exc_input,
 		uint16_t num_inhibitory_inputs, const input_t *inh_input,
@@ -445,8 +454,8 @@ state_t meanfield_model_state_update(
                     meanfield,
                     pNetwork,
                     Pfit_exc,
-                    Pfit_inh,
-                    mathsbox);
+                    Pfit_inh);
+                    //mathsbox);
     meanfield->this_h = global_params->machine_timestep_ms;
 
     return meanfield->this_h;//meanfield->Ve;
@@ -477,14 +486,14 @@ state_t meanfield_model_get_firing_rate_Vi(const meanfield_t *meanfield) {
 }
 
 state_t meanfield_model_get_adaptation_W(const meanfield_t *meanfield){
-    return meanfield->w;
+    return meanfield->w_exc;
 }
 
 
 void meanfield_model_print_state_variables(const meanfield_t *meanfield) {
     log_debug("Ve = %11.4k ", meanfield->Ve);
     log_debug("Vi = %11.4k ", meanfield->Vi);
-    log_debug("W = %11.4k ", meanfield->w);
+    log_debug("W_exc = %11.4k ", meanfield->w_exc);
 }
 
 void meanfield_model_print_parameters() { //const meanfield_t *meanfield
