@@ -117,6 +117,9 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         
     
     */
+    
+    
+    
    
     REAL muV0 = pNetwork->muV0;
     REAL iDmuV0 = pNetwork->iDmuV0;
@@ -207,11 +210,11 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     
     pNetwork->muV = muV ;
     
-    log_info("muV get fluct=%4.8k\n", muV);
+    //log_info("muV get fluct=%4.8k\n", muV);
    
 
     REAL muGn = muG/Gl;
-    pNetwork->muGn = muGn;
+    //pNetwork->muGn = muGn;
     REAL Tm = Cm/muG;
     REAL Ue = Qe*(Ee-muV)/muG;
     REAL Ui = Qi*(Ei-muV)/muG;
@@ -276,6 +279,11 @@ void TF(REAL Ve, REAL Vi, REAL W,
     }
 
     get_fluct_regime_varsup(Ve, Vi, W, pNetwork);
+    
+    if (pNetwork->Vthre != ZERO){
+        pNetwork->Vthre = ACS_DBL_TINY;
+    }
+    
     threshold_func(pNetwork, Pfit);
 
     
@@ -346,16 +354,18 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL T_inv = meanfield->Timescale_inv;
         
     TF(lastVe, lastVi, lastWe, pNetwork, Pfit_exc);//, mathsbox);
-    REAL lastmuV = pNetwork->muV;
+    //TF(meanfield->Ve, meanfield->Vi, meanfield->w_exc, pNetwork, Pfit_exc);
+    //REAL lastmuV = pNetwork->muV;
     REAL lastTF_exc = pNetwork->Fout_th;
     
-    log_info("muV RK2 local exc =%4.8k\n", lastmuV);
+    //log_info("muV RK2 local exc =%4.8k\n", lastmuV);
     
     //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
     
     //log_info("pNet->muV =%4.8k\n", pNetwork->muV);
     
     TF(lastVe, lastVi, lastWi, pNetwork, Pfit_inh);//, mathsbox);
+    //TF(meanfield->Ve, meanfield->Vi, meanfield->w_inh, pNetwork, Pfit_exc);
     REAL lastTF_inh = pNetwork->Fout_th;
     //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
     
@@ -386,19 +396,25 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
 /***********************************
  *  RUNGE-KUTTA 2nd order Midpoint *
  ***********************************/
-    
+    REAL h_int;
+    h_int =  pNetwork->muGn;
+    h_int += h;
+    pNetwork->muGn = h_int;
     h=h*0.001;
+        
+    //log_info('h_int=%6.6k',h_int);
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     REAL alpha_exc = lastVe + h*k1_exc;
     REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
     
     meanfield->Ve += REAL_HALF(h*(k1_exc + k2_exc));
-        
+            
     REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
     REAL alpha_inh = lastVi + h*k1_inh;
     REAL k2_inh = (lastTF_inh - alpha_inh)*T_inv;
     
     meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
+    log_info("i=%6.1k   Ve = %4.9k  Vi = %4.9k", h_int, meanfield->Ve, meanfield->Vi);
     
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;

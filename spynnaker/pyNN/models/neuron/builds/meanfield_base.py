@@ -93,9 +93,9 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  Fout_th=0.,
 
                  p0_exc=-0.0515518,
-                 p1_exc=0.0045520,
-                 p2_exc=-0.0076063,
-                 p3_exc=0.0009485,
+                 p1_exc=0.00455197,
+                 p2_exc=-0.00760625,
+                 p3_exc=0.00094851,
                  p4_exc=0.001,
                  p5_exc=-0.0009863,
                  p6_exc=-0.0026474,
@@ -105,15 +105,15 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  p10_exc=-0.014084,
                  
                  p0_inh=-0.0496832,
-                 p1_inh=0.0041233,
+                 p1_inh=0.00412289,
                  p2_inh=-0.0054849,
                  p3_inh=-0.0013451,
                  p4_inh=0.001,
                  p5_inh=-0.0010459,
-                 p6_inh=0.0030610,
+                 p6_inh=0.00306102,
                  p7_inh=-0.0084485,
                  p8_inh=-0.0025717,
-                 p9_inh=0.0017986,
+                 p9_inh=0.00179862,
                  p10_inh=-0.013830,
 
 
@@ -126,32 +126,8 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  isyn_inh=0.0,
 
                  sample=1000,
-                 err_func=0.):#,
-                 #cycles_numbre=0.):
+                 err_func=0.):
         
-                 #p0_exc=-0.0515518,
-                 #p1_exc=0.00455197,
-                 #p2_exc=-0.00760625,
-                 #p3_exc=0.00094851,
-                 #p4_exc=0.001,
-                 #p5_exc=-0.0009863,
-                 #p6_exc=-0.0026474,
-                 #p7_exc=-0.0135417,
-                 #p8_exc=0.0028742,
-                 #p9_exc=0.0029213,
-                 #p10_exc=-0.014084,
-                 
-                 #p0_inh=-0.0496832,
-                 #p1_inh=0.00412289,
-                 #p2_inh=-0.0054849,
-                 #p3_inh=-0.0013451,
-                 #p4_inh=0.001,
-                 #p5_inh=-0.0010459,
-                 #p6_inh=0.00306102,
-                 #p7_inh=-0.0084485,
-                 #p8_inh=-0.0025717,
-                 #p9_inh=0.00179862,
-                 #p10_inh=-0.013830,
         # pylint: disable=too-many-arguments, too-many-locals
         one_over_DmuV0 = 1/DmuV0
         one_over_DsV0 = 1/DsV0
