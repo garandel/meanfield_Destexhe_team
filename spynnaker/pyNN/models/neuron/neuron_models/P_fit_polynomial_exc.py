@@ -69,17 +69,17 @@ class pFitPolynomialExc(AbstractInputType):
         super().__init__(
             
             [###--TF inputs--###
-             DataType.S031, #p0
-             DataType.S031, #p1
-             DataType.S031, #p2
-             DataType.S031, #p3
-             DataType.S031, #p4
-             DataType.S031, #p5
-             DataType.S031, #p6
-             DataType.S031, #p7
-             DataType.S031, #p8
-             DataType.S031, #p9
-             DataType.S031]) #p10
+             DataType.S1615, #p0
+             DataType.S1615, #p1
+             DataType.S1615, #p2
+             DataType.S1615, #p3
+             DataType.S1615, #p4
+             DataType.S1615, #p5
+             DataType.S1615, #p6
+             DataType.S1615, #p7
+             DataType.S1615, #p8
+             DataType.S1615, #p9
+             DataType.S1615]) #p10
         
         self.__p0_exc = p0_exc
         self.__p1_exc = p1_exc

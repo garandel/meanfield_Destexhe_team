@@ -352,10 +352,10 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     
     REAL T_inv = meanfield->Timescale_inv;
-        
+    /*
     TF(lastVe, lastVi, lastWe, pNetwork, Pfit_exc);//, mathsbox);
     //TF(meanfield->Ve, meanfield->Vi, meanfield->w_exc, pNetwork, Pfit_exc);
-    //REAL lastmuV = pNetwork->muV;
+    REAL lastmuV = pNetwork->muV;
     REAL lastTF_exc = pNetwork->Fout_th;
     
     //log_info("muV RK2 local exc =%4.8k\n", lastmuV);
@@ -368,6 +368,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //TF(meanfield->Ve, meanfield->Vi, meanfield->w_inh, pNetwork, Pfit_exc);
     REAL lastTF_inh = pNetwork->Fout_th;
     //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
+    */
     
 /***********************************************************************
  *   EULER Explicite method
@@ -393,34 +394,92 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     meanfield->w = lastW + h*k1_W;
     */
     
-/***********************************
- *  RUNGE-KUTTA 2nd order Midpoint *
- ***********************************/
+/************************************************
+ *  RUNGE-KUTTA 2nd order Midpoint Try presision*
+ ***********************************************/
+    TF(lastVe, lastVi, lastWe, pNetwork, Pfit_exc);    
+    REAL lastmuV = pNetwork->muV;
+    REAL lastTF_exc_1 = pNetwork->Fout_th;
+       
+    TF(lastVe, lastVi, lastWi, pNetwork, Pfit_inh);
+    REAL lastTF_inh_1 = pNetwork->Fout_th;
+        
     REAL h_int;
     h_int =  pNetwork->muGn;
     h_int += h;
     pNetwork->muGn = h_int;
     h=h*0.001;
         
-    //log_info('h_int=%6.6k',h_int);
-    REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
-    REAL alpha_exc = lastVe + h*k1_exc;
-    REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
+    REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVe);
+    REAL lastVe_n2 = lastVe + REAL_HALF(h*alpha_exc_1);
     
-    meanfield->Ve += REAL_HALF(h*(k1_exc + k2_exc));
-            
-    REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
-    REAL alpha_inh = lastVi + h*k1_inh;
-    REAL k2_inh = (lastTF_inh - alpha_inh)*T_inv;
+    REAL alpha_inh_1 = T_inv*(lastTF_inh_1 - lastVi);
+    REAL lastVi_n2 = lastVi + REAL_HALF(h*alpha_inh_1);
     
-    meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
-    log_info("i=%6.1k   Ve = %4.9k  Vi = %4.9k", h_int, meanfield->Ve, meanfield->Vi);
+    
+    
+    TF(lastVe_n2, lastVi_n2, lastWe, pNetwork, Pfit_exc);
+    REAL TF_exc_2 = pNetwork->Fout_th;
+    
+    TF(lastVe_n2, lastVi_n2, lastWi, pNetwork, Pfit_inh);
+    REAL TF_inh_2 = pNetwork->Fout_th;
+    
+    REAL alpha_exc_2 = T_inv*(TF_exc_2 - lastVe_n2);
+    REAL alpha_inh_2 = T_inv*(TF_inh_2 - lastVi_n2);
+    
+    meanfield->Ve += h*alpha_exc_2;
+    meanfield->Vi += h*alpha_inh_2;
+    
+
+
+    log_info("%6.1k  %4.9k  %4.9k", h_int, meanfield->Ve, meanfield->Vi);
     
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
     REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
  
     meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
+    
+    
+/***********************************
+ *  RUNGE-KUTTA 2nd order Midpoint *
+ ***********************************/
+    /*
+    REAL h_int;
+    h_int =  pNetwork->muGn;
+    h_int += h;
+    pNetwork->muGn = h_int;
+    h=h*0.001;
+    */
+
+    
+        
+    //log_info('h_int=%6.6k',h_int);
+    /*
+    REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
+    REAL alpha_exc = lastVe + h*k1_exc;
+    REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
+    
+    meanfield->Ve += REAL_HALF(h*(k1_exc + k2_exc));
+    */
+    /*        
+    REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
+    REAL alpha_inh = lastVi + h*k1_inh;
+    REAL k2_inh = (lastTF_inh - alpha_inh)*T_inv;
+    
+    meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
+    */
+    /*
+    meanfield->Vi += REAL_HALF(h*T_inv*(lastTF_exc - lastVe)*(2.-h*T_inv));
+    log_info("i      Ve     Vi");
+    log_info("%6.1k  %4.9k  %4.9k", h_int, meanfield->Ve, meanfield->Vi);
+    
+    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
+    REAL alpha_we = lastWe + h*k1_We;
+    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
+ 
+    meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
+    */
     
     /*
     REAL k1_Wi = -lastWi/tauw_inh;// + b_inh * lastVi + a_inh*(muV-El_inh); overflowed otherwise
