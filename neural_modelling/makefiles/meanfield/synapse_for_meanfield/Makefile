@@ -13,10 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-MODELS = meanfield_model_cond, synapse_for_meanfield
-         
-all:
-	for d in $(MODELS); do $(MAKE) -C $$d || exit $$?; done
+APP = $(notdir $(CURDIR))
 
-clean:
-	for d in $(MODELS); do $(MAKE) -C $$d clean || exit $$?; done
+SYNAPSE_DYNAMICS = $(NEURON_DIR)/neuron/plasticity/synapse_dynamics_static_impl.c
+
+include ../synapse_build.mk
