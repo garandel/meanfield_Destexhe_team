@@ -26,7 +26,7 @@ ifndef NEURAL_MODELLING_DIRS
 endif
 #Check NEURAL_MODELLING_DIRS
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-CHECK_PATH := $(NEURAL_MODELLING_DIRS)/makefiles/synapse_only/synapse_build.mk
+CHECK_PATH := $(NEURAL_MODELLING_DIRS)/makefiles/meanfield/synapse_build.mk
 ifneq ($(CHECK_PATH), $(MAKEFILE_PATH))
     $(error Please check NEURAL_MODELLING_DIRS as based on that this file is at $(CHECK_PATH) when it is actually at $(MAKEFILE_PATH))
 endif
@@ -92,7 +92,7 @@ else
     SYNAPSE_DYNAMICS := $(call strip_source_dirs,$(SYNAPSE_DYNAMICS))
     SYNAPSE_DYNAMICS_O := $(BUILD_DIR)$(SYNAPSE_DYNAMICS:%.c=%.o)
     
-    SYNAPSE_DYNAMICS_STATIC := neuron/plasticity/synapse_dynamics_static_impl.c
+    SYNAPSE_DYNAMICS_STATIC := meanfield/plasticity/synapse_dynamics_static_impl.c
     STDP_ENABLED = 0
     ifneq ($(SYNAPSE_DYNAMICS), $(SYNAPSE_DYNAMICS_STATIC))
         STDP_ENABLED = 1
@@ -122,7 +122,7 @@ endif
 
 SYNGEN_ENABLED = 1
 ifndef SYNAPTOGENESIS_DYNAMICS
-    SYNAPTOGENESIS_DYNAMICS := neuron/structural_plasticity/synaptogenesis_dynamics_static_impl.c
+    SYNAPTOGENESIS_DYNAMICS := meanfield/structural_plasticity/synaptogenesis_dynamics_static_impl.c
     SYNAPTOGENESIS_DYNAMICS_C := $(MODIFIED_DIR)$(SYNAPTOGENESIS_DYNAMICS)
     SYNGEN_ENABLED = 0
 else
@@ -164,11 +164,11 @@ endif
 OTHER_SOURCES_CONVERTED := $(call strip_source_dirs,$(OTHER_SOURCES))
 
 # List all the sources relative to one of SOURCE_DIRS
-SOURCES = neuron/c_main_synapses.c \
-          neuron/synapses.c \
-          neuron/direct_synapses.c \
-          neuron/spike_processing_fast.c \
-          neuron/population_table/population_table_$(POPULATION_TABLE_IMPL)_impl.c \
+SOURCES = meanfield/c_main_synapses.c \
+          meanfield/synapses.c \
+          meanfield/direct_synapses.c \
+          meanfield/spike_processing_fast.c \
+          meanfield/population_table/population_table_$(POPULATION_TABLE_IMPL)_impl.c \
           $(SYNAPSE_DYNAMICS) $(WEIGHT_DEPENDENCE) \
           $(TIMING_DEPENDENCE) $(SYNAPTOGENESIS_DYNAMICS) \
           $(PARTNER_SELECTION) $(FORMATION) $(ELIMINATION) $(OTHER_SOURCES_CONVERTED)
@@ -180,22 +180,22 @@ FEC_OPT = $(OTIME)
 # Extra compile options
 DO_COMPILE = $(CC) -DLOG_LEVEL=$(SYNAPSE_DEBUG) $(CFLAGS) -DSTDP_ENABLED=$(STDP_ENABLED)
 
-$(BUILD_DIR)neuron/synapses.o: $(MODIFIED_DIR)neuron/synapses.c
+$(BUILD_DIR)meanfield/synapses.o: $(MODIFIED_DIR)meanfield/synapses.c
 	#synapses.c
 	-@mkdir -p $(dir $@)
 	$(DO_COMPILE) -o $@ $<
 
-$(BUILD_DIR)neuron/direct_synapses.o: $(MODIFIED_DIR)neuron/direct_synapses.c
+$(BUILD_DIR)meanfield/direct_synapses.o: $(MODIFIED_DIR)meanfield/direct_synapses.c
 	#direct_synapses.c
 	-mkdir -p $(dir $@)
 	$(DO_COMPILE) -o $@ $<
 
-$(BUILD_DIR)neuron/spike_processing_fast.o: $(MODIFIED_DIR)neuron/spike_processing_fast.c
+$(BUILD_DIR)meanfield/spike_processing_fast.o: $(MODIFIED_DIR)meanfield/spike_processing_fast.c
 	#spike_processing_fast.c
 	-@mkdir -p $(dir $@)
 	$(DO_COMPILE) -o $@ $<
 
-$(BUILD_DIR)neuron/population_table/population_table_binary_search_impl.o: $(MODIFIED_DIR)neuron/population_table/population_table_binary_search_impl.c
+$(BUILD_DIR)meanfield/population_table/population_table_binary_search_impl.o: $(MODIFIED_DIR)meanfield/population_table/population_table_binary_search_impl.c
 	#population_table/population_table_binary_search_impl.c
 	-@mkdir -p $(dir $@)
 	$(DO_COMPILE) -o $@ $<
@@ -220,7 +220,7 @@ ifeq ($(STDP_ENABLED), 1)
 	-@mkdir -p $(dir $@)
 	$(STDP_COMPILE) $(SYNGEN_INCLUDES) -o $@ $<
 
-    $(BUILD_DIR)neuron/plasticity/common/post_events.o: $(MODIFIED_DIR)neuron/plasticity/common/post_events.c
+    $(BUILD_DIR)meanfield/plasticity/common/post_events.o: $(MODIFIED_DIR)meanfield/plasticity/common/post_events.c
 	# plasticity/common/post_events.c
 	-@mkdir -p $(dir $@)
 	$(STDP_COMPILE) -o $@ $<

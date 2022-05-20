@@ -10,5 +10,4 @@ MEANFIELD_IMPL_H = $(MEANFIELD_DIR)/meanfield/implementations/meanfield_impl_sta
 THRESHOLD_TYPE_H = $(MEANFIELD_DIR)/meanfield/threshold_types/threshold_type_static.h
 SYNAPSE_TYPE_H = $(MEANFIELD_DIR)/meanfield/synapse_types/synapse_types_exponential_impl.h
 
-
 include ../meanfield_build.mk

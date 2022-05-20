@@ -22,7 +22,7 @@
  *
  * \author Petrut Bogdan
  */
-#include <neuron/synapses.h>
+#include "../../meanfield/synapses.h"//<neuron/synapses.h>
 #include <debug.h>
 #include <utils.h>
 #include "../../meanfield/plasticity/synapse_dynamics.h"

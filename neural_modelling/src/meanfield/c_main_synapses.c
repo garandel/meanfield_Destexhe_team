@@ -32,9 +32,11 @@
  *
  * @image html spynnaker_c_code_flow.png
  */
-
-#include <spin1_api_params.h>
 #include "../meanfield/c_main_common.h"
+
+#include <tdma_processing.h>
+#include <spin1_api_params.h>
+//#include "../meanfield/c_main_common.h"
 #include "../meanfield/c_main_synapse_common.h"
 #include "../meanfield/spike_processing_fast.h"
 #include "../meanfield/structural_plasticity/synaptogenesis_dynamics.h"
