@@ -324,7 +324,8 @@ void TF(REAL Ve, REAL Vi, REAL W,
 void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
                      ParamsFromNetwork_t *restrict pNetwork,
                      pFitPolynomial_t *restrict Pfit_exc,
-                     pFitPolynomial_t *restrict Pfit_inh){
+                     pFitPolynomial_t *restrict Pfit_inh,
+                     REAL input_this_timestep){
                      //mathsbox_t *restrict mathsbox) {
     
     /* will add exc_aff=0, inh_aff=0, pure_exc_aff=0
@@ -342,9 +343,14 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL El_inh = pNetwork->El_inh;
     REAL tauw_inh = meanfield->tauw_inh;
     */
+    //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + ext_drive;
+    REAL lastVepExtD = lastVe + input_this_timestep;//+ ext_drive
+    if (h==50){
+        lastVepExtD = lastVe  + ext_drive;
+    }
+    
     REAL lastVi = meanfield->Vi;
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
@@ -397,7 +403,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     */
     
 /************************************************
- *  RUNGE-KUTTA 2nd order Midpoint Try presision*
+ *  RUNGE-KUTTA 2nd order Midpoint Try precision*
  ***********************************************/
     TF(lastVepExtD, lastVi, lastWe, pNetwork, Pfit_exc);    
     REAL lastmuV = pNetwork->muV;
@@ -405,11 +411,13 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
        
     TF(lastVepExtD, lastVi, lastWi, pNetwork, Pfit_inh);
     REAL lastTF_inh_1 = pNetwork->Fout_th;
-        
+    
+    /*
     REAL h_int;
-    h_int =  pNetwork->muGn;
+    h_int = pNetwork->muGn;
     h_int += h;
     pNetwork->muGn = h_int;
+    */ //For look at counting of h
     h=h*0.001;
         
     REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVepExtD);
@@ -434,7 +442,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
 
 
-    //log_info("%6.1k  %4.9k  %4.9k", h_int, meanfield->Ve, meanfield->Vi);
+    //log_info("%6.1k  %4.9k  %4.9k", h, meanfield->Ve, meanfield->Vi);
     
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepExtD + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
@@ -505,37 +513,38 @@ state_t meanfield_model_state_update(
     meanfield_t *restrict meanfield,
     ParamsFromNetwork_t *restrict pNetwork,
     pFitPolynomial_t *restrict Pfit_exc,
-    pFitPolynomial_t *restrict Pfit_inh){
-    //mathsbox_t *restrict mathsbox){
-    /*
-        uint16_t num_excitatory_inputs, const input_t *exc_input,
-		uint16_t num_inhibitory_inputs, const input_t *inh_input,
-		input_t external_bias, meanfield_t *restrict meanfield,
-        ParamsFromNetwork_t *restrict pNetwork) {
+    pFitPolynomial_t *restrict Pfit_inh,
+    input_t external_bias,
+    uint16_t num_excitatory_inputs, const input_t *exc_input,
+    uint16_t num_inhibitory_inputs, const input_t *inh_input) {
+        //mathsbox_t *restrict mathsbox){
     REAL total_exc = 0;
     REAL total_inh = 0;
 
     for (int i =0; i<num_excitatory_inputs; i++) {
         total_exc += exc_input[i];
+        log_info("exc_inputs = %6.6k",exc_input[i]);
     }
     for (int i =0; i<num_inhibitory_inputs; i++) {
         total_inh += inh_input[i];
     }
+    
 
-    //input_t input_this_timestep = total_exc - total_inh
-    //        + external_bias + neuron->I_offset; LOOK HERE!!!!!
-    */
+    input_t input_this_timestep = total_exc + total_inh + external_bias;// + neuron->I_offset;//external_bias;
+    //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     // the best AR update so far
     RK2_midpoint_MF(meanfield->this_h,
                     meanfield,
                     pNetwork,
                     Pfit_exc,
-                    Pfit_inh);
+                    Pfit_inh,
+                    input_this_timestep);
                     //mathsbox);
     meanfield->this_h = global_params->machine_timestep_ms;
+    //REAL mean = (meanfield->Ve + meanfield->Vi) *0.5;
 
-    return meanfield->this_h;//meanfield->Ve;
+    return meanfield->Ve;//mean; // meanfield->this_h;//
 }
 
 

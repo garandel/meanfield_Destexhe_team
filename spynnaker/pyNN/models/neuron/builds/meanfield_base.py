@@ -24,7 +24,7 @@ from spynnaker.pyNN.models.neuron.threshold_types import ThresholdTypeStatic
 from spynnaker.pyNN.models.neuron import AbstractPyNNMeanfieldModelStandard
 from spynnaker.pyNN.models.defaults import default_initial_values
 
-_IZK_THRESHOLD = 30.0
+_IZK_THRESHOLD = 0.0
 
 
 class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
@@ -67,7 +67,7 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  Erev_inh=-80.,
                  Ntot=10000.,
                  gei=0.2,
-                 ext_drive=0.,
+                 ext_drive=1.5,
                  afferent_exc_fraction=1.,
 
                  Gl=10.,
@@ -179,8 +179,8 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
         threshold_type = ThresholdTypeStatic(_IZK_THRESHOLD)
 
         super().__init__(
-            model_name="meanfield_model_cond",
-            binary="meanfield_model_cond.aplx",
+            model_name="meanfield_model_cond_only",
+            binary="meanfield_model_cond_only.aplx",
             neuron_model=neuron_model,
             params_from_network=params_from_network,
             p_fit_polynomial_exc = p_fit_polynomial_exc, 

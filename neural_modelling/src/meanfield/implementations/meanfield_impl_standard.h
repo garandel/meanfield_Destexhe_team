@@ -360,7 +360,7 @@ static void neuron_impl_do_timestep_update(
         //mathsbox_t *mathsbox_types = &mathsbox_array[meanfield_index];
 
         // Get the input_type parameters and voltage for this neuron
-        input_type_t *input_types = &input_type_array[meanfield_index];
+        //input_type_t *input_types = &input_type_array[meanfield_index];
 
         // Get threshold and additional input parameters for this neuron
         threshold_type_t *the_threshold_type = &threshold_type_array[meanfield_index];
@@ -370,7 +370,7 @@ static void neuron_impl_do_timestep_update(
                 &neuron_synapse_shaping_params[meanfield_index];
 
         // Store whether the neuron has spiked
-        bool has_spiked = false;
+        //bool has_spiked = false;
 
         // Loop however many times requested; do this in reverse for efficiency,
         // and because the index doesn't actually matter
@@ -390,22 +390,24 @@ static void neuron_impl_do_timestep_update(
             input_t inh_values[NUM_INHIBITORY_RECEPTORS];
             input_t *inh_syn_values =
                     synapse_types_get_inhibitory_input(inh_values, the_synapse_type);
-
+            
+            /*
             // Call functions to obtain exc_input and inh_input
             input_t *exc_input_values = input_type_get_input_value(
                     exc_syn_values, input_types, NUM_EXCITATORY_RECEPTORS);
             input_t *inh_input_values = input_type_get_input_value(
                     inh_syn_values, input_types, NUM_INHIBITORY_RECEPTORS);
-
+            */
+            
             // Sum g_syn contributions from all receptors for recording
             REAL total_exc = 0;
             REAL total_inh = 0;
 
             for (int i = 0; i < NUM_EXCITATORY_RECEPTORS; i++) {
-                total_exc += exc_input_values[i];
+                total_exc += exc_syn_values[i];
             }
             for (int i = 0; i < NUM_INHIBITORY_RECEPTORS; i++) {
-                total_inh += inh_input_values[i];
+                total_inh += inh_syn_values[i];
             }
 
             // Do recording if on the first step 
@@ -424,21 +426,26 @@ static void neuron_impl_do_timestep_update(
             }
 
             // Call functions to convert exc_input and inh_input to current
+            /*
             input_type_convert_excitatory_input_to_current(
                     exc_input_values, input_types, firing_rate_Ve);
             input_type_convert_inhibitory_input_to_current(
                     inh_input_values, input_types, firing_rate_Vi);
-            
-//            input_t external_bias += additional_input_get_input_value_as_current(
-//                    additional_inputs, firing_rate);
+            */
+            input_t external_bias = firing_rate_Ve;//additional_input_get_input_value_as_current(additional_inputs, firing_rate_Ve);
+            //input_t external_bias =0.315;
 
             // update neuron parameters
             state_t result = meanfield_model_state_update(this_meanfield,
                                                           pNetwork_types,
                                                           Pfit_exc_types,
-                                                          Pfit_inh_types);
+                                                          Pfit_inh_types,
+                                                          external_bias,
+                                                          NUM_EXCITATORY_RECEPTORS,
+                                                          exc_syn_values,
+                                                          NUM_INHIBITORY_RECEPTORS,
+                                                          inh_syn_values);
                                                           //mathsbox_types);
-
             // determine if a spike should occur
             bool spike_now =
                     threshold_type_is_above_threshold(result, the_threshold_type);
@@ -451,6 +458,8 @@ static void neuron_impl_do_timestep_update(
 
                 // Tell the additional input
                 additional_input_has_spiked(additional_inputs);
+                
+                log_info("result = %6.4k ", result);
 
                 // Record the spike
                 neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
@@ -461,14 +470,17 @@ static void neuron_impl_do_timestep_update(
 
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
+            /*
             if (pNetwork_types->Fout_th==0.0) {
                 has_spiked = true;
             }
+            */
         }
-
+        /*
         if (has_spiked) {
             neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
         }
+        */
 
 #if LOG_LEVEL >= LOG_DEBUG
         meanfield_model_print_state_variables(this_meanfield);
@@ -500,6 +512,13 @@ static void neuron_impl_store_neuron_parameters(
         spin1_memcpy(&address[next], meanfield_array,
                 n_meanfields * sizeof(meanfield_t));
         next += n_words_needed(n_meanfields * sizeof(meanfield_t));
+    }
+    
+    if (sizeof(synapse_param_t)) {
+        log_debug("writing synapse parameters");
+        spin1_memcpy(&address[next], neuron_synapse_shaping_params,
+                n_meanfields * sizeof(synapse_param_t));
+        next += n_words_needed(n_meanfields * sizeof(synapse_param_t));
     }
 
     /*

@@ -122,9 +122,9 @@ bool neuron_initialise(
 
     // output if this model is expecting to transmit
     if (!use_key) {
-        log_debug("\tThis model is not expecting to transmit as it has no key");
+        log_info("\tThis model is not expecting to transmit as it has no key");
     } else {
-        log_debug("\tThis model is expected to transmit with key = %08x", key);
+        log_info("\tThis model is expected to transmit with key = %08x", key);
     }
 
     // Read the neuron details

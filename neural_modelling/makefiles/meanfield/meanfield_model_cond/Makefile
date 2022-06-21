@@ -9,5 +9,6 @@ MATHSBOX_H = $(MEANFIELD_DIR)/meanfield/models/mathsbox.h
 MEANFIELD_IMPL_H = $(MEANFIELD_DIR)/meanfield/implementations/meanfield_impl_standard.h
 THRESHOLD_TYPE_H = $(MEANFIELD_DIR)/meanfield/threshold_types/threshold_type_static.h
 SYNAPSE_TYPE_H = $(MEANFIELD_DIR)/meanfield/synapse_types/synapse_types_exponential_impl.h
+ADDITIONAL_INPUT_H = $(MEANFIELD_DIR)/meanfield/additional_inputs/additional_input_MF_impl.h
 
 include ../meanfield_build.mk
