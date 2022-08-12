@@ -76,8 +76,10 @@ typedef enum {
 //! \param[in,out] exp_param: The parameter to shape
 static inline void exp_shaping(exp_params_t *exp_param) {
     // decay value according to decay constant
-	exp_param->synaptic_input_value =
-			decay_s1615(exp_param->synaptic_input_value, exp_param->decay);
+	exp_param->synaptic_input_value = exp_param->synaptic_input_value;
+    
+	//		decay_s1615(exp_param->synaptic_input_value, exp_param->decay);
+    //log_info("adress exp_shaping 0x%08x", &exp_param->synaptic_input_value);
 }
 
 //! \brief decays the stuff thats sitting in the input buffers as these have not
@@ -91,7 +93,9 @@ static inline void exp_shaping(exp_params_t *exp_param) {
 static inline void synapse_types_shape_input(
         synapse_param_t *parameters) {
 	exp_shaping(&parameters->exc);
+    //log_info("exc : 0x%08x", &parameters->exc);
 	exp_shaping(&parameters->inh);
+//    log_info("inh : 0x%08x", &parameters->inh);
 }
 
 //! \brief helper function to add input for a given timer period to a given
@@ -99,8 +103,11 @@ static inline void synapse_types_shape_input(
 //! \param[in,out] exp_param: the pointer to the parameters to use
 //! \param[in] input: the inputs to add.
 static inline void add_input_exp(exp_params_t *exp_param, input_t input) {
-	exp_param->synaptic_input_value = exp_param->synaptic_input_value +
-			decay_s1615(input, exp_param->init);
+	exp_param->synaptic_input_value = exp_param->synaptic_input_value;// + 100. +
+//			decay_s1615(input, exp_param->init);
+    log_info("add_input_exp = %7.7k", exp_param->synaptic_input_value);
+    log_info("input = %7.7k", input);
+    log_info("exp_params->input = %7.7k", exp_param->init);
 }
 
 //! \brief adds the inputs for a give timer period to a given neuron that is
@@ -112,6 +119,7 @@ static inline void add_input_exp(exp_params_t *exp_param, input_t input) {
 static inline void synapse_types_add_neuron_input(
         index_t synapse_type_index, synapse_param_t *parameters,
         input_t input) {
+    log_info("syn_index= %2.8k",synapse_type_index);
     switch (synapse_type_index) {
     case EXCITATORY:
     	add_input_exp(&parameters->exc, input);
@@ -129,6 +137,8 @@ static inline void synapse_types_add_neuron_input(
 static inline input_t* synapse_types_get_excitatory_input(
         input_t *excitatory_response, synapse_param_t *parameters) {
     excitatory_response[0] = parameters->exc.synaptic_input_value;
+    log_info("\n excitatory_response=%5.5k", parameters->exc.synaptic_input_value);
+    //log_info("adress excitatory_response 0x%08x", &parameters->exc.synaptic_input_value);
     return &excitatory_response[0];
 }
 

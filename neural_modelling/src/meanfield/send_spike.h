@@ -69,6 +69,8 @@ static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
 
     if (use_key) {
         send_spike_mc(key | neuron_index);
+        log_info("\t key = %08x", key);
+        log_info("neuron_index = %5.8k", neuron_index);
 
         // Keep track of provenance data
         uint32_t clocks = tc[T1_COUNT];

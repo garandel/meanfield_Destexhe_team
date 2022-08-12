@@ -67,7 +67,7 @@ class MeanfieldBase(AbstractPyNNMeanfieldModelStandard):
                  Erev_inh=-80.,
                  Ntot=10000.,
                  gei=0.2,
-                 ext_drive=1.5,
+                 ext_drive=3.5,
                  afferent_exc_fraction=1.,
 
                  Gl=10.,
