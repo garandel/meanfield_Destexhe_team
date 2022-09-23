@@ -360,7 +360,7 @@ static void neuron_impl_do_timestep_update(
         //mathsbox_t *mathsbox_types = &mathsbox_array[meanfield_index];
 
         // Get the input_type parameters and voltage for this neuron
-        //input_type_t *input_types = &input_type_array[meanfield_index];
+        input_type_t *input_types = &input_type_array[meanfield_index];
 
         // Get threshold and additional input parameters for this neuron
         threshold_type_t *the_threshold_type = &threshold_type_array[meanfield_index];
@@ -394,13 +394,13 @@ static void neuron_impl_do_timestep_update(
             input_t *inh_syn_values =
                     synapse_types_get_inhibitory_input(inh_values, the_synapse_type);
             
-            /*
+            
             // Call functions to obtain exc_input and inh_input
             input_t *exc_input_values = input_type_get_input_value(
                     exc_syn_values, input_types, NUM_EXCITATORY_RECEPTORS);
             input_t *inh_input_values = input_type_get_input_value(
                     inh_syn_values, input_types, NUM_INHIBITORY_RECEPTORS);
-            */
+            
             
             // Sum g_syn contributions from all receptors for recording
             /*

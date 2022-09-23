@@ -43,6 +43,7 @@ static inline input_t *input_type_get_input_value(
         uint16_t num_receptors) {
     for (int i = 0; i < num_receptors; i++) {
         value[i] = value[i] >> 10;
+        log_info("value[%2.2k] = %7.7k", i, value[i]);
     }
     return &value[0];
 }
