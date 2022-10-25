@@ -394,12 +394,19 @@ static void neuron_impl_do_timestep_update(
             input_t *inh_syn_values =
                     synapse_types_get_inhibitory_input(inh_values, the_synapse_type);
             
+            log_info("exc_syn_adds=%08x", exc_syn_values);
+            log_info("inh_syn_add=%08x", inh_syn_values);
+            
+            log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            log_info("inh_syn_val=%5.5k",*inh_syn_values);
             
             // Call functions to obtain exc_input and inh_input
             input_t *exc_input_values = input_type_get_input_value(
                     exc_syn_values, input_types, NUM_EXCITATORY_RECEPTORS);
             input_t *inh_input_values = input_type_get_input_value(
                     inh_syn_values, input_types, NUM_INHIBITORY_RECEPTORS);
+            
+            
             
             
             // Sum g_syn contributions from all receptors for recording
@@ -557,7 +564,7 @@ static void neuron_impl_store_neuron_parameters(
 }
 
 /*
-#if LOG_LEVEL >= LOG_DEBUG
+//#if LOG_LEVEL >= LOG_DEBUG
 //! \brief Print the inputs to the neurons
 //! \param[in] n_neurons: The number of neurons
 void neuron_impl_print_inputs(uint32_t n_meanfields) {
@@ -572,14 +579,14 @@ void neuron_impl_print_inputs(uint32_t n_meanfields) {
     if (!empty) {
         log_debug("-------------------------------------\n");
 
-        for (index_t i = 0; i < n_neurons; i++) {
+        for (index_t i = 0; i < n_nmeanfields; i++) {
             synapse_param_t *params = &neuron_synapse_shaping_params[i];
             input_t input = synapse_types_get_excitatory_input(params)
                     - synapse_types_get_inhibitory_input(params);
             if (bitsk(input) != 0) {
-                log_debug("%3u: %12.6k (= ", i, input);
+                log_info("%3u: %12.6k (= ", i, input);
                 synapse_types_print_input(params);
-                log_debug(")\n");
+                log_info(")\n");
             }
         }
         log_debug("-------------------------------------\n");

@@ -533,7 +533,7 @@ state_t meanfield_model_state_update(
     
 
     input_t input_this_timestep = total_exc + total_inh ;//+ external_bias;// + neuron->I_offset;//external_bias;
-    log_info("input_this_timestep = %11.4k", input_this_timestep);
+    //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     // the best AR update so far
     RK2_midpoint_MF(meanfield->this_h,

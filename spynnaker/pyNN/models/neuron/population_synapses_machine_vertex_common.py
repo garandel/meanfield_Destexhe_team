@@ -188,8 +188,8 @@ class PopulationSynapsesMachineVertexCommon(
         :rtype: str
         """
 
-        # Reunite title and extension and return
-        return "synapses" + app_vertex.synapse_executable_suffix + ".aplx"
+        # Reunite title and extension and return synapse_for_meanfield.aplx
+        return "synapse_for_meanfield" + app_vertex.synapse_executable_suffix + ".aplx"
 
     @overrides(PopulationMachineCommon.get_recorded_region_ids)
     def get_recorded_region_ids(self):

@@ -210,6 +210,7 @@ static inline bool process_fixed_synapses(
         // overflow into the weight at worst but can't affect the lower bits.
         uint32_t ring_buffer_index = (synaptic_word + masked_time) & ring_buffer_mask;
         uint32_t weight = synapse_row_sparse_weight(synaptic_word);
+        log_info("weight from syn_row = %8.6k", weight);
 
         // Add weight to current ring buffer value
         uint32_t accumulation = ring_buffers[ring_buffer_index] + weight;
@@ -223,6 +224,7 @@ static inline bool process_fixed_synapses(
             accumulation = sat_test - 1;
             synapses_saturation_count++;
         }
+        log_info("accucmulation = %8.6k", accumulation);
 
         // Store saturated value back in ring-buffer
         ring_buffers[ring_buffer_index] = accumulation;
