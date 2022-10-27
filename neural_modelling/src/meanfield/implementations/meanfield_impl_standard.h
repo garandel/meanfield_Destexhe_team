@@ -496,6 +496,7 @@ static void neuron_impl_do_timestep_update(
 
                 // Send the spike
                 send_spike(timer_count, time, meanfield_index);
+                
             }
             
 
