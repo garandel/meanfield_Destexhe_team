@@ -46,9 +46,9 @@ static inline input_t additional_input_get_input_value_as_current(
         struct additional_input_t *additional_input,
         UNUSED state_t membrane_voltage) {
     // Decay Ca2 trace
-    additional_input->ext_drive += 0.315;//additional_input->exp_TauCa;
+    additional_input->ext_drive = 0.315;//additional_input->exp_TauCa;
 
-    // Return the Ca2
+    // Return the ext_drive
     return additional_input->ext_drive;
 }
 
