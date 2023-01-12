@@ -18,13 +18,9 @@ typedef struct ParamsFromNetwork_t {
     REAL afferent_exc_fraction;
     
     REAL Gl;
-    REAL Cm;//inverse one-> nop bcs otherwise need to add two variables instead of one
+    REAL Cm;
     REAL El_exc;
     REAL El_inh;
-    
-    // Variable-state parameters
-    //REAL fe;
-    //REAL fi;
     
     REAL muV;
     REAL muV0;
@@ -45,13 +41,6 @@ typedef struct ParamsFromNetwork_t {
     
     REAL Fout_th;
 } ParamsFromNetwork_t;
-
-/*
-typedef struct global_toolbox_params_t {
-    REAL this_h;
-    REAL this_time;
-} global_toolbox_params_t;
-*/
 
 
 #endif
