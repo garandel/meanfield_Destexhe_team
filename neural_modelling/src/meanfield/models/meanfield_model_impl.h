@@ -40,7 +40,7 @@ typedef struct meanfield_t {
     REAL delta_v_exc;
     REAL delta_v_inh;
     REAL ampnoise;
-    REAL Timescale_inv;
+    REAL Timescale_inv; // Global
     
     REAL Ve; 
     REAL Vi;
