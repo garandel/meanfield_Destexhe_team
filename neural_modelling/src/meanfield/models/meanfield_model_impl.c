@@ -43,29 +43,6 @@ static const global_neuron_params_t *global_params;
 //! Thanks to Mantas Mikaitis for this!
 //static const REAL MAGIC_MULTIPLIER = REAL_CONST(0.040008544921875);
 
-/****************************************************************************
- *   Error function with integral computing by midpoint method OK
- *   Will do the Simpson if ITCM is ok
- *   
- *   Sampling of error function is maybe connected to the time_step need to
- *   investigate.
- *  
- *    expk take  : ~ 570 bytes
-      sqrtk take : ~1250 bytes
- *****************************************************************************/
-/*
-void error_function(REAL argument, mathsbox_t *restrict mathsbox){
-
-    REAL Erfc = ZERO;
-
-    Erfc = erfc(argument);
-    
-    mathsbox->err_func = Erfc;
-
-}
-*/
-
-
 static inline REAL square_root_of(REAL number)
 {
      //!! square root method take from Quake III Arena 
@@ -114,13 +91,8 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     */
     /*
         If add other inv_constante, this go on DTCM so a priori no problem.
-        
-    
     */
-    
-    
-    
-   
+
     REAL muV0 = pNetwork->muV0;
     REAL iDmuV0 = pNetwork->iDmuV0;
 
@@ -136,7 +108,6 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     REAL TvN = pNetwork->TvN;
     REAL Vthre = pNetwork->Vthre;
     
-
     
     REAL P0 = Pfit->P0;
     REAL P1 = Pfit->P1;
@@ -149,6 +120,7 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
     REAL P9 = Pfit->P9;
     REAL P10 = Pfit->P10;
 
+    
     Vthre = P0\
         + P1*(muV-muV0)*iDmuV0\
         + P2*(sV-sV0)*iDsV0\
@@ -159,12 +131,6 @@ void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *re
         + P8*((muV-muV0)*iDmuV0)*((sV-sV0)*iDsV0)\
         + P9*((muV-muV0)*iDmuV0)*((TvN-TvN0)*iDTvN0)\
         + P10*((sV-sV0)*iDsV0)*((TvN-TvN0)*iDTvN0);
-    /*
-    int_k_t test;
-    test = P1*(muV-muV0)*iDmuV0;
-    log_info("Vthre = %3.4k", test);
-    */
-
   
     pNetwork->Vthre = Vthre;
 
@@ -190,8 +156,6 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL Ee = pNetwork->Ee;
     REAL Cm = pNetwork->Cm;
            
-    //log_info("Ve=%3.6k", Ve);
-
     REAL Fe;
     Fe = Ve * (1-gei)*pconnec*Ntot; // default is 1 !!
     REAL Fi;
@@ -209,12 +173,9 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL muV  = (muGe*Ee + muGi*Ei + Gl*El_exc - W)/muG;
     
     pNetwork->muV = muV ;
-    
-    //log_info("muV get fluct=%4.8k\n", muV);
-   
 
     REAL muGn = muG/Gl;
-    //pNetwork->muGn = muGn;
+    //pNetwork->muGn = muGn; //to uncomment in order to stock it
     REAL Tm = Cm/muG;
     REAL Ue = Qe*(Ee-muV)/muG;
     REAL Ui = Qi*(Ei-muV)/muG;
@@ -234,19 +195,6 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL sV_sqr = REAL_CONST(0.50000)*((Tv_denom_e + Tv_denom_i));
     
     pNetwork->sV =  square_root_of(sV_sqr);  // sV_sqr; //  sqrtk(sV_sqr);//  kbits(sV_sqr);
-    
-    //SOME ERRORS LOGS
-    
-    //log_info("Fe=%3.6k", Fe);
-    //log_info("Fi=%3.6k", Fi);
-    /*
-    log_info("muG = %6.6k", muG);
-    log_info("muGe = %6.6k", muGe);
-    log_info("muGi = %6.6k", muGi);
-    log_info("Gl = %6.6k", Gl);
-    log_info("muV = %11.4k", pNetwork->muV);
-    log_info("TvN=%11.4k", pNetwork->TvN);
-    */
 
 }
 
@@ -254,13 +202,12 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
 void TF(REAL Ve, REAL Vi, REAL W,
         ParamsFromNetwork_t *restrict pNetwork,
         pFitPolynomial_t *restrict Pfit){
-        //,        mathsbox_t *restrict mathsbox){
 
-/*
-    State-variables are directly connected to the struct
-    parameters are put in local in order to make the code clear.
-
-*/
+/********************************************************************
+ *   State-variables are directly connected to the struct           *
+ *   parameters are put in local in order to make the code clear.   *
+ *                                                                  *
+ ********************************************************************/
     
     
     if (pNetwork->Fout_th != ZERO){
@@ -269,7 +216,6 @@ void TF(REAL Ve, REAL Vi, REAL W,
     if (pNetwork->muV != ZERO){
         pNetwork->muV = ACS_DBL_TINY;
     }
-    //log_info("Fout_th_zero=%11.6k", pNetwork->Fout_th); //OK
 
     if (Ve < ACS_DBL_TINY){
         Ve += ACS_DBL_TINY;
@@ -294,26 +240,11 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
     
-    
-    //log_info("argument = %11.6k", argument);
-    
-
-    //error_function(argument, mathsbox);
-    
-
-    
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
-    //log_info("Cm*pNetwork->TvN=%11.4k", Cm*pNetwork->TvN);
-    //pNetwork->Fout_th =  mathsbox->err_func * (HALF*Gl)/(Cm*pNetwork->TvN) ; //this one give 1 order of magnitude less than direct method SO not the good result
     pNetwork->Fout_th = erfc(argument) * (HALF*Gl)/(Cm*pNetwork->TvN) ;
     
-    
-    
-    //log_info("Fout_th=%11.4k\n", pNetwork->Fout_th);
-
-
     if (pNetwork->Fout_th < ACS_DBL_TINY){
         pNetwork->Fout_th += ACS_DBL_TINY;
     }
@@ -326,56 +257,30 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
                      pFitPolynomial_t *restrict Pfit_exc,
                      pFitPolynomial_t *restrict Pfit_inh,
                      REAL input_this_timestep){
-                     //mathsbox_t *restrict mathsbox) {
     
-    /* will add exc_aff=0, inh_aff=0, pure_exc_aff=0
-    *
-    */
-    //log_info("h=%11.4k\n", h);
+    /* 
+     * will add exc_aff=0, inh_aff=0, pure_exc_aff=0
+     */
     REAL a_exc = meanfield->a_exc;
     REAL b_exc = meanfield->b_exc;
     REAL El_exc = pNetwork->El_exc;
     REAL tauw_exc = meanfield->tauw_exc;
     REAL ext_drive = pNetwork->ext_drive;
     
-    /*REAL a_inh = meanfield->a_inh;
-    REAL b_inh = meanfield->b_inh;
-    REAL El_inh = pNetwork->El_inh;
-    REAL tauw_inh = meanfield->tauw_inh;
-    */
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
     REAL lastVepExtD = lastVe + input_this_timestep;//+ ext_drive
     
-    
-    
     REAL lastVi = meanfield->Vi;
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
     
-    //REAL lastW_exc = meanfield->w;
+    //REAL lastW_exc = meanfield->w_exc;
     //REAL lastW_inh = lastW_exc - b*lastVe;
     
     
     REAL T_inv = meanfield->Timescale_inv;
-    /*
-    TF(lastVe, lastVi, lastWe, pNetwork, Pfit_exc);//, mathsbox);
-    //TF(meanfield->Ve, meanfield->Vi, meanfield->w_exc, pNetwork, Pfit_exc);
-    REAL lastmuV = pNetwork->muV;
-    REAL lastTF_exc = pNetwork->Fout_th;
-    
-    //log_info("muV RK2 local exc =%4.8k\n", lastmuV);
-    
-    //log_info("Fout_th_exc=%11.4k\n", pNetwork->Fout_th);
-    
-    //log_info("pNet->muV =%4.8k\n", pNetwork->muV);
-    
-    TF(lastVe, lastVi, lastWi, pNetwork, Pfit_inh);//, mathsbox);
-    //TF(meanfield->Ve, meanfield->Vi, meanfield->w_inh, pNetwork, Pfit_exc);
-    REAL lastTF_inh = pNetwork->Fout_th;
-    //log_info("Fout_th_inh=%11.4k\n", pNetwork->Fout_th);
-    */
     
 /***********************************************************************
  *   EULER Explicite method
@@ -411,12 +316,6 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     TF(lastVepExtD, lastVi, lastWi, pNetwork, Pfit_inh);
     REAL lastTF_inh_1 = pNetwork->Fout_th;
     
-    /*
-    REAL h_int;
-    h_int = pNetwork->muGn;
-    h_int += h;
-    pNetwork->muGn = h_int;
-    */ //For look at counting of h
     h=h*0.001;
         
     REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVepExtD);
@@ -424,8 +323,6 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     REAL alpha_inh_1 = T_inv*(lastTF_inh_1 - lastVi);
     REAL lastVi_n2 = lastVi + REAL_HALF(h*alpha_inh_1);
-    
-    
     
     TF(lastVe_n2, lastVi_n2, lastWe, pNetwork, Pfit_exc);
     REAL TF_exc_2 = pNetwork->Fout_th;
@@ -439,8 +336,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     meanfield->Ve += h*alpha_exc_2;
     meanfield->Vi += h*alpha_inh_2;
     
-
-
+    // Control if output are realistic
     //log_info("%6.1k  %4.9k  %4.9k", h, meanfield->Ve, meanfield->Vi);
     
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepExtD + a_exc*(lastmuV-El_exc);
@@ -448,55 +344,6 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVepExtD + a_exc*(lastmuV-El_exc);
  
     meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
-    
-    
-/***********************************
- *  RUNGE-KUTTA 2nd order Midpoint *
- ***********************************/
-    /*
-    REAL h_int;
-    h_int =  pNetwork->muGn;
-    h_int += h;
-    pNetwork->muGn = h_int;
-    h=h*0.001;
-    */
-
-    
-        
-    //log_info('h_int=%6.6k',h_int);
-    /*
-    REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
-    REAL alpha_exc = lastVe + h*k1_exc;
-    REAL k2_exc = (lastTF_exc - alpha_exc )*T_inv;
-    
-    meanfield->Ve += REAL_HALF(h*(k1_exc + k2_exc));
-    */
-    /*        
-    REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
-    REAL alpha_inh = lastVi + h*k1_inh;
-    REAL k2_inh = (lastTF_inh - alpha_inh)*T_inv;
-    
-    meanfield->Vi += REAL_HALF(h*(k1_inh + k2_inh));
-    */
-    /*
-    meanfield->Vi += REAL_HALF(h*T_inv*(lastTF_exc - lastVe)*(2.-h*T_inv));
-    log_info("i      Ve     Vi");
-    log_info("%6.1k  %4.9k  %4.9k", h_int, meanfield->Ve, meanfield->Vi);
-    
-    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
-    REAL alpha_we = lastWe + h*k1_We;
-    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
- 
-    meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
-    */
-    
-    /*
-    REAL k1_Wi = -lastWi/tauw_inh;// + b_inh * lastVi + a_inh*(muV-El_inh); overflowed otherwise
-    REAL alpha_wi = lastWi + h*k1_Wi;
-    REAL k2_Wi = -alpha_wi/tauw_inh ;//+ b_inh * lastVi;
- 
-    meanfield->w_inh += REAL_HALF(h*(k1_Wi+k2_Wi));
-    */
 
 }
 
@@ -505,9 +352,11 @@ void meanfield_model_set_global_neuron_params(
     global_params = params;
 }
 
-/*perhaps when we will do more than one MF we could uses "num_excitatory_inputs" like the number of ex MF and in MF?
-  and maybe is there some contamanation from the neightbourest neighbour MF!
-*/
+/************************* IDEA ***************************************************
+ * perhaps when we will do more than one MF we could uses "num_excitatory_inputs" *
+ * like the number of ex MF and in MF?                                            *
+ * and maybe is there some contamanation from the neightbourest neighbour MF!     *
+ **********************************************************************************/
 state_t meanfield_model_state_update(
     meanfield_t *restrict meanfield,
     ParamsFromNetwork_t *restrict pNetwork,
@@ -516,7 +365,7 @@ state_t meanfield_model_state_update(
     input_t external_bias,
     uint16_t num_excitatory_inputs, const input_t *exc_input,
     uint16_t num_inhibitory_inputs, const input_t *inh_input) {
-        //mathsbox_t *restrict mathsbox){
+    
     REAL total_exc = 0;
     REAL total_inh = 0;
 
@@ -532,7 +381,7 @@ state_t meanfield_model_state_update(
     log_info("total_inh=%8.6k",total_inh);
     */
 
-    input_t input_this_timestep = total_exc + total_inh ;//+ external_bias;// + neuron->I_offset;//external_bias;
+    input_t input_this_timestep = total_exc + total_inh ;//+ external_bias;// + neuron->I_offset;
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     // the best AR update so far
@@ -542,29 +391,20 @@ state_t meanfield_model_state_update(
                     Pfit_exc,
                     Pfit_inh,
                     input_this_timestep);
-                    //mathsbox);
+                    
     meanfield->this_h = global_params->machine_timestep_ms;
-    //REAL mean = (meanfield->Ve + meanfield->Vi) *0.5;
-
-    return meanfield->Ve;//mean; // meanfield->this_h;//
+    
+    //what is the best output for this function? Output of this function is used normally for thershold
+    return meanfield->Ve;
 }
 
 
 
-void neuron_model_has_spiked() { //meanfield_t *restrict meanfield
+void neuron_model_has_spiked() { 
     log_debug("in neuron_model_has_spiked, time is ",
               global_params->machine_timestep_ms);
-    // reset membrane voltage
-    //neuron->V = neuron->C;
-
-    // offset 2nd state variable
-    //neuron->U += neuron->D;
-
-    // simple threshold correction - next timestep (only) gets a bump
-    //neuron->this_h = global_params->machine_timestep_ms * SIMPLE_TQ_OFFSET;
 }
 
-//change name neuron -> meanfield and membrane -> rate
 state_t meanfield_model_get_firing_rate_Ve(const meanfield_t *meanfield) {
     return meanfield->Ve;
 }

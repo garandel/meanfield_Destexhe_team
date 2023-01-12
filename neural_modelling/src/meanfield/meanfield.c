@@ -101,14 +101,6 @@ bool neuron_initialise(
     
     log_info("&recording_address = 0x%08x",&recording_address);
 
-    /*static inline void test(uint32_t time) {
-    for (uint32_t i = N_RECORDED_VARS; i > 0; i--) {
-            if (N_RECORDED_VARS==NULL){
-                log_error("fail at %u", n_neurons_value);
-            }
-        }
-    }*/
-
     // init the TDMA
     void *data_addr = address;
     tdma_processing_initialise(&data_addr);
@@ -251,8 +243,6 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
         uint32_t neuron_index = 0;
         for (uint32_t n_i = n_neurons_peak; n_i > 0; n_i--) {
             weight_t value = syns[ring_buffer_index];
-            //weight_t value2 = syns[ring_buffer_index];
-            //log_info("value2 = %8.6k, ring_buffer_index = %8.6k, rb_shift=%5.8k", value2, ring_buffer_index, rb_shift);
             if (neuron_index > n_neurons) {
                     log_error("Neuron index %u out of range", neuron_index);
                     rt_error(RTE_SWERR);
