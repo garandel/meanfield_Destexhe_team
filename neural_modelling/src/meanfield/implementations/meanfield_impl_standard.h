@@ -38,6 +38,7 @@
 #include <bit_field.h>
 #include <recording.h>
 
+
 //! Indices for recording of words
 enum word_recording_indices {
     //! V (somatic potential) recording index
@@ -62,12 +63,6 @@ enum bitfield_recording_indices {
 
 // This import depends on variables defined above
 #include <meanfield/meanfield_recording.h>
-
-/*static int azer[] = {
-    0x41,
-    0x43
-    };*/
-
 
 //! Array of meanfield states -> will be change in future , the future is now!!
 static meanfield_t *meanfield_array;
@@ -344,6 +339,13 @@ static void neuron_impl_load_neuron_parameters(
 #endif // LOG_LEVEL >= LOG_DEBUG
 }
 
+static union {
+    uint32_t as_int;
+    input_t as_real;
+} number;
+
+extern uint32_t key;
+
 SOMETIMES_UNUSED // Marked unused as only used sometimes
 static void neuron_impl_do_timestep_update(
         uint32_t timer_count, uint32_t time, uint32_t n_neurons) {
@@ -383,8 +385,13 @@ static void neuron_impl_do_timestep_update(
             
             state_t adaptation_W = meanfield_model_get_adaptation_W(this_meanfield);
             
+            //log_info("test_addr=0x%08x", &firing_rate_Ve);
+            
+            //Add to mimic an input from synapses (just to test) will be remove!!!            
+            
             the_synapse_type->exc.synaptic_input_value = firing_rate_Ve;
             the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
+            
 
             // Get the exc and inh values from the synapses
             input_t exc_values[NUM_EXCITATORY_RECEPTORS];
@@ -394,11 +401,12 @@ static void neuron_impl_do_timestep_update(
             input_t *inh_syn_values =
                     synapse_types_get_inhibitory_input(inh_values, the_synapse_type);
             
-            log_info("exc_syn_adds=%08x", exc_syn_values);
-            log_info("inh_syn_add=%08x", inh_syn_values);
+            //log_info("exc_syn_adds=%08x", exc_syn_values);
+            //log_info("inh_syn_add=%08x", inh_syn_values);
             
-            log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            //log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            //input_types->Ve_input = firing_rate_Ve ;// remplace pour tester exc_syn_values
             
             // Call functions to obtain exc_input and inh_input
             input_t *exc_input_values = input_type_get_input_value(
@@ -462,8 +470,20 @@ static void neuron_impl_do_timestep_update(
             }
             */
             //input_t external_bias =0.315;
-            log_info("Ve = %6.4k ", firing_rate_Ve);
-            log_info("Vi = %6.4k ", firing_rate_Vi);
+            //log_info("Vi = %6.4k ", firing_rate_Vi);
+            
+            //firing_rate.as_mf = *exc_input_values;$
+            
+            //<- with this one that's work with mimic synapses coms
+            number.as_real = *exc_syn_values;
+            uint32_t r_int = number.as_int;
+            log_info("firing = %d",r_int);
+            
+            
+            //input_t *r_ve = firing_rate.as_mf;
+            //*r_ve = *exc_syn_values;
+            //uint32_t *r_int = firing_rate.as_int;
+            
 
             // update neuron parameters
             state_t result = meanfield_model_state_update(this_meanfield,
@@ -477,10 +497,12 @@ static void neuron_impl_do_timestep_update(
                                                           inh_syn_values);
                                                           //mathsbox_types);
             // determine if a spike should occur
-            bool spike_now = TRUE;//                    threshold_type_is_above_threshold(result, the_threshold_type);
+            //bool spike_now = TRUE;//threshold_type_is_above_threshold(result, the_threshold_type);
+            
+            //uint32_t with_payload = 1;
 
             // If spike occurs, communicate to relevant parts of model
-            
+            /*
             if (spike_now) {
                 // Call relevant model-based functions
                 // Tell the neuron model
@@ -495,10 +517,34 @@ static void neuron_impl_do_timestep_update(
                 neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
 
                 // Send the spike
-                send_spike(timer_count, time, meanfield_index);
+                //key_t key_p = 1;
                 
-            }
+                if (key < 3){
+                    key += 1;
+                }
+                else
+                {
+                    key = 1;
+                }
+                
+                log_info("key = %d", key);
+                
+                send_spike(timer_count, time, meanfield_index);
+                spin1_send_fr_packet(key, r_int, with_payload);
+                //spin1_get_chip_id(void);
+                
+            }*/
+            neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
+            send_spike(timer_count, time, meanfield_index);
+            //send_spike(timer_count, r_int, meanfield_index);
             
+            spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
+            /*
+            while (!spin1_send_mc_packet(key, r_int, with_payload)) {
+                spin1_delay_us(1);
+            }
+            */
+
 
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
@@ -507,6 +553,7 @@ static void neuron_impl_do_timestep_update(
                 has_spiked = true;
             }
             */
+            
         }
         /*
         if (has_spiked) {
@@ -553,14 +600,14 @@ static void neuron_impl_store_neuron_parameters(
         next += n_words_needed(n_meanfields * sizeof(synapse_param_t));
     }
 
-    /*
+    
     if (sizeof(ParamsFromNetwork_t)) {
         log_debug("writing input type parameters");
         spin1_memcpy(&address[next], pNetwork_array,
                 n_meanfields * sizeof(ParamsFromNetwork_t));
         next += n_words_needed(n_meanfields * sizeof(ParamsFromNetwork_t));
     }
-    */
+    
 
 }
 

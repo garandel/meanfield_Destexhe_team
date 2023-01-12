@@ -166,9 +166,13 @@ void resume_callback(void) {
 static inline void sum(weight_t *syns) {
     uint32_t n_words = sdram_inputs.size_in_bytes >> 2;
     const uint32_t *src = (const uint32_t *) syns;
+    //log_info("src_add=0x%08x", src);
+    //log_info("src=%d", *src);
     uint32_t *tgt = all_synaptic_contributions.as_int;
     for (uint32_t i = n_words; i > 0; i--) {
+        //log_info("tgt=%d", *tgt);
         *tgt++ += *src++;
+        
     }
 }
 
@@ -211,8 +215,17 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
 
     // Start the transfer of the first part of the weight data
     uint8_t *sdram = sdram_inputs.address;
+    //uint8_t *send_add = &cc[CC_TXDATA];
     uint32_t write_index = 0;
     uint32_t read_index = 0;
+    
+    //try a little ack
+    //log_info("&cc[CC_TXDATA] addr = 0x%08x", &cc[CC_TXDATA]);
+    //log_info("cc[CC_TXDATA] val = %d", cc[CC_TXDATA]);
+    
+    //do_fast_dma_write(&cc[CC_TXDATA], sdram, sdram_inputs.size_in_bytes);
+    
+    log_info("sdram addr= 0x%08x", sdram);
 
     // Start the first DMA
     do_fast_dma_read(sdram, synaptic_contributions[write_index],
@@ -233,6 +246,14 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
 
         // Add in the contributions from the last read item
         sum(synaptic_contributions[read_index]);
+        
+        /*
+        log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);
+        log_info("cc[CC_TXDATA] add = 0x%08x", &cc[CC_TXDATA]);
+        log_info("CC_TXDATA = 0x%08x", CC_TXDATA);
+        */
+        
+        //log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
         read_index = !read_index;
     }
 

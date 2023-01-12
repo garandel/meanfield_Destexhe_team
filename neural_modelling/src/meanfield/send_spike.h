@@ -66,6 +66,7 @@ static inline void send_spike_mc(uint32_t key) {
 static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
         uint32_t neuron_index) {
     // Do any required synapse processing
+    log_info("before dyna");
     synapse_dynamics_process_post_synaptic_event(time, neuron_index);
 
     if (use_key) {
@@ -75,8 +76,8 @@ static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
 
         // Keep track of provenance data
         uint32_t clocks = tc[T1_COUNT];
-        log_info("clocks=%5.8k", clocks);
-        log_info("time=%5.8k", time);
+        //log_info("clocks=%d", clocks);
+        log_info("time=%d", time);
         if (clocks > earliest_send_time) {
             earliest_send_time = clocks;
         }

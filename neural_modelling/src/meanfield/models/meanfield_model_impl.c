@@ -527,10 +527,10 @@ state_t meanfield_model_state_update(
     for (int i =0; i<num_inhibitory_inputs; i++) {
         total_inh += inh_input[i];
     }
-    
+    /*
     log_info("total_exc=%8.6k",total_exc);
     log_info("total_inh=%8.6k",total_inh);
-    
+    */
 
     input_t input_this_timestep = total_exc + total_inh ;//+ external_bias;// + neuron->I_offset;//external_bias;
     //log_info("input_this_timestep = %11.4k", input_this_timestep);

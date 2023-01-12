@@ -24,10 +24,14 @@
 
 //! Conductance input parameters
 typedef struct input_type_t {
+    
+    REAL Ve_input;
     //! reversal voltage - Excitatory [mV]
-    REAL     V_rev_E;
+    //REAL     V_rev_E;
     //! reversal voltage - Inhibitory [mV]
-    REAL     V_rev_I;
+    //REAL     V_rev_I;
+    
+    
 } input_type_t;
 
 //! \brief Gets the actual input value. This allows any scaling to take place
@@ -42,8 +46,8 @@ static inline input_t *input_type_get_input_value(
         input_t *restrict value, UNUSED input_type_t *input_type,
         uint16_t num_receptors) {
     for (int i = 0; i < num_receptors; i++) {
-        value[i] = value[i] >> 10;
-        log_info("value[%2.2k] = %7.7k", i, value[i]);
+        value[i] = value[i] ;//>> 10;
+        //log_info("value[%2.2k] = %7.7k", i, value[i]);
     }
     return &value[0];
 }
@@ -58,8 +62,8 @@ static inline void input_type_convert_excitatory_input_to_current(
         input_t *restrict exc_input, const input_type_t *input_type,
         state_t membrane_voltage) {
     for (int i=0; i < NUM_EXCITATORY_RECEPTORS; i++) {
-        exc_input[i] = exc_input[i] *
-                (input_type->V_rev_E - membrane_voltage);
+       // exc_input[i] = exc_input[i] *
+        //        (input_type->V_rev_E - membrane_voltage);
     }
 }
 
@@ -73,8 +77,8 @@ static inline void input_type_convert_inhibitory_input_to_current(
         input_t *restrict inh_input, const input_type_t *input_type,
         state_t membrane_voltage) {
     for (int i=0; i < NUM_INHIBITORY_RECEPTORS; i++) {
-        inh_input[i] = -inh_input[i] *
-                (input_type->V_rev_I - membrane_voltage);
+        //inh_input[i] = -inh_input[i] *
+          //      (input_type->V_rev_I - membrane_voltage);
     }
 }
 

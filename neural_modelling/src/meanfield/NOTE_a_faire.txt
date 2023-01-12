@@ -1,0 +1,31 @@
+Bah oui c'est plus simple comme ça!!!
+
+RAPPEL A RETIRER :
+    log en python execution : 
+        spinnman/tranceiver.py l2030 "iter"
+        spinn_front_and_common/interface/application_runner.py l 130 "wait"
+                                                               l 134 "before wait"
+
+
+
+- send_spike.c trigger synapse.c et autre synaptique action.
+- multicast actions ne foncitonnent pas -> spin1_send_mc_packet(key, r_int, with_payload) juste le fr focntionne. => dmd Andrew
+   |-> certainnement lié au splitters
+  
+- scamp et P2P gère l'envoie de msg entre chips voir de ce coté pour coms entre MFs MS questions es-ce que le fait de passer par une key ne règle pas ce problème?
+
+
+get_neuron_id( <- pop_table <- synapse.c <- spike_processing_fast.h
+
+ATTA!!! 
+    timer_callback()[c_main_synapses.c]
+        <- spike_processing_fast_time_loop() => ici que spike est attendue peut le changer
+        <- synapse_process_synaptic_row()[synapse.c]
+        <- process_current_row() [spike_processing_fast.c]
+        
+        
+- neuron_impl_add_inputs() <- neuron_transfer() [meanfield.c] <- timer_callback [c_main_neuron.c] 'read params from synapses where there was write in ring buffer'
+<- do_fast_dma_write() [spike_processing_fast.c]
+
+RQ TEST : 
+    fait (1) (2&3) => fait (1) val_to_add = 0 | (2&3) val_to_add = 1024 donc fait bien la connection

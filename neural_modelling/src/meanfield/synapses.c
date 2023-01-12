@@ -193,6 +193,8 @@ static inline bool process_fixed_synapses(
         synapse_row_fixed_part_t *fixed_region, uint32_t time) {
     uint32_t *synaptic_words = synapse_row_fixed_weight_controls(fixed_region);
     uint32_t fixed_synapse = synapse_row_num_fixed_synapses(fixed_region);
+    
+    log_info("fixed_synapse=%d",fixed_synapse);
 
     num_fixed_pre_synaptic_events += fixed_synapse;
 
@@ -210,10 +212,11 @@ static inline bool process_fixed_synapses(
         // overflow into the weight at worst but can't affect the lower bits.
         uint32_t ring_buffer_index = (synaptic_word + masked_time) & ring_buffer_mask;
         uint32_t weight = synapse_row_sparse_weight(synaptic_word);
-        log_info("weight from syn_row truck = %8.6k", weight);
+        log_info("weight from syn_row = %d", weight);
 
         // Add weight to current ring buffer value
         uint32_t accumulation = ring_buffers[ring_buffer_index] + weight;
+        log_info("ring_buffers = %d", ring_buffers[ring_buffer_index]);
 
         // If 17th bit is set, saturate accumulator at UINT16_MAX (0xFFFF)
         // **NOTE** 0x10000 can be expressed as an ARM literal,
@@ -224,7 +227,7 @@ static inline bool process_fixed_synapses(
             accumulation = sat_test - 1;
             synapses_saturation_count++;
         }
-        log_info("accucmulation = %8.6k", accumulation);
+        log_info("accucmulation = %d", accumulation);
 
         // Store saturated value back in ring-buffer
         ring_buffers[ring_buffer_index] = accumulation;
@@ -347,7 +350,11 @@ bool synapses_process_synaptic_row(
 
     // Get address of non-plastic region from row
     synapse_row_fixed_part_t *fixed_region = synapse_row_fixed_region(row);
-
+    log_info("yep _fixe");
+    
+    log_info("cc[CC_TXDATA] = 0x%08x", &cc[CC_TXDATA]);
+    log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);
+    
     // **TODO** multiple optimised synaptic row formats
     //if (plastic_tag(row) == 0) {
     // If this row has a plastic region

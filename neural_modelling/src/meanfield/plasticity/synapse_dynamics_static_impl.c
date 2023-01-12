@@ -36,7 +36,21 @@ bool synapse_dynamics_initialise(
 
 //---------------------------------------
 void synapse_dynamics_process_post_synaptic_event(
-        UNUSED uint32_t time, UNUSED index_t neuron_index) {
+         uint32_t time,  index_t neuron_index) {
+    
+    log_info("time = %d", time);
+    //spin1_send_fr_packet(neuron_index, time, WITH_PAYLOAD);
+    /*
+    cc[CC_TXDATA] = time;
+    cc[CC_TXKEY] = neuron_index;
+    */
+    //log_info("neuron_index=%1.9k",neuron_index);
+    /*
+    for (unit neuron_index=0; neuron_index < n_neurons; neuron_index++) {
+            
+    }
+    */
+    
 }
 
 //---------------------------------------
@@ -122,6 +136,8 @@ bool synapse_dynamics_add_neuron(
     int32_t fixed_synapse = synapse_row_num_fixed_synapses(fixed_region);
     uint32_t *synaptic_words = synapse_row_fixed_weight_controls(fixed_region);
     uint32_t new_synapse = _fixed_synapse_convert(id, weight, delay, type);
+    
+    log_info("new_synapse = %d", new_synapse);
 
     // Add control word at offset
     synaptic_words[fixed_synapse] = new_synapse;
