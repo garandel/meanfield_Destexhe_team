@@ -76,7 +76,6 @@ static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
 
         // Keep track of provenance data
         uint32_t clocks = tc[T1_COUNT];
-        //log_info("clocks=%d", clocks);
         log_info("time=%d", time);
         if (clocks > earliest_send_time) {
             earliest_send_time = clocks;

@@ -30,3 +30,10 @@ ATTA!!!
 RQ TEST : 
     fait (1) (2&3) => fait (1) val_to_add = 0 | (2&3) val_to_add = 1024 donc fait bien la connection
 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
+
+A VOIR:
+
+store_data() dans spike_processing_fast.c l.396
+
+PROBLEME MAJEUR:
+on veux faire du dynamique avec quelque chose qui à priori n'est pas fait pour. CF synapses.c l.361-378
