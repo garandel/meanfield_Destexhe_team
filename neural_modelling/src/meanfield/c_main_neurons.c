@@ -215,11 +215,10 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
 
     // Start the transfer of the first part of the weight data
     uint8_t *sdram = sdram_inputs.address;
-    //uint8_t *send_add = &cc[CC_TXDATA];
     uint32_t write_index = 0;
     uint32_t read_index = 0;
     
-    //try a little ack
+    //try a little hack I let it here in order to retry this one
     //log_info("&cc[CC_TXDATA] addr = 0x%08x", &cc[CC_TXDATA]);
     //log_info("cc[CC_TXDATA] val = %d", cc[CC_TXDATA]);
     
@@ -247,13 +246,6 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
         // Add in the contributions from the last read item
         sum(synaptic_contributions[read_index]);
         
-        /*
-        log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);
-        log_info("cc[CC_TXDATA] add = 0x%08x", &cc[CC_TXDATA]);
-        log_info("CC_TXDATA = 0x%08x", CC_TXDATA);
-        */
-        
-        //log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
         read_index = !read_index;
     }
 

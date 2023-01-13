@@ -185,6 +185,7 @@ void neuron_do_timestep_update(timer_t time, uint timer_count) { // EXPORTED
     neuron_recording_record(time);
 }
 
+//TO REMOVE AFTER
 // do a converter but WILL change it for just a buffer with pointer once the problem
 // will be solve
 static union {
@@ -249,21 +250,9 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
             }
             input_t val_to_add = synapse_row_convert_weight_to_input(
                         value, rb_shift);
-            /*
-            input_t val_to_add = synapse_row_convert_weight_to_input(
-                        cc[CC_TXDATA], rb_shift); // fonctionne mais cherche autrechose
-                        
-            number_bis.as_int = cc[CC_TXDATA];
-            input_t val = number_bis.as_real;
-            */
-                
+                            
             neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);//val=val_to_add normaly here do a artefact like /!\
                 
-            //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);
-            //log_info("neuron_index = %d", neuron_index);
-            //log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
-                 
-            //neuron_impl_add_inputs(synapse_index, neuron_index, val);
             log_info("value = %8.6k, ring_buffer_index = %d, val_to_add = %6.6k, rb_shift=%d", value, ring_buffer_index, val_to_add, rb_shift);
             
             syns[ring_buffer_index] = 0;
