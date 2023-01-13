@@ -78,7 +78,7 @@ static inline void exp_shaping(exp_params_t *exp_param) {
     // decay value according to decay constant
 	exp_param->synaptic_input_value = exp_param->synaptic_input_value;
     
-	//		decay_s1615(exp_param->synaptic_input_value, exp_param->decay);
+	//decay_s1615(exp_param->synaptic_input_value, exp_param->decay);
     //log_info("adress exp_shaping 0x%08x", &exp_param->synaptic_input_value);
 }
 
@@ -120,7 +120,6 @@ static inline void add_input_exp(exp_params_t *exp_param, input_t input) {
 static inline void synapse_types_add_neuron_input(
         index_t synapse_type_index, synapse_param_t *parameters,
         input_t input) {
-    //log_info("syn_index= %2.8k",synapse_type_index);
     log_info("input=%3.4k",input);
     switch (synapse_type_index) {
     case EXCITATORY:
@@ -139,8 +138,7 @@ static inline void synapse_types_add_neuron_input(
 static inline input_t* synapse_types_get_excitatory_input(
         input_t *excitatory_response, synapse_param_t *parameters) {
     excitatory_response[0] = parameters->exc.synaptic_input_value;
-    //log_info(" excitatory_response=%5.5k", parameters->exc.synaptic_input_value);
-    //log_info("adress excitatory_response 0x%08x", &parameters->exc.synaptic_input_value);
+    
     return &excitatory_response[0];
 }
 
@@ -151,7 +149,7 @@ static inline input_t* synapse_types_get_excitatory_input(
 static inline input_t* synapse_types_get_inhibitory_input(
         input_t *inhibitory_response, synapse_param_t *parameters) {
     inhibitory_response[0] = parameters->inh.synaptic_input_value;
-    //log_info(" inh_response=%5.5k", parameters->inh.synaptic_input_value);
+    
     return &inhibitory_response[0];
 }
 
