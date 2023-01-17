@@ -19,9 +19,11 @@ get_neuron_id( <- pop_table <- synapse.c <- spike_processing_fast.h
 
 ATTA!!! 
     timer_callback()[c_main_synapses.c]
-        <- spike_processing_fast_time_loop() => ici que spike est attendue peut le changer
+        <- spike_processing_fast_time_step_loop() => ici que spike est attendue peut le changer
         <- synapse_process_synaptic_row()[synapse.c]
         <- process_current_row() [spike_processing_fast.c]
+        
+        |-> Le psike n'arrive pas jusqu'à synapse part et d'arrete dans meanfield.
         
         
 - neuron_impl_add_inputs() <- neuron_transfer() [meanfield.c] <- timer_callback [c_main_neuron.c] 'read params from synapses where there was write in ring buffer'

@@ -138,12 +138,13 @@ void timer_callback(UNUSED uint unused0, UNUSED uint unused1) {
 
         // Pause common functions
         common_pause(recording_flags);
-
         simulation_ready_to_read();
+        
         return;
     }
 
     uint32_t n_rewires = synaptogenesis_n_updates();
+    log_info("timer_callback");
     spike_processing_fast_time_step_loop(time, n_rewires);
 }
 

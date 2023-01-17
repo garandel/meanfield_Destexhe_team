@@ -120,7 +120,7 @@ static inline void add_input_exp(exp_params_t *exp_param, input_t input) {
 static inline void synapse_types_add_neuron_input(
         index_t synapse_type_index, synapse_param_t *parameters,
         input_t input) {
-    log_info("input=%3.4k",input);
+    //log_info("input=%3.4k",input);
     switch (synapse_type_index) {
     case EXCITATORY:
     	add_input_exp(&parameters->exc, input);

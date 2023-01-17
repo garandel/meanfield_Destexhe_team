@@ -332,6 +332,7 @@ static union {
     input_t as_real;
 } number;
 
+//! Key from meanfield.c
 extern uint32_t key;
 
 SOMETIMES_UNUSED // Marked unused as only used sometimes
@@ -467,10 +468,11 @@ static void neuron_impl_do_timestep_update(
                                                           inh_syn_values);
                                                           //mathsbox_types);
             // determine if a spike should occur
-            //bool spike_now = TRUE;//threshold_type_is_above_threshold(result, the_threshold_type);
+            
+            bool spike_now = TRUE;//threshold_type_is_above_threshold(result, the_threshold_type);
             
             // If spike occurs, communicate to relevant parts of model
-            /*
+            
             if (spike_now) {
                 // Call relevant model-based functions
                 // Tell the neuron model
@@ -487,13 +489,13 @@ static void neuron_impl_do_timestep_update(
                 // Send the spike
                 //key_t key_p = 1;
                 
-                if (key < 3){
+                /*if (key < 3){
                     key += 1;
                 }
                 else
                 {
                     key = 1;
-                }
+                }*/
                 
                 log_info("key = %d", key);
                 
@@ -501,12 +503,12 @@ static void neuron_impl_do_timestep_update(
                 spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
                 //spin1_get_chip_id(void);
                 
-            }*/
+            }
             neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
-            send_spike(timer_count, time, meanfield_index);
+            //send_spike(timer_count, time, meanfield_index);
             //send_spike(timer_count, r_int, meanfield_index);
             
-            spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
+            //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
 
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
