@@ -170,9 +170,8 @@ static inline void sum(weight_t *syns) {
     //log_info("src=%d", *src);
     uint32_t *tgt = all_synaptic_contributions.as_int;
     for (uint32_t i = n_words; i > 0; i--) {
-        //log_info("tgt=%d", *tgt);
         *tgt++ += *src++;
-        
+        //log_info("tgt=%d", *tgt);
     }
 }
 
@@ -221,10 +220,9 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
     //try a little hack I let it here in order to retry this one
     //log_info("&cc[CC_TXDATA] addr = 0x%08x", &cc[CC_TXDATA]);
     //log_info("cc[CC_TXDATA] val = %d", cc[CC_TXDATA]);
+    //do_fast_dma_write(&test_constante_bis, sdram, sdram_inputs.size_in_bytes);
     
-    //do_fast_dma_write(&cc[CC_TXDATA], sdram, sdram_inputs.size_in_bytes);
-    
-    log_info("sdram addr= 0x%08x", sdram);
+    //log_info("sdram addr= 0x%08x", sdram);
 
     // Start the first DMA
     do_fast_dma_read(sdram, synaptic_contributions[write_index],
@@ -248,7 +246,12 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
         
         read_index = !read_index;
     }
-
+    uint32_t constant_test = 42;
+    log_info("cc[CC_TXDATA] = %5.5k", cc[CC_TXDATA]);
+    uint32_t *r_int = all_synaptic_contributions.as_int;
+    *r_int += constant_test; //cc[CC_TXDATA];
+    log_info("r_int d=%d", *r_int);
+    log_info("addr r_int = 0x%08x ET addre constante_test=0x%08x", r_int, &constant_test);
     neuron_transfer(all_synaptic_contributions.as_weight);
 
     // Now do neuron time step update

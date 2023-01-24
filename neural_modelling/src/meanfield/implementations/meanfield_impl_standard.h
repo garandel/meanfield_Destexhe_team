@@ -330,6 +330,7 @@ static void neuron_impl_load_neuron_parameters(
 static union {
     uint32_t as_int;
     input_t as_real;
+    weight_t as_weight; //hacking will try
 } number;
 
 //! Key from meanfield.c
@@ -454,7 +455,8 @@ static void neuron_impl_do_timestep_update(
             //<- with this one that's work with mimic synapses coms
             number.as_real = *exc_syn_values;
             uint32_t r_int = number.as_int;
-            log_info("firing = %d",r_int);
+            //weight_t r_weight = number.as_weight;
+            //log_info("firing = %d",r_int);
             
             // update neuron parameters
             state_t result = meanfield_model_state_update(this_meanfield,

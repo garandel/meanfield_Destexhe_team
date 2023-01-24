@@ -103,7 +103,6 @@ static inline void neuron_recording_record_accum(
     uint8_t index = neuron_recording_indexes[var_index][neuron_index];
     accum *data = (accum *) recording_values[var_index];
     data[index] = value;
-    log_info("data_addr = 0x%08x", &data);
 }
 
 //! \brief stores a recording of a double variable only; this is faster than

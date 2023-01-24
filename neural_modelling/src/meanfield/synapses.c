@@ -216,7 +216,7 @@ static inline bool process_fixed_synapses(
 
         // Add weight to current ring buffer value
         uint32_t accumulation = ring_buffers[ring_buffer_index] + weight;
-        log_info("ring_buffers = %d", ring_buffers[ring_buffer_index]); // think to remove it
+        log_info("ring_buffers_index = %d", ring_buffer_index); // think to remove it
 
         // If 17th bit is set, saturate accumulator at UINT16_MAX (0xFFFF)
         // **NOTE** 0x10000 can be expressed as an ARM literal,
@@ -354,6 +354,8 @@ bool synapses_process_synaptic_row(
     
     log_info("cc[CC_TXDATA] = 0x%08x", &cc[CC_TXDATA]);// think to remove it
     log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
+    
+    //how create a plastic region???
     
     // **TODO** multiple optimised synaptic row formats
     //if (plastic_tag(row) == 0) {

@@ -55,7 +55,7 @@ static inline void send_spike_mc(uint32_t key) {
 
     // Do the send
     cc[CC_TCR] = PKT_MC;
-    log_info("PKT_MC=%4.5k", PKT_MC);
+    //log_info("PKT_MC=%d", PKT_MC);
     //log_info("cc[CC_TCR] = 0x%08x with CC_TCR= %2.8k", cc[CC_TCR], CC_TCR);
     cc[CC_TXKEY]  = key;
 }
@@ -67,7 +67,7 @@ static inline void send_spike_mc(uint32_t key) {
 static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
         uint32_t neuron_index) {
     // Do any required synapse processing
-    log_info("before dyna");
+    //log_info("before dyna");
     synapse_dynamics_process_post_synaptic_event(time, neuron_index);
 
     if (use_key) {
