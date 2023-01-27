@@ -39,6 +39,21 @@ store_data() dans spike_processing_fast.c l.396
 
 PROBLEME MAJEUR:
 on veux faire du dynamique avec quelque chose qui à priori n'est pas fait pour. CF synapses.c l.361-378
+  
+    |-> peut-être une solution serait de mettre tous les resultats d'une itération 
+        dans un buffer tel que all_synaptic_contributions et de faire la même 
+        opération que sum() mais en dynamique.
+        |-> Dans l'idée : 
+                record dans dtcm [neuron_recording_record_accum]
+                -> write dans sdram [do_fast_dma_write]
+                -> recup avec [do_fast_dma_read]
+                -> fait opération [sum()] 
+                -> redistribu au autre MFs
+
+    |->OU 
+        envoi la data avec spin1_send_packet et spin1_send_fr_packet ou mc
+        ET
+        écrit un recepteur avec la clef
 
 PETITE QUESTION: c'est quoi fixed route et multicast en fait???
 

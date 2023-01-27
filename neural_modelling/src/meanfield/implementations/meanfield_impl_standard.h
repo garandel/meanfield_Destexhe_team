@@ -490,14 +490,15 @@ static void neuron_impl_do_timestep_update(
 
                 // Send the spike
                 //key_t key_p = 1;
-                
-                /*if (key < 3){
-                    key += 1;
-                }
-                else
-                {
+                /*
+                if (key == 0){
                     key = 1;
-                }*/
+                }
+                else if (key == 1)
+                {
+                    key = 0;
+                }
+                */
                 
                 log_info("key = %d", key);
                 
@@ -506,7 +507,7 @@ static void neuron_impl_do_timestep_update(
                 //spin1_get_chip_id(void);
                 
             }
-            neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
+            //neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
             //send_spike(timer_count, time, meanfield_index);
             //send_spike(timer_count, r_int, meanfield_index);
             

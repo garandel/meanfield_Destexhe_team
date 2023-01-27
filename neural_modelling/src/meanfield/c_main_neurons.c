@@ -246,12 +246,14 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
         
         read_index = !read_index;
     }
-    uint32_t constant_test = 42;
+    //uint32_t constant_test = 42;
     log_info("cc[CC_TXDATA] = %5.5k", cc[CC_TXDATA]);
-    uint32_t *r_int = all_synaptic_contributions.as_int;
-    *r_int += constant_test; //cc[CC_TXDATA];
-    log_info("r_int d=%d", *r_int);
-    log_info("addr r_int = 0x%08x ET addre constante_test=0x%08x", r_int, &constant_test);
+    log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
+    //uint32_t *r_int = all_synaptic_contributions.as_int;
+    //*r_int += constant_test; //cc[CC_TXDATA];
+    
+    //log_info("r_int d=%d", *r_int);
+    //log_info("addr r_int = 0x%08x ET addre constante_test=0x%08x", r_int, &constant_test);
     neuron_transfer(all_synaptic_contributions.as_weight);
 
     // Now do neuron time step update
