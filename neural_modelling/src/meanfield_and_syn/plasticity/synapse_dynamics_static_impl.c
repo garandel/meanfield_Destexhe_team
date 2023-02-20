@@ -38,7 +38,7 @@ bool synapse_dynamics_initialise(
 void synapse_dynamics_process_post_synaptic_event(
          uint32_t time,  index_t neuron_index) {
     
-    log_info("time = %d", time);
+    //log_info("time = %d", time);
     //spin1_send_fr_packet(neuron_index, time, WITH_PAYLOAD);
     /*
     cc[CC_TXDATA] = time;

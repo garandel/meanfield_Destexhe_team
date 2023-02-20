@@ -491,7 +491,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
 
         // Wait for a spike, or the timer to expire -> spike never arrive a priori bcs there is no coms btws MF and synapses
         uint32_t spike;
-        log_info("timer = %d", tc[T2_COUNT]);
+        //log_info("timer = %d", tc[T2_COUNT]);
         while (!is_end_of_time_step() && !get_next_spike(time, &spike)) {
             // This doesn't wait for interrupt currently because there isn't
             // a way to have a T2 interrupt without a callback function, and
@@ -508,7 +508,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
 
         // There must be a spike!  Start a DMA processing loop...
         bool dma_in_progress = start_first_dma(time, &spike);
-        log_info("is it spike");
+        //log_info("is it spike");
 
         while (dma_in_progress && !is_end_of_time_step()) {
 

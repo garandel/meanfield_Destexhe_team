@@ -29,8 +29,8 @@
 #include <meanfield/models/mathsbox.h>
 
 #include <meanfield/input_types/input_type.h>
-#include <meanfield/additional_inputs/additional_input.h>
-#include <meanfield/threshold_types/threshold_type.h>
+//#include <meanfield/additional_inputs/additional_input.h>
+//#include <meanfield/threshold_types/threshold_type.h>
 #include <meanfield/synapse_types/synapse_types.h>
 
 // Further includes
@@ -45,12 +45,8 @@ enum word_recording_indices {
     VE_RECORDING_INDEX = 0,
     VI_RECORDING_INDEX = 1,
     W_RECORDING_INDEX = 2,
-    //! Gsyn_exc (excitatory synaptic conductance/current) recording index
-    GSYN_EXC_RECORDING_INDEX = 3,
-    //! Gsyn_inh (excitatory synaptic conductance/current) recording index
-    GSYN_INH_RECORDING_INDEX = 4,
     //! Number of recorded word-sized state variables
-    N_RECORDED_VARS = 5
+    N_RECORDED_VARS = 3
 };
 
 //! Indices for recording of bitfields
@@ -60,6 +56,7 @@ enum bitfield_recording_indices {
     //! Number of recorded bitfields
     N_BITFIELD_VARS = 1
 };
+
 
 // This import depends on variables defined above
 #include <meanfield/meanfield_recording.h>
@@ -78,11 +75,11 @@ static pFitPolynomial_t *Pfit_inh_array;
 static input_type_t *input_type_array;
 
 //! Additional input array
-static additional_input_t *additional_input_array;
-
+//static additional_input_t *additional_input_array;
+/*
 //! Threshold states array
 static threshold_type_t *threshold_type_array;
-
+*/
 //! Global parameters for the neurons
 static global_neuron_params_t *global_parameters;
 
@@ -168,6 +165,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
         }
     }
 
+    /*
     // Allocate DTCM for additional input array and copy block of data
     if (sizeof(additional_input_t)) {
         additional_input_array =
@@ -178,7 +176,8 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
             return false;
         }
     }
-
+    */
+/*
     // Allocate DTCM for threshold type array and copy block of data
     if (sizeof(threshold_type_t)) {
         threshold_type_array =
@@ -188,7 +187,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
             return false;
         }
     }
-
+*/
     // Allocate DTCM for synapse shaping parameters
     if (sizeof(synapse_param_t)) {
         neuron_synapse_shaping_params =
@@ -294,14 +293,14 @@ static void neuron_impl_load_neuron_parameters(
                 n_meanfields * sizeof(input_type_t));
         next += n_words_needed(n_meanfields * sizeof(input_type_t));
     }
-
+/*
     if (sizeof(threshold_type_t)) {
         log_debug("reading threshold type parameters");
         spin1_memcpy(threshold_type_array, &address[next],
                 n_meanfields * sizeof(threshold_type_t));
         next += n_words_needed(n_meanfields * sizeof(threshold_type_t));
     }
-
+*/
     if (sizeof(synapse_param_t)) {
         log_debug("reading synapse parameters");
         spin1_memcpy(neuron_synapse_shaping_params, &address[next],
@@ -309,12 +308,14 @@ static void neuron_impl_load_neuron_parameters(
         next += n_words_needed(n_meanfields * sizeof(synapse_param_t));
     }
 
+    /*
     if (sizeof(additional_input_t)) {
         log_debug("reading additional input type parameters");
         spin1_memcpy(additional_input_array, &address[next],
                 n_meanfields * sizeof(additional_input_t));
         next += n_words_needed(n_meanfields * sizeof(additional_input_t));
     }
+    */
 
     meanfield_model_set_global_neuron_params(global_parameters);
 
@@ -352,10 +353,12 @@ static void neuron_impl_do_timestep_update(
         // Get the input_type parameters and voltage for this neuron
         input_type_t *input_types = &input_type_array[meanfield_index];
 
+        /*
         // Get threshold and additional input parameters for this neuron
         threshold_type_t *the_threshold_type = &threshold_type_array[meanfield_index];
         additional_input_t *additional_inputs =
                 &additional_input_array[meanfield_index];
+        */
         synapse_param_t *the_synapse_type =
                 &neuron_synapse_shaping_params[meanfield_index];
 
@@ -433,11 +436,6 @@ static void neuron_impl_do_timestep_update(
                         VI_RECORDING_INDEX, meanfield_index, firing_rate_Vi);
                 neuron_recording_record_accum(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
-                /*neuron_recording_record_accum(
-                        GSYN_EXC_RECORDING_INDEX, meanfield_index, total_exc);
-                neuron_recording_record_accum(
-                        GSYN_INH_RECORDING_INDEX, meanfield_index, total_inh);
-                        */
             }
 
             // Call functions to convert exc_input and inh_input to current
@@ -480,13 +478,13 @@ static void neuron_impl_do_timestep_update(
                 // Tell the neuron model
                 neuron_model_has_spiked(this_meanfield);
 
+                /*
                 // Tell the additional input
                 additional_input_has_spiked(additional_inputs);
-                
+                */
                 //log_info("result = %6.4k ", result);
 
-                // Record the spike
-                neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
+                
 
                 // Send the spike
                 //key_t key_p = 1;
@@ -500,14 +498,14 @@ static void neuron_impl_do_timestep_update(
                 }
                 */
                 
-                log_info("key = %d", key);
+                //log_info("key = %d", key);
                 
                 send_spike(timer_count, time, meanfield_index);
                 spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
                 //spin1_get_chip_id(void);
                 
             }
-            //neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
+            
             //send_spike(timer_count, time, meanfield_index);
             //send_spike(timer_count, r_int, meanfield_index);
             
@@ -515,18 +513,9 @@ static void neuron_impl_do_timestep_update(
 
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
-            /*
-            if (pNetwork_types->Fout_th==0.0) {
-                has_spiked = true;
-            }
-            */
+            
             
         }
-        /*
-        if (has_spiked) {
-            neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
-        }
-        */
 
 #if LOG_LEVEL >= LOG_DEBUG
         meanfield_model_print_state_variables(this_meanfield);

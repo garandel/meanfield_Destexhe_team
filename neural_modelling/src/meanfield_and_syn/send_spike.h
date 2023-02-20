@@ -58,7 +58,7 @@ static inline void send_spike_mc(uint32_t key) {
     //log_info("PKT_MC=%d", PKT_MC);
     //log_info("cc[CC_TCR] = 0x%08x with CC_TCR= %2.8k", cc[CC_TCR], CC_TCR);
     cc[CC_TXKEY]  = key;
-    log_info("key send spike = %d", key);
+    //log_info("key send spike = %d", key);
 }
 
 //! \brief Performs the sending of a spike.  Inlined for speed.
@@ -78,7 +78,7 @@ static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
 
         // Keep track of provenance data
         uint32_t clocks = tc[T1_COUNT];
-        log_info("time=%d", time);
+        //log_info("time=%d", time);
         if (clocks > earliest_send_time) {
             earliest_send_time = clocks;
         }

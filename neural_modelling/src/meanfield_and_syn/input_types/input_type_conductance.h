@@ -58,6 +58,7 @@ static inline input_t *input_type_get_input_value(
 //!     been scaled by input_type_get_input_value()
 //! \param[in] input_type: The input type pointer to the parameters
 //! \param[in] membrane_voltage: The membrane voltage to use for the input
+//WILL do the post treatment for NN 
 static inline void input_type_convert_excitatory_input_to_current(
         input_t *restrict exc_input, const input_type_t *input_type,
         state_t membrane_voltage) {

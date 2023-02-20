@@ -182,9 +182,6 @@ static inline void sum(weight_t *syns) {
         *tgt++ += *src++;
         
     }
-    //*tgt += 42;
-    log_info("tgt=0x%08x", *tgt);
-    log_info("tgt add=0x%08x", tgt);
 }
 
 /*
