@@ -174,7 +174,7 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     
     pNetwork->muV = muV ;
 
-    REAL muGn = muG/Gl;
+    //REAL muGn = muG/Gl;
     //pNetwork->muGn = muGn; //to uncomment in order to stock it
     REAL Tm = Cm/muG;
     REAL Ue = Qe*(Ee-muV)/muG;
@@ -381,7 +381,7 @@ state_t meanfield_model_state_update(
     log_info("total_inh=%8.6k",total_inh);
     */
 
-    input_t input_this_timestep = total_exc + total_inh ;//+ external_bias;// + neuron->I_offset;
+    input_t input_this_timestep = total_exc + total_inh + external_bias;// + neuron->I_offset;
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     // the best AR update so far
@@ -392,18 +392,19 @@ state_t meanfield_model_state_update(
                     Pfit_inh,
                     input_this_timestep);
                     
-    meanfield->this_h = global_params->machine_timestep_ms;
+    //meanfield->this_h = global_params->machine_timestep_ms;
     
     //what is the best output for this function? Output of this function is used normally for thershold
     return meanfield->Ve;
 }
 
 
-
+/*
 void neuron_model_has_spiked() { 
     log_debug("in neuron_model_has_spiked, time is ",
               global_params->machine_timestep_ms);
 }
+*/
 
 state_t meanfield_model_get_firing_rate_Ve(const meanfield_t *meanfield) {
     return meanfield->Ve;
@@ -417,13 +418,14 @@ state_t meanfield_model_get_adaptation_W(const meanfield_t *meanfield){
     return meanfield->w_exc;
 }
 
-
+/*
 void meanfield_model_print_state_variables(const meanfield_t *meanfield) {
     log_debug("Ve = %11.4k ", meanfield->Ve);
     log_debug("Vi = %11.4k ", meanfield->Vi);
     log_debug("W_exc = %11.4k ", meanfield->w_exc);
 }
-
+*/
+/*
 void meanfield_model_print_parameters() { //const meanfield_t *meanfield
     //log_debug("Ve = %11.4k ", meanfield->Ve);
     //log_debug("Vi = %11.4k ", meanfield->Vi);
@@ -433,3 +435,4 @@ void meanfield_model_print_parameters() { //const meanfield_t *meanfield
 
     //log_debug("I = %11.4k \n", neuron->I_offset);
 }
+*/

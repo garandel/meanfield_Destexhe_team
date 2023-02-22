@@ -26,7 +26,7 @@
 #include <recording.h>
 #include <wfi.h>
 
-//#include "implementations/meanfield_impl_standard.h"
+#include "implementations/meanfield_impl_standard.h"
 
 
 //! A struct of the different types of recorded data
@@ -79,7 +79,7 @@ extern uint8_t **recording_values;
 
 //! An array of spaces into which bitfields can be written
 extern uint32_t **bitfield_values;
-
+/*
 //! \brief stores a recording of a value of any type, except bitfield;
 //!        use the functions below for common types as these will be faster.
 //! \param[in] var_index: which recording variable to write this is
@@ -92,6 +92,7 @@ static inline void neuron_recording_record_value(
     uint32_t p = size * index;
     spin1_memcpy(&recording_values[var_index][p], value, size);
 }
+*/
 
 //! \brief stores a recording of an accum variable only; this is faster than
 //!        neuron_recording_record_value for this type
@@ -104,7 +105,7 @@ static inline void neuron_recording_record_accum(
     accum *data = (accum *) recording_values[var_index];
     data[index] = value;
 }
-
+/*
 //! \brief stores a recording of a double variable only; this is faster than
 //!        neuron_recording_record_value for this type
 //! \param[in] var_index: which recording variable to write this is
@@ -128,7 +129,7 @@ static inline void neuron_recording_record_float(
     float *data = (float *) recording_values[var_index];
     data[index] = value;
 }
-
+*/
 //! \brief stores a recording of an int32_t variable only; this is faster than
 //!        neuron_recording_record_value for this type
 //! \param[in] var_index: which recording variable to write this is

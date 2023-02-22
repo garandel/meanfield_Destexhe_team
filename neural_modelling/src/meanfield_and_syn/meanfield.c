@@ -185,57 +185,6 @@ void neuron_do_timestep_update(timer_t time, uint timer_count) { // EXPORTED
     neuron_recording_record(time);
 }
 
-//TO REMOVE AFTER
-// do a converter but WILL change it for just a buffer with pointer once the problem
-// will be solve
-static union {
-    uint32_t as_int;
-    input_t as_real;
-} number_bis;
-
-/*
-void neuron_transfer(weight_t *syns) { // EXPORTED
-    uint32_t synapse_index = 0;
-    uint32_t ring_buffer_index = 0;
-    for (uint32_t s_i = n_synapse_types; s_i > 0; s_i--) {
-        uint32_t rb_shift = ring_buffer_to_input_left_shifts[synapse_index];
-        uint32_t neuron_index = 0;
-        for (uint32_t n_i = n_neurons_peak; n_i > 0; n_i--) {
-            weight_t value = syns[ring_buffer_index];
-            //weight_t value2 = syns[ring_buffer_index];
-            //log_info("value2 = %8.6k, ring_buffer_index = %8.6k, rb_shift=%5.8k", value2, ring_buffer_index, rb_shift);
-            if (value > 0) {
-                if (neuron_index > n_neurons) {
-                    log_error("Neuron index %u out of range", neuron_index);
-                    rt_error(RTE_SWERR);
-                }
-                input_t val_to_add = synapse_row_convert_weight_to_input(
-                        value, rb_shift);
-                
-                number_bis.as_int = cc[CC_TXDATA];
-                input_t val = number_bis.as_real;
-                
-                neuron_impl_add_inputs(synapse_index, neuron_index, val);//val=val_to_add normaly
-                
-                log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);
-                log_info("neuron_index = %2.8k", neuron_index);
-                //log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
-                 
-                //neuron_impl_add_inputs(synapse_index, neuron_index, val);
-                log_info("value = %8.6k, ring_buffer_index = %8.6k, val_to_add = %2.6k, rb_shift=%5.8k", value, ring_buffer_index, val_to_add, rb_shift);
-            }
-            syns[ring_buffer_index] = 0;
-            ring_buffer_index++;
-            neuron_index++;
-        }
-        synapse_index++;
-    }
-}
-*/
-
-//pourra utiliser la condition que je vien de supprimer pour test,
-// afin de mettre une valeur de saturation 200MHz
-
 void neuron_transfer(weight_t *syns) { // EXPORTED
     uint32_t synapse_index = 0;
     uint32_t ring_buffer_index = 0;
@@ -261,33 +210,7 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
         synapse_index++;
     }
 }
-/*
-void meanfield_transfer(input_t *syns) { // EXPORTED CONSTRUCTION
-    uint32_t synapse_index = 0;
-    uint32_t ring_buffer_index = 0;
-    for (uint32_t s_i = n_synapse_types; s_i > 0; s_i--) {
-        uint32_t rb_shift = 0.0;//ring_buffer_to_input_left_shifts[synapse_index];
-        uint32_t neuron_index = 0;
-        for (uint32_t n_i = n_neurons_peak; n_i > 0; n_i--) {
-            weight_t value = syns[ring_buffer_index];
-            if (neuron_index > n_neurons) {
-                    log_error("Neuron index %u out of range", neuron_index);
-                    rt_error(RTE_SWERR);
-            }
-            input_t val_to_add = synapse_row_convert_weight_to_input(value, rb_shift); ///modif ici pour avoir les input en direct
-                            
-            neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);//val=val_to_add normaly here do a artefact like /!\
-                
-            log_info("value = %4.7k, ring_buffer_index = %d, val_to_add = %4.7k, rb_shift=%d", value, ring_buffer_index, val_to_add, rb_shift);
-            
-            syns[ring_buffer_index] = 0;
-            ring_buffer_index++;
-            neuron_index++;
-        }
-        synapse_index++;
-    }
-}
-*/
+
 
 #if LOG_LEVEL >= LOG_DEBUG
 void neuron_print_inputs(void) { // EXPORTED
