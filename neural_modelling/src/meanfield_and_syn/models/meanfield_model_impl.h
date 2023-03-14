@@ -20,7 +20,7 @@
 #ifndef _MEANFIELD_MODEL_IMPL_H_
 #define _MEANFIELD_MODEL_IMPL_H_
 
-#include "../../meanfield/models/meanfield_model.h"
+#include "../../meanfield_and_syn/models/meanfield_model.h"
 //#include <sqrt.h>
 
 typedef struct meanfield_t {

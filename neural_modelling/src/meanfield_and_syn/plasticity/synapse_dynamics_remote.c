@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../meanfield/plasticity/synapse_dynamics.h"
+#include "../../meanfield_and_syn/plasticity/synapse_dynamics.h"
 
 void synapse_dynamics_process_post_synaptic_event(
         UNUSED uint32_t time, UNUSED uint32_t neuron_index) {

@@ -24,13 +24,13 @@
  * Will implemente synapse like connection btw MFs after 1MF will work
  */
 
-#include "../meanfield/meanfield.h"
+#include "../meanfield_and_syn/meanfield.h"
 
 #include "tdma_processing.h"
 #include <debug.h>
-#include "../meanfield/implementations/meanfield_impl.h"
-#include "../meanfield/meanfield_recording.h"
-#include "../meanfield/plasticity/synapse_dynamics.h"
+#include "../meanfield_and_syn/implementations/meanfield_impl.h"
+#include "../meanfield_and_syn/meanfield_recording.h"
+#include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
 
 //! The key to be used for this core (will be ORed with neuron ID)
 key_t key;

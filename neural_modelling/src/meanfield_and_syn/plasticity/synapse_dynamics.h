@@ -23,7 +23,7 @@
 #define _SYNAPSE_DYNAMICS_H_
 
 #include <common/neuron-typedefs.h>
-#include <neuron/synapse_row.h>
+#include <meanfield_and_syn/synapse_row.h>
 
 //! \brief Initialise the synapse dynamics
 //! \param[in] address: Where the configuration data is

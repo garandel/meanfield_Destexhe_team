@@ -26,7 +26,7 @@
 #include <recording.h>
 #include <wfi.h>
 
-#include "implementations/meanfield_impl_standard.h"
+#include "../meanfield_and_syn/implementations/meanfield_impl_standard.h"
 
 
 //! A struct of the different types of recorded data

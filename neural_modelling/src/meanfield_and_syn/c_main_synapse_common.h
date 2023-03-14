@@ -20,11 +20,11 @@
 
 #include <data_specification.h>
 #include <common/in_spikes.h>
-#include "../meanfield/direct_synapses.h"
-#include "../meanfield/plasticity/synapse_dynamics.h"
-#include "../meanfield/population_table/population_table.h"
-#include "../meanfield/structural_plasticity/synaptogenesis_dynamics.h"
-#include "../meanfield/synapses.h"
+#include "../meanfield_and_syn/direct_synapses.h"
+#include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
+#include "../meanfield_and_syn/population_table/population_table.h"
+#include "../meanfield_and_syn/structural_plasticity/synaptogenesis_dynamics.h"
+#include "../meanfield_and_syn/synapses.h"
 
 //! The region IDs used by synapse processing
 struct synapse_regions {

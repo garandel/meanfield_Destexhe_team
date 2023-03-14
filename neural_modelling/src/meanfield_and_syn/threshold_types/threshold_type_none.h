@@ -20,7 +20,7 @@
 #ifndef _THRESHOLD_TYPE_NONE_H_
 #define _THRESHOLD_TYPE_NONE_H_
 
-#include "../../meanfield/threshold_types/threshold_type.h"
+#include "../../meanfield_and_syn/threshold_types/threshold_type.h"
 
 struct threshold_type_t {
 };

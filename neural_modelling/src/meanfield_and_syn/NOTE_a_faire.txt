@@ -74,4 +74,40 @@ de ce que di Andrew on peut adresser avec key à n'importe quel proc du moment q
 
 
 essaie avec un buffer
+------------------------------------------------------------------------------------
+Dans la même veine, 
+
+spike_processing_fast.c <- in_spikes.h <- circular_buffer.h
+
+//! \brief Retrieves a spike from the input spike buffer.
+//! \param[out] spike: The spike that was retrieved.
+//! \return True if a spike was retrieved, false if the buffer was empty.
+static inline bool in_spikes_get_next_spike(spike_t* spike) {
+    return circular_buffer_get_next(buffer, spike);
+}
+
+//! \brief Get the next item from an existing buffer.
+//! \param[in] buffer: The buffer to get the next item from.
+//! \param[out] item: The retrieved item.
+//! \return Whether an item was retrieved.
+static inline bool circular_buffer_get_next(
+        circular_buffer buffer, uint32_t *item) {
+    bool success = _circular_buffer_not_empty(buffer);
+
+    if (success) {
+	    *item = buffer->buffer[buffer->output];
+	    buffer->output = _circular_buffer_next(buffer, buffer->output);
+    }
+
+    return success;
+}
+DONC peut éjécter spike et remplacer pas circular_buffer=> 
+
+    EN COURS :
+        cf spike_processing_fast_time_step_loop
+        
+REMARQUE :
+    SANS erfc() de math.h ÇA MARCHE DU MOINS ÇA COMPIL MAIS ÇA NE DONNE PAS LE BON RESULTAT OF COURSE
+    
+    Essaie avec erfcf (float x) donne 5404 byte de trop c'est pas mal mais trop
 

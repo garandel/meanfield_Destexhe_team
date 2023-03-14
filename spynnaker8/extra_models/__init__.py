@@ -29,7 +29,9 @@ from spynnaker.pyNN.models.neuron.builds import (
     IFCurDelta, IFCurrExpCa2Adaptive, IFCurrDualExpBase as
     IF_curr_dual_exp, IzkCondExpBase as
     Izhikevich_cond, IFCurrExpSEMDBase as
-    IF_curr_exp_sEMD, MeanfieldBase as Meanfield, MeanfieldAndSynBase as MeanfieldSyn)
+    IF_curr_exp_sEMD,
+    MeanfieldBase as Meanfield,
+    MeanfieldAndSynBase as MeanfieldSyn)
 from spynnaker.pyNN.models.spike_source import SpikeSourcePoissonVariable
 
 __all__ = [

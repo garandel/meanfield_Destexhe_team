@@ -46,7 +46,7 @@
 
 #include <neuron/decay.h>
 #include <debug.h>
-#include "../../meanfield/synapse_types/synapse_types.h"
+#include "../../meanfield_and_syn/synapse_types/synapse_types.h"
 
 //---------------------------------------
 // Synapse parameters

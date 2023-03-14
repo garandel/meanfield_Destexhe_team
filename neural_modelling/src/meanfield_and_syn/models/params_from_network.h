@@ -1,7 +1,7 @@
 #ifndef _PARAMS_FROM_NETWORK_H_
 #define _PARAMS_FROM_NETWORK_H_
 
-#include "../../meanfield/models/meanfield_model.h"
+#include "../../meanfield_and_syn/models/meanfield_model.h"
 
 typedef struct ParamsFromNetwork_t {
     // nominally 'fixed' parameters

@@ -20,7 +20,7 @@
 #include <neuron/synapse_row.h>
 #include <debug.h>
 #include <stdbool.h>
-#include "../../meanfield/population_table/population_table.h"
+#include "../../meanfield_and_syn/population_table/population_table.h"
 
 //! bits in a word
 #define BITS_PER_WORD 32

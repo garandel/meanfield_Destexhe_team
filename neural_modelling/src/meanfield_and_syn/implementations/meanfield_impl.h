@@ -23,7 +23,7 @@
 #define _MEANFIELD_IMPL_H_
 
 #include <common/neuron-typedefs.h>
-#include <meanfield/send_spike.h>
+#include <meanfield_and_syn/send_spike.h>
 
 //! \brief Initialise the particular implementation of the data
 //! \param[in] n_neurons: The number of neurons

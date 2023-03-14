@@ -23,15 +23,15 @@
 #include "meanfield_impl.h"
 
 // Includes for model parts used in this implementation
-#include <meanfield/models/meanfield_model_impl.h>
-#include <meanfield/models/params_from_network.h>
-#include <meanfield/models/P_fit_polynomial.h>
-#include <meanfield/models/mathsbox.h>
+#include <meanfield_and_syn/models/meanfield_model_impl.h>
+#include <meanfield_and_syn/models/params_from_network.h>
+#include <meanfield_and_syn/models/P_fit_polynomial.h>
+#include <meanfield_and_syn/models/mathsbox.h>
 
 //#include <meanfield/input_types/input_type.h>
 //#include <meanfield/additional_inputs/additional_input.h>
 //#include <meanfield/threshold_types/threshold_type.h>
-#include <meanfield/synapse_types/synapse_types.h>
+#include <meanfield_and_syn/synapse_types/synapse_types.h>
 
 // Further includes
 #include <debug.h>
@@ -329,11 +329,12 @@ static void neuron_impl_load_neuron_parameters(
 #endif // LOG_LEVEL >= LOG_DEBUG
 }
 
-
+/*
 static union {
     uint32_t as_int;
     input_t as_real;
 } number;
+*/
 
 //! Key from meanfield.c
 extern uint32_t key;
@@ -346,7 +347,7 @@ static void neuron_impl_do_timestep_update(
         // Get the neuron itself
         meanfield_t *this_meanfield = &meanfield_array[meanfield_index];
 
-        // Get the Params from network and mathsbox params for this neuron
+        // Get the Params from network and polynomial equation for this neuron
         ParamsFromNetwork_t *pNetwork_types = &pNetwork_array[meanfield_index];
         pFitPolynomial_t *Pfit_exc_types = &Pfit_exc_array[meanfield_index];
         pFitPolynomial_t *Pfit_inh_types = &Pfit_inh_array[meanfield_index];
@@ -397,8 +398,8 @@ static void neuron_impl_do_timestep_update(
             //log_info("exc_syn_adds=%08x", exc_syn_values);
             //log_info("inh_syn_add=%08x", inh_syn_values);
             
-            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            //log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            log_info("inh_syn_val=%5.5k",*inh_syn_values);
             //input_types->Ve_input = firing_rate_Ve ;// remplace pour tester exc_syn_values
             
             /*
@@ -447,8 +448,8 @@ static void neuron_impl_do_timestep_update(
             //TODO implement external bias
             
             //<- with this one that's work with mimic synapses coms
-            number.as_real = *exc_syn_values;
-            uint32_t r_int = number.as_int;
+            //number.as_real = *exc_syn_values;
+            //uint32_t r_int = number.as_int;
             //weight_t r_weight = number.as_weight;
             //log_info("firing = %d",r_int);
             
@@ -476,7 +477,7 @@ static void neuron_impl_do_timestep_update(
             
             
             
-            neuron_model_has_spiked(this_meanfield);
+            //neuron_model_has_spiked(this_meanfield);
             send_spike(timer_count, time, meanfield_index);
             //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
             /*
@@ -494,6 +495,7 @@ static void neuron_impl_do_timestep_update(
                 
             }
             */
+            //neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
 
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);

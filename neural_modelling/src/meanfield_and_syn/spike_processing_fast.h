@@ -24,7 +24,7 @@
 #include <common/in_spikes.h>
 #include <spin1_api.h>
 
-#include "../meanfield/synapse_row.h"
+#include "../meanfield_and_syn/synapse_row.h"
 
 //! A region of SDRAM used to transfer synapses
 struct sdram_config {

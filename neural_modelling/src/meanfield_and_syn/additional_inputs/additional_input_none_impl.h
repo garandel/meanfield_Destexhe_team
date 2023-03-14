@@ -20,7 +20,7 @@
 #ifndef _ADDITIONAL_INPUT_TYPE_NONE_H_
 #define _ADDITIONAL_INPUT_TYPE_NONE_H_
 
-#include "../../meanfield/additional_inputs/additional_input.h"
+#include "../../meanfield_and_syn/additional_inputs/additional_input.h"
 
 //! An empty additional input that makes no contribution
 struct additional_input_t {

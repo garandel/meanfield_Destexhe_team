@@ -17,14 +17,15 @@
 
 //! \file
 //! \brief Izhekevich neuron implementation
-#include "../../meanfield/models/meanfield_model_impl.h"
+#include "../../meanfield_and_syn/models/meanfield_model_impl.h"
 
 #include <debug.h>
-#include <math.h>
-#include <stdfix-exp.h>
-#include "../../meanfield/models/params_from_network.h"
+//#include <math.h>
+//#include <stdfix-exp.h>
+//#include <polynomial.h>
+#include "../../meanfield_and_syn/models/params_from_network.h"
 //#include "../../meanfield/models/mathsbox.h"
-#include "../../meanfield/models/P_fit_polynomial.h"
+#include "../../meanfield_and_syn/models/P_fit_polynomial.h"
 //#include "../../common/maths-util.h" // i.o to use SQRT(x) and SQR(a)
 
 //! The global parameters of the Izhekevich neuron model
@@ -70,10 +71,19 @@ static inline REAL square_root_of(REAL number)
     
 }
 
-
+//static int poly[3] = {1,5,3};
     
 
 
+static inline REAL erfc_test(REAL x)
+{
+    
+    //log_info("IT'S THE WRONG ONE JUST FOR TEST");
+    //return __horner_int_b(poly,x,2);
+    //return expk(x);
+    return x+1.;
+        
+}    
 
 
 void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *restrict Pfit)
@@ -243,7 +253,7 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
-    pNetwork->Fout_th = erfc(argument) * (HALF*Gl)/(Cm*pNetwork->TvN) ;
+    pNetwork->Fout_th = erfc_test(argument) * (HALF*Gl)/(Cm*pNetwork->TvN) ;
     
     if (pNetwork->Fout_th < ACS_DBL_TINY){
         pNetwork->Fout_th += ACS_DBL_TINY;

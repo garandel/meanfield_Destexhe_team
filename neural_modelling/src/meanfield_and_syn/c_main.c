@@ -33,12 +33,12 @@
  * @image html spynnaker_c_code_flow.png
  */
 
-#include "../meanfield/c_main_common.h"
-#include "../meanfield/c_main_neuron_common.h"
-#include "../meanfield/c_main_synapse_common.h"
-#include "../meanfield/profile_tags.h"
-#include "../meanfield/regions.h"
-#include "../meanfield/spike_processing.h"
+#include "../meanfield_and_syn/c_main_common.h"
+#include "../meanfield_and_syn/c_main_neuron_common.h"
+#include "../meanfield_and_syn/c_main_synapse_common.h"
+#include "../meanfield_and_syn/profile_tags.h"
+#include "../meanfield_and_syn/regions.h"
+#include "../meanfield_and_syn/spike_processing.h"
 
 //! The combined provenance from synapses and neurons
 struct combined_provenance {

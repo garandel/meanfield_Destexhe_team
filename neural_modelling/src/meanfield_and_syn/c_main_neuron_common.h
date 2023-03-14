@@ -20,7 +20,7 @@
 #include <data_specification.h>
 #include <tdma_processing.h>
 
-#include "../meanfield/meanfield.h"
+#include "../meanfield_and_syn/meanfield.h"
 
 //! The provenance information provided by neurons
 struct neuron_provenance {

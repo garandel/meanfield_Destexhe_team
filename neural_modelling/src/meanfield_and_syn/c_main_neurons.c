@@ -34,14 +34,14 @@
  */
 //#include <stdbool.h>
 //#include <stdint.h>
-#include "../meanfield/c_main_common.h"
+#include "../meanfield_and_syn/c_main_common.h"
 
 
 #include <tdma_processing.h>
 #include <spin1_api_params.h>
-#include "../meanfield/c_main_neuron_common.h"
-#include "../meanfield/dma_common.h"
-#include "../meanfield/profile_tags.h"
+#include "../meanfield_and_syn/c_main_neuron_common.h"
+#include "../meanfield_and_syn/dma_common.h"
+#include "../meanfield_and_syn/profile_tags.h"
 
 //! values for the priority for each callback
 typedef enum callback_priorities {
@@ -319,12 +319,12 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
     neuron_transfer(all_synaptic_contributions.as_weight);
     //meanfield_transfer(all_meanfield_contributions.as_input); // CONSTRUCTION
     
-    log_info("address synaptic_contributions buffer = 0x%08x", synaptic_contributions);
+    //log_info("address synaptic_contributions buffer = 0x%08x", synaptic_contributions);
     
-    uint core_id = spin1_get_core_id();
-    uint chip_id = spin1_get_chip_id();
+    //uint core_id = spin1_get_core_id();
+    //uint chip_id = spin1_get_chip_id();
     
-    log_info("core_id = %d AND chip_id = %d",core_id, chip_id);
+    //log_info("core_id = %d AND chip_id = %d",core_id, chip_id);
 
     // Now do neuron time step update
     neuron_do_timestep_update(time, timer_count);

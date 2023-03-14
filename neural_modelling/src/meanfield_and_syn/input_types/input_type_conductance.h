@@ -20,7 +20,7 @@
 #ifndef _INPUT_TYPE_CONDUCTANCE_H_
 #define _INPUT_TYPE_CONDUCTANCE_H_
 
-#include "../../meanfield/input_types/input_type.h"
+#include "../../meanfield_and_syn/input_types/input_type.h"
 
 //! Conductance input parameters
 typedef struct input_type_t {

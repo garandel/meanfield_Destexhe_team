@@ -22,7 +22,7 @@
 #include <spin1_api.h>
 #include <spin1_api_params.h>
 
-#include "../meanfield/plasticity/synapse_dynamics.h"
+#include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
 
 //! Key from neruon.c
 extern uint32_t key;

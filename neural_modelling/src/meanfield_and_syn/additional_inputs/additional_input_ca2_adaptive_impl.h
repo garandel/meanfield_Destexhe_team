@@ -26,7 +26,7 @@
 #ifndef _ADDITIONAL_INPUT_CA2_ADAPTIVE_H_
 #define _ADDITIONAL_INPUT_CA2_ADAPTIVE_H_
 
-#include "../../meanfield/additional_inputs/additional_input.h"
+#include "../../meanfield_and_syn/additional_inputs/additional_input.h"
 
 //! The additional input is due to calcium ions
 struct additional_input_t {

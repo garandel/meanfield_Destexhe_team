@@ -23,7 +23,7 @@
 #include <common/neuron-typedefs.h>
 #include <debug.h>
 
-#include "../meanfield/synapse_row.h"
+#include "../meanfield_and_syn/synapse_row.h"
 
 //! \brief Number of bits needed for the synapse type and index
 //! \details

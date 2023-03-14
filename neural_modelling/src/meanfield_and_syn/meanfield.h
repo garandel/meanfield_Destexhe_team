@@ -34,7 +34,7 @@
 
 #include <common/neuron-typedefs.h>
 #include <spin1_api.h>
-#include "../meanfield/synapse_row.h"
+#include "../meanfield_and_syn/synapse_row.h"
 
 //! \brief translate the data stored in the NEURON_PARAMS data region in SDRAM
 //!        and convert it into c based objects for use.

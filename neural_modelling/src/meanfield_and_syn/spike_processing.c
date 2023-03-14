@@ -23,11 +23,11 @@
 #include <debug.h>
 #include <common/in_spikes.h>
 #include <recording.h>
-#include "../meanfield/direct_synapses.h"
-#include "../meanfield/population_table/population_table.h"
-#include "../meanfield/structural_plasticity/synaptogenesis_dynamics.h"
-#include "../meanfield/synapse_row.h"
-#include "../meanfield/synapses.h"
+#include "../meanfield_and_syn/direct_synapses.h"
+#include "../meanfield_and_syn/population_table/population_table.h"
+#include "../meanfield_and_syn/structural_plasticity/synaptogenesis_dynamics.h"
+#include "../meanfield_and_syn/synapse_row.h"
+#include "../meanfield_and_syn/synapses.h"
 
 //! DMA buffer structure combines the row read from SDRAM with information
 //! about the read.

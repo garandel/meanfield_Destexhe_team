@@ -21,7 +21,7 @@
  * \details No functionality is gained with this class.
  */
 #include <debug.h>
-#include "../../meanfield/structural_plasticity/synaptogenesis_dynamics.h"
+#include "../../meanfield_and_syn/structural_plasticity/synaptogenesis_dynamics.h"
 
 bool synaptogenesis_dynamics_initialise(
         UNUSED address_t sdram_sp_address, uint32_t *recording_regions_used) {

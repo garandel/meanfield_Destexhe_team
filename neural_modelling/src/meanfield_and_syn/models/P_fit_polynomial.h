@@ -1,7 +1,7 @@
 #ifndef _P_FIT_POLYNOMIAL_H_
 #define _P_FIT_POLYNOMIAL_H_
 
-#include "../../meanfield/models/meanfield_model.h"
+#include "../../meanfield_and_syn/models/meanfield_model.h"
 
 typedef struct pFitPolynomial_t {
     // nominally 'fixed' parameters

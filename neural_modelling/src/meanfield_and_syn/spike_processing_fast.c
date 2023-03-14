@@ -22,11 +22,11 @@
 #include <recording.h>
 #include <debug.h>
 #include <wfi.h>
-#include "../meanfield/dma_common.h"
-#include "../meanfield/plasticity/synapse_dynamics.h"
-#include "../meanfield/population_table/population_table.h"
-#include "../meanfield/structural_plasticity/synaptogenesis_dynamics.h"
-#include "../meanfield/synapses.h"
+#include "../meanfield_and_syn/dma_common.h"
+#include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
+#include "../meanfield_and_syn/population_table/population_table.h"
+#include "../meanfield_and_syn/structural_plasticity/synaptogenesis_dynamics.h"
+#include "../meanfield_and_syn/synapses.h"
 
 //! DMA buffer structure combines the row read from SDRAM with information
 //! about the read.
@@ -240,7 +240,7 @@ static inline bool start_first_dma(uint32_t time, spike_t *spike) {
             read_synaptic_row(*spike, row, n_bytes);
             return true;
         }
-    } while (!is_end_of_time_step() && get_next_spike(time, spike));
+    } while (!is_end_of_time_step());// && get_next_spike(time, spike));
 
     return false;
 }
@@ -309,7 +309,6 @@ static inline void process_current_row(uint32_t time, bool dma_in_progress) {
     if (!synapses_process_synaptic_row(time, buffer->row, &write_back)) {
         handle_row_error(buffer);
     }
-    synaptogenesis_spike_received(time, buffer->originating_spike);
     spike_processing_count++;
     if (write_back) {
         uint32_t n_bytes = synapse_row_plastic_size(buffer->row) * sizeof(uint32_t);
@@ -406,7 +405,7 @@ static inline bool prepare_timestep(uint32_t time) {
     spin1_mode_restore(cspr);
     return true;
 }
-
+/*
 //! \brief Perform synaptic rewiring for this time step
 //! \param[in] time The current time step
 //! \param[in] n_rewires The number of rewirings to try
@@ -473,7 +472,7 @@ static inline void do_rewiring(uint32_t time, uint32_t n_rewires) {
         current_buffer = (current_buffer + 1) & DMA_BUFFER_MOD_MASK;
     }
 }
-
+*/
 void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
 
     // Prepare for the start
@@ -484,7 +483,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
     }
 
     // Do rewiring
-    do_rewiring(time, n_rewires);
+    //do_rewiring(time, n_rewires);
 
     // Loop until the end of a time step is reached
     while (true) {
@@ -492,7 +491,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
         // Wait for a spike, or the timer to expire -> spike never arrive a priori bcs there is no coms btws MF and synapses
         uint32_t spike;
         //log_info("timer = %d", tc[T2_COUNT]);
-        while (!is_end_of_time_step() && !get_next_spike(time, &spike)) {
+        while (!is_end_of_time_step()){// && !get_next_spike(time, &spike)) {
             // This doesn't wait for interrupt currently because there isn't
             // a way to have a T2 interrupt without a callback function, and
             // a callback function is too slow!  This is therefore a busy wait.

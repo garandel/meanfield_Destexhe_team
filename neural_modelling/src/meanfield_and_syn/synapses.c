@@ -23,13 +23,13 @@
 #include <debug.h>
 #include <spin1_api.h>
 #include <utils.h>
-#include "../meanfield/meanfield.h"
-#include "../meanfield/plasticity/synapse_dynamics.h"
-#include "../meanfield/spike_processing.h"
+#include "../meanfield_and_syn/meanfield.h"
+#include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
+#include "../meanfield_and_syn/spike_processing.h"
 
 //! if using profiler import profiler tags
 #ifdef PROFILER_ENABLED
-#include "../meanfield/profile_tags.h"
+#include "../meanfield_and_syn/profile_tags.h"
 #endif //PROFILER_ENABLED
 
 //! Globals required for synapse benchmarking to work.

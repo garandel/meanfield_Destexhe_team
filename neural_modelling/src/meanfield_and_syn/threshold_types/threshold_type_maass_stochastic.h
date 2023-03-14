@@ -22,7 +22,7 @@
 
 #include <random.h>
 #include <stdfix-exp.h>
-#include "../../meanfield/threshold_types/threshold_type.h"
+#include "../../meanfield_and_syn/threshold_types/threshold_type.h"
 
 //! Probability of firing when at saturation
 #define PROB_SATURATION 0.8k

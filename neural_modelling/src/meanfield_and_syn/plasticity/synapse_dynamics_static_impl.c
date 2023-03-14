@@ -22,10 +22,10 @@
  *
  * \author Petrut Bogdan
  */
-#include "../../meanfield/synapses.h"
+#include "../../meanfield_and_syn/synapses.h"
 #include <debug.h>
 #include <utils.h>
-#include "../../meanfield/plasticity/synapse_dynamics.h"
+#include "../../meanfield_and_syn/plasticity/synapse_dynamics.h"
 
 bool synapse_dynamics_initialise(
         UNUSED address_t address, UNUSED uint32_t n_neurons,

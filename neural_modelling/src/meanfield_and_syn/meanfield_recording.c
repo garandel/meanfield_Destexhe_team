@@ -17,7 +17,7 @@
 
 //! \file
 //! \brief Implementation of non-inlined API in neuron_recording.h
-#include "../meanfield/meanfield_recording.h"
+#include "../meanfield_and_syn/meanfield_recording.h"
 
 #include <bit_field.h>
 #include <stddef.h>
