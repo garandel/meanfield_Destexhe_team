@@ -479,6 +479,7 @@ static void neuron_impl_do_timestep_update(
             
             //neuron_model_has_spiked(this_meanfield);
             send_spike(timer_count, time, meanfield_index);
+            log_info("time = %d", time);
             //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
             /*
             // determine if a spike should occur

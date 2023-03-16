@@ -179,8 +179,8 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
         threshold_type = ThresholdTypeStatic(_IZK_THRESHOLD)
 
         super().__init__(
-            model_name="meanfield_model_dynamics",
-            binary="meanfield_model_dynamics.aplx",
+            model_name="meanfield_model_dynamics_neuron",
+            binary="meanfield_model_dynamics_neuron.aplx",
             neuron_model=neuron_model,
             params_from_network=params_from_network,
             p_fit_polynomial_exc = p_fit_polynomial_exc, 

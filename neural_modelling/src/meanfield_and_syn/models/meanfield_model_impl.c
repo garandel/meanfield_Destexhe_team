@@ -81,7 +81,7 @@ static inline REAL erfc_test(REAL x)
     //log_info("IT'S THE WRONG ONE JUST FOR TEST");
     //return __horner_int_b(poly,x,2);
     //return expk(x);
-    return x+1.;
+    return x+1.*20;
         
 }    
 
