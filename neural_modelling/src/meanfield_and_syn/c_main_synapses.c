@@ -36,7 +36,7 @@
 
 #include <tdma_processing.h>
 #include <spin1_api_params.h>
-//#include "../meanfield_and_syn/c_main_common.h"
+#include "../meanfield_and_syn/c_main_common.h"
 #include "../meanfield_and_syn/c_main_synapse_common.h"
 #include "../meanfield_and_syn/spike_processing_fast.h"
 #include "../meanfield_and_syn/structural_plasticity/synaptogenesis_dynamics.h"

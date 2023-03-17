@@ -329,12 +329,12 @@ static void neuron_impl_load_neuron_parameters(
 #endif // LOG_LEVEL >= LOG_DEBUG
 }
 
-/*
+
 static union {
     uint32_t as_int;
     input_t as_real;
 } number;
-*/
+
 
 //! Key from meanfield.c
 extern uint32_t key;
@@ -398,8 +398,8 @@ static void neuron_impl_do_timestep_update(
             //log_info("exc_syn_adds=%08x", exc_syn_values);
             //log_info("inh_syn_add=%08x", inh_syn_values);
             
-            log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            //log_info("inh_syn_val=%5.5k",*inh_syn_values);
             //input_types->Ve_input = firing_rate_Ve ;// remplace pour tester exc_syn_values
             
             /*
@@ -448,10 +448,11 @@ static void neuron_impl_do_timestep_update(
             //TODO implement external bias
             
             //<- with this one that's work with mimic synapses coms
-            //number.as_real = *exc_syn_values;
-            //uint32_t r_int = number.as_int;
+            number.as_real = *exc_syn_values;
+            uint32_t r_int = number.as_int;
             //weight_t r_weight = number.as_weight;
-            //log_info("firing = %d",r_int);
+            //log_info("firing reel = %8.6k", number.as_real);
+            //log_info("firing_int = %d",r_int);
             
             // update neuron parameters
             /*
@@ -480,7 +481,8 @@ static void neuron_impl_do_timestep_update(
             //neuron_model_has_spiked(this_meanfield);
             send_spike(timer_count, time, meanfield_index);
             log_info("time = %d", time);
-            //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
+            spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
+            //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
             /*
             // determine if a spike should occur
             bool spike_now = TRUE;//threshold_type_is_above_threshold(result, the_threshold_type);

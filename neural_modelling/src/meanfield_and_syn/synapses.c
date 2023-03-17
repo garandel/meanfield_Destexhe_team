@@ -353,7 +353,7 @@ bool synapses_process_synaptic_row(
     //log_info("yep _fixe"); // think to remove it
     
     //log_info("cc[CC_TXDATA] = 0x%08x", &cc[CC_TXDATA]);// think to remove it
-    //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
+    log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
     
     //how create a plastic region???
     

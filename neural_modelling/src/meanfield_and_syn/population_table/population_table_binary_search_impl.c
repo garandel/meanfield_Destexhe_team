@@ -17,7 +17,7 @@
 
 //! \file
 //! \brief Master population table implementation that uses binary search
-#include <neuron/synapse_row.h>
+#include "../../meanfield_and_syn/synapse_row.h"
 #include <debug.h>
 #include <stdbool.h>
 #include "../../meanfield_and_syn/population_table/population_table.h"
@@ -473,7 +473,7 @@ bool population_table_get_first_address(
         spike_t spike, synaptic_row_t *row_address,
         size_t *n_bytes_to_transfer) {
     // locate the position in the binary search / array
-    log_debug("Searching for key %d", spike);
+    log_info("Searching for key %d", spike);
 
     // check we don't have a complete miss
     uint32_t position;
