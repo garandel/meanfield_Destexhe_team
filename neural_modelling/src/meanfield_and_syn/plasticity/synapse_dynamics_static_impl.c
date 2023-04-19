@@ -137,7 +137,7 @@ bool synapse_dynamics_add_neuron(
     uint32_t *synaptic_words = synapse_row_fixed_weight_controls(fixed_region);
     uint32_t new_synapse = _fixed_synapse_convert(id, weight, delay, type);
     
-    log_info("new_synapse = %d", new_synapse);
+    //log_info("new_synapse = %d", new_synapse);
 
     // Add control word at offset
     synaptic_words[fixed_synapse] = new_synapse;

@@ -32,7 +32,7 @@
  *
  * @image html spynnaker_c_code_flow.png
  */
-#include "../meanfield/c_main_common.h"
+//#include "../meanfield/c_main_common.h"
 
 #include <tdma_processing.h>
 #include <spin1_api_params.h>

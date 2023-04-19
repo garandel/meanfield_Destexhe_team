@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "../../meanfield_and_syn/population_table/population_table.h"
 
+
 //! bits in a word
 #define BITS_PER_WORD 32
 
@@ -417,7 +418,7 @@ bool population_table_initialise(
 
     master_population_table_length = config->table_length;
     log_debug("Master pop table length is %d\n", master_population_table_length);
-    log_debug("Master pop table entry size is %d\n",
+    log_info("Master pop table entry size is %d\n",
             sizeof(master_population_table_entry));
     uint32_t n_master_pop_bytes =
             master_population_table_length * sizeof(master_population_table_entry);
@@ -474,6 +475,21 @@ bool population_table_get_first_address(
         size_t *n_bytes_to_transfer) {
     // locate the position in the binary search / array
     log_info("Searching for key %d", spike);
+    
+    /*
+    union _spike_t spikeP;
+    spikeP.pair = spike;
+    
+    spikeP.payload = cc[CC_TXDATA];
+    */
+    //log_info("sizeof spike_t =%d", sizeof(spike_t));
+    
+    //key_t clef = spike_key(spike);
+    //payload_t donne = spike_payload(spike);
+    //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
+    //log_info("clef = %d",clef);
+    //log_info("data = %d", donne);
+    //log_info("payload = %5.5k" , spike.payload); 
 
     // check we don't have a complete miss
     uint32_t position;
@@ -485,7 +501,7 @@ bool population_table_get_first_address(
                 spike, spike);
         return false;
     }
-    log_debug("position = %d", position);
+    //log_info("position = %d", position);
 
     master_population_table_entry entry = master_population_table[position];
 
@@ -565,10 +581,12 @@ bool population_table_get_next_address(
             // If the row is a direct row, indicate this by specifying the
             // n_bytes_to_transfer is 0
             if (item.is_single) {
+                log_info("is single");
                 *row_address = (synaptic_row_t) (get_direct_address(item) +
                     (last_neuron_id * sizeof(uint32_t)));
                 *n_bytes_to_transfer = 0;
             } else {
+                log_info("not single");
 
                 uint32_t row_length = get_row_length(item);
                 uint32_t block_address = get_address(item);

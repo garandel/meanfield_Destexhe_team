@@ -111,3 +111,27 @@ REMARQUE :
     
     Essaie avec erfcf (float x) donne 5404 byte de trop c'est pas mal mais trop
 
+------------------------------------------------------------------------------------
+start_first_dma pas actionnée pas read_synaptic_row diff true 
+    => due au fait que doit utiliser spike_processing.c
+
+RQ: penser à SPIKES_WITH_PAYLOADS (neuron-typesdef) car routing_table fonctionne 0->1 et 1->0
+
+
+population_table_binary_search_impl.c n'arrive pas à actionner SPIKES_WITH_PAYLOADS
+doit faire en sorte que :
+    log_info("sizeof =%d", sizeof(spike_t)); affiche 8 bytes et non 4 comme 
+    actuellement
+    
+SPIKES_WITH_PAYLOADS à mettre dans synapse_row fonctionne spike_t ont size=8
+*
+---------------------------------------------------------------------------------------
+RQ: direct_synapses.c n'include pas .h?????
+
+IDEE : utilisation de SPIKES_WITH_PAYLOADS et _spike_t_ 
+    -> def spike tq spike.payload = data et use send_spike pour projeter avec table
+    
+Q? : où est créé le spike au sens l'appelation?
+
+------------------------------------------------------------------------------------
+recaller avec send_spike pour pouvoir utiliser la table de répartition population_table... 

@@ -164,7 +164,7 @@ static inline void process_ring_buffers(void) {
 void background_callback(uint timer_count, uint local_time) {
     profiler_write_entry_disable_irq_fiq(PROFILER_ENTER | PROFILER_TIMER);
 
-    log_debug("Timer tick %u \n", local_time);
+    //log_info("Timer tick %u \n", local_time);
 
     spike_processing_do_rewiring(synaptogenesis_n_updates());
 

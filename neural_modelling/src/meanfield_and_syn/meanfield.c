@@ -201,7 +201,7 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
                             
             neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);//val=val_to_add normaly here do a artefact like /!\
                 
-            log_info("value = %d, ring_buffer_index = %d, val_to_add = %4.7k, rb_shift=%d", value, ring_buffer_index, val_to_add, rb_shift);
+            //log_info("value = %d, ring_buffer_index = %d, val_to_add = %4.7k, rb_shift=%d", value, ring_buffer_index, val_to_add, rb_shift);
             
             syns[ring_buffer_index] = 0;
             ring_buffer_index++;

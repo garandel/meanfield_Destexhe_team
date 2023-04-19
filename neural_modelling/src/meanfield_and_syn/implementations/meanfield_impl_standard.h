@@ -20,6 +20,7 @@
 #ifndef _MEANFIELD_IMPL_STD_H_
 #define _MEANFIELD_IMPL_STD_H_
 
+
 #include "meanfield_impl.h"
 
 // Includes for model parts used in this implementation
@@ -37,6 +38,8 @@
 #include <debug.h>
 #include <bit_field.h>
 #include <recording.h>
+
+
 
 
 //! Indices for recording of words
@@ -479,9 +482,9 @@ static void neuron_impl_do_timestep_update(
             
             
             //neuron_model_has_spiked(this_meanfield);
-            send_spike(timer_count, time, meanfield_index);
-            log_info("time = %d", time);
-            spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
+            send_spike(r_int, time, meanfield_index);
+            //log_info("time = %d", time);
+            //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
             //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
             /*
             // determine if a spike should occur

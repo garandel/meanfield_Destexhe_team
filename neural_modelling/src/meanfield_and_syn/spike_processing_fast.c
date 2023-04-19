@@ -201,6 +201,7 @@ static inline void read_synaptic_row(spike_t spike, synaptic_row_t row,
     buffer->originating_spike = spike;
     buffer->n_bytes_transferred = n_bytes;
     do_fast_dma_read(row, buffer->row, n_bytes);
+    log_info("read");
     next_buffer_to_fill = (next_buffer_to_fill + 1) & DMA_BUFFER_MOD_MASK;
 }
 
@@ -240,7 +241,7 @@ static inline bool start_first_dma(uint32_t time, spike_t *spike) {
             read_synaptic_row(*spike, row, n_bytes);
             return true;
         }
-    } while (!is_end_of_time_step());// && get_next_spike(time, spike));
+    } while (!is_end_of_time_step() && get_next_spike(time, spike));
 
     return false;
 }
@@ -481,7 +482,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
         process_end_of_time_step(time);
         return;
     }
-
+    
     // Do rewiring
     //do_rewiring(time, n_rewires);
 
@@ -491,7 +492,7 @@ void spike_processing_fast_time_step_loop(uint32_t time, uint32_t n_rewires) {
         // Wait for a spike, or the timer to expire -> spike never arrive a priori bcs there is no coms btws MF and synapses
         uint32_t spike;
         //log_info("timer = %d", tc[T2_COUNT]);
-        while (!is_end_of_time_step()){// && !get_next_spike(time, &spike)) {
+        while (!is_end_of_time_step() && !get_next_spike(time, &spike)) {
             // This doesn't wait for interrupt currently because there isn't
             // a way to have a T2 interrupt without a callback function, and
             // a callback function is too slow!  This is therefore a busy wait.

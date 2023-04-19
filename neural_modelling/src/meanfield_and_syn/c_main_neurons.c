@@ -36,7 +36,11 @@
 //#include <stdint.h>
 #include "../meanfield_and_syn/c_main_common.h"
 
+/*
+#define __SPIKE_T__
 
+#define SPIKES_WITH_PAYLOADS
+*/
 #include <tdma_processing.h>
 #include <spin1_api_params.h>
 #include "../meanfield_and_syn/c_main_neuron_common.h"

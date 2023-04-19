@@ -103,10 +103,10 @@ static inline void synapse_types_shape_input(
 //! \param[in,out] exp_param: the pointer to the parameters to use
 //! \param[in] input: the inputs to add.
 static inline void add_input_exp(exp_params_t *exp_param, input_t input) {
-    log_info("add_input_exp avant = %7.7k", exp_param->synaptic_input_value);
+    //log_info("add_input_exp avant = %7.7k", exp_param->synaptic_input_value);
 	exp_param->synaptic_input_value = exp_param->synaptic_input_value + input;// + 100. +
 //			decay_s1615(input, exp_param->init);
-    log_info("add_input_exp = %7.7k", exp_param->synaptic_input_value);
+    //log_info("add_input_exp = %7.7k", exp_param->synaptic_input_value);
     //log_info("input = %7.7k", input);
     //log_info("exp_params->input = %7.7k", exp_param->init);
 }

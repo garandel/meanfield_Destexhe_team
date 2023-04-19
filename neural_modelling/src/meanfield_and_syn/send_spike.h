@@ -39,6 +39,7 @@ extern uint32_t latest_send_time;
 //! Mask to recognise the Comms Controller "not full" flag
 #define TX_NOT_FULL_MASK 0x10000000
 
+
 //! \brief Perform direct spike sending with hardware for speed
 //! \param[in] key The key to send
 static inline void send_spike_mc(uint32_t key) {
@@ -52,10 +53,12 @@ static inline void send_spike_mc(uint32_t key) {
         io_printf(IO_BUF, "[ERROR] Couldn't send spike; TCR=0x%08x\n", cc[CC_TCR]);
         rt_error(RTE_SWERR);
     }
+    //typedef uint64_t test;
 
     // Do the send
     cc[CC_TCR] = PKT_MC;
     //log_info("PKT_MC=%d", PKT_MC);
+    //log_info("sizeof test =%d ",sizeof(test));
     //log_info("cc[CC_TCR] = 0x%08x with CC_TCR= %2.8k", cc[CC_TCR], CC_TCR);
     cc[CC_TXKEY]  = key;
     //log_info("key send spike = %d", key);
@@ -65,7 +68,7 @@ static inline void send_spike_mc(uint32_t key) {
 //! \param[in] timer_count The global timer count when the time step started
 //! \param[in] time The current time step
 //! \param[in] The neuron index to send
-static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
+static inline void send_spike(uint32_t timer_count, uint32_t time,
         uint32_t neuron_index) {
     // Do any required synapse processing
     //log_info("before dyna");
@@ -73,8 +76,17 @@ static inline void send_spike(UNUSED uint32_t timer_count, uint32_t time,
 
     if (use_key) {
         send_spike_mc(key | neuron_index);
-        //log_info("\t key = %08x", key);
-        //log_info("neuron_index = %5.8k", neuron_index);
+        
+        //uint32_t argument = timer_count| (key | neuron_index);
+        //log_info("argument = %d", argument);
+        
+        //spin1_send_fr_packet(key, timer_count, WITH_PAYLOAD);
+        /*
+        log_info("\t key = %d", key);
+        log_info("neuron_index = %d", neuron_index);
+        */
+        //log_info("timer_counte hack=%d", timer_count);
+        
 
         // Keep track of provenance data
         uint32_t clocks = tc[T1_COUNT];

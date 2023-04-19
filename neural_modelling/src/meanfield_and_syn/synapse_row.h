@@ -88,8 +88,10 @@
 
 #ifndef _SYNAPSE_ROW_H_
 #define _SYNAPSE_ROW_H_
+//#define SPIKES_WITH_PAYLOADS
 
 #include <common/neuron-typedefs.h>
+
 
 //! how many bits the synapse weight will take
 #ifndef SYNAPSE_WEIGHT_BITS
@@ -241,7 +243,7 @@ static inline input_t synapse_row_convert_weight_to_input(
         int_k_t input_type;
         s1615 output_type;
     } converter;
-
+    
     converter.input_type = (int_k_t) (weight) << left_shift;
 
     return converter.output_type;

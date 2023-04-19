@@ -29,6 +29,8 @@
 #include "../meanfield_and_syn/synapse_row.h"
 #include "../meanfield_and_syn/synapses.h"
 
+
+
 //! DMA buffer structure combines the row read from SDRAM with information
 //! about the read.
 typedef struct dma_buffer {
@@ -165,7 +167,7 @@ static inline bool is_something_to_do(
         }
         cpsr = spin1_int_disable();
     }
-
+    
     // Is there another address in the population table?
     spin1_mode_restore(cpsr);
     if (population_table_get_next_address(spike, row, n_bytes_to_transfer)) {
@@ -223,6 +225,8 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
     synaptic_row_t row;
     size_t n_bytes_to_transfer;
     spike_t spike;
+    //spike = cc[CC_TXDATA];
+    //log_info("spike hack = %d", cc[CC_TXDATA]);
     dma_n_spikes = 0;
     dma_n_rewires = 0;
 
@@ -232,6 +236,7 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             &spike, &dma_n_rewires, &dma_n_spikes)) {
         if (current_buffer != NULL &&
                 current_buffer->sdram_writeback_address == row) {
+            log_info("if");
             // If we can reuse the row, add on what we can use it for
             // Note that only one of these will have a value of 1 with the
             // other being set to 0, but we add both as it is simple
@@ -240,6 +245,7 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             dma_n_rewires = 0;
             dma_n_spikes = 0;
         } else if (n_bytes_to_transfer == 0) {
+            log_info("elif");
             // If the row is in DTCM, process the row now
             synaptic_row_t single_fixed_synapse =
                     direct_synapses_get_direct_synapse(row);
@@ -249,6 +255,7 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             dma_n_rewires = 0;
             dma_n_spikes = 0;
         } else {
+            log_info("else");
             // If the row is in SDRAM, set up the transfer and we are done
             do_dma_read(row, n_bytes_to_transfer, spike);
             setup_done = true;
