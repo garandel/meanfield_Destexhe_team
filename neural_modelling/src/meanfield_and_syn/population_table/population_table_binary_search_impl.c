@@ -17,6 +17,7 @@
 
 //! \file
 //! \brief Master population table implementation that uses binary search
+//#define SPIKES_WITH_PAYLOADS
 #include "../../meanfield_and_syn/synapse_row.h"
 #include <debug.h>
 #include <stdbool.h>
@@ -418,7 +419,7 @@ bool population_table_initialise(
 
     master_population_table_length = config->table_length;
     log_debug("Master pop table length is %d\n", master_population_table_length);
-    log_info("Master pop table entry size is %d\n",
+    log_debug("Master pop table entry size is %d\n",
             sizeof(master_population_table_entry));
     uint32_t n_master_pop_bytes =
             master_population_table_length * sizeof(master_population_table_entry);
@@ -482,10 +483,10 @@ bool population_table_get_first_address(
     
     spikeP.payload = cc[CC_TXDATA];
     */
-    //log_info("sizeof spike_t =%d", sizeof(spike_t));
+    //log_info("sizeof spike_t = %d", sizeof(spike_t));
     
     //key_t clef = spike_key(spike);
-    //payload_t donne = spike_payload(spike);
+    payload_t donne = spike_payload(spike);
     //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
     //log_info("clef = %d",clef);
     //log_info("data = %d", donne);
@@ -522,6 +523,7 @@ bool population_table_get_first_address(
         last_neuron_id = local_neuron_id + get_core_sum(extra, spike);
         bit_field_id = local_neuron_id + get_bitfield_sum(extra, spike);
     } else {
+        //log_info("else");//remove it in futur
         last_neuron_id = get_neuron_id(entry, spike);
         bit_field_id = last_neuron_id;
     }
@@ -556,6 +558,7 @@ bool population_table_get_first_address(
     uint32_t local_spike_id;
     bool get_next = population_table_get_next_address(
             &local_spike_id, row_address, n_bytes_to_transfer);
+    //log_info("local spike = 0x%08x", &local_spike_id);
 
     // tracks surplus DMAs
     if (!get_next) {
@@ -581,10 +584,11 @@ bool population_table_get_next_address(
             // If the row is a direct row, indicate this by specifying the
             // n_bytes_to_transfer is 0
             if (item.is_single) {
-                log_info("is single");
                 *row_address = (synaptic_row_t) (get_direct_address(item) +
                     (last_neuron_id * sizeof(uint32_t)));
                 *n_bytes_to_transfer = 0;
+                log_info("spike table = 0x%.8x", spike);
+                
             } else {
                 log_info("not single");
 
@@ -595,7 +599,7 @@ bool population_table_get_next_address(
 
                 *row_address = (synaptic_row_t) (block_address + neuron_offset);
                 *n_bytes_to_transfer = stride * sizeof(uint32_t);
-                log_debug("neuron_id = %u, block_address = 0x%.8x, "
+                log_info("neuron_id = %u, block_address = 0x%.8x, "
                         "row_length = %u, row_address = 0x%.8x, n_bytes = %u",
                         last_neuron_id, block_address, row_length, *row_address,
                         *n_bytes_to_transfer);

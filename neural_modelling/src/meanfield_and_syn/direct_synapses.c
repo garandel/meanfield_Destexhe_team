@@ -67,7 +67,8 @@ bool direct_synapses_initialise(
 synaptic_row_t direct_synapses_get_direct_synapse(void *row_address) {
     uint32_t *data = row_address;
     single_fixed_synapse.synapse_datum = *data;
-    log_info("data=0x%08x",*data);
+    //log_info("data=0x%08x",*data);
+    log_info("data=0x%08x", &single_fixed_synapse.synapse_datum);
     //log_info("direct");
     return (synaptic_row_t) &single_fixed_synapse;
 }

@@ -157,7 +157,7 @@ static inline bool is_something_to_do(
     uint cpsr = spin1_int_disable();
 
     // Check for synaptic rewiring
-    while (rewires_to_do) {
+    /*while (rewires_to_do) {
         rewires_to_do--;
         spin1_mode_restore(cpsr);
         if (synaptogenesis_dynamics_rewire(time, spike, row,
@@ -167,7 +167,9 @@ static inline bool is_something_to_do(
         }
         cpsr = spin1_int_disable();
     }
-    
+    */
+    log_info("spike process =0x%.8x",spike);
+    //log_info("spike process =%d", spike);
     // Is there another address in the population table?
     spin1_mode_restore(cpsr);
     if (population_table_get_next_address(spike, row, n_bytes_to_transfer)) {
@@ -236,7 +238,7 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             &spike, &dma_n_rewires, &dma_n_spikes)) {
         if (current_buffer != NULL &&
                 current_buffer->sdram_writeback_address == row) {
-            log_info("if");
+            //log_info("if");
             // If we can reuse the row, add on what we can use it for
             // Note that only one of these will have a value of 1 with the
             // other being set to 0, but we add both as it is simple
@@ -245,7 +247,8 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             dma_n_rewires = 0;
             dma_n_spikes = 0;
         } else if (n_bytes_to_transfer == 0) {
-            log_info("elif");
+            log_info("spike dma_read = %d", spike);
+            //log_info("elif");
             // If the row is in DTCM, process the row now
             synaptic_row_t single_fixed_synapse =
                     direct_synapses_get_direct_synapse(row);
@@ -255,7 +258,7 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
             dma_n_rewires = 0;
             dma_n_spikes = 0;
         } else {
-            log_info("else");
+            //log_info("else");
             // If the row is in SDRAM, set up the transfer and we are done
             do_dma_read(row, n_bytes_to_transfer, spike);
             setup_done = true;
@@ -289,12 +292,13 @@ static inline void setup_synaptic_dma_write(
         dtcm_start_address = synapse_row_plastic_region(buffer->row);
     }
 
-    log_debug("Writing back %u bytes of plastic region to %08x for spike %u",
+    log_info("Writing back %u bytes of plastic region to %08x for spike %u",
             write_size, sdram_start_address, buffer->originating_spike);
 
     // Start transfer
     while (!spin1_dma_transfer(DMA_TAG_WRITE_PLASTIC_REGION, sdram_start_address,
             dtcm_start_address, DMA_WRITE, write_size)) {
+        //log_info("transfert");//remove
         // Do Nothing
     }
 }
@@ -330,9 +334,9 @@ static void multicast_packet_received_callback(uint key, UNUSED uint unused) {
 //! \param[in] payload: the payload of the packet. The count.
 static void multicast_packet_pl_received_callback(uint key, uint payload) {
     p_per_ts_struct.packets_this_time_step += 1;
-    log_debug("Received spike %x with payload %d at %d, DMA Busy = %d",
+    log_info("Received spike %x with payload %d at %d, DMA Busy = %d",
         key, payload, time, dma_busy);
-
+/*
     // cycle through the packet insertion
     bool added = false;
     for (uint count = payload; count > 0; count--) {
@@ -340,7 +344,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     }
     if (added) {
         start_dma_loop();
-    }
+    }*/
 }
 
 //! \brief Called when a DMA completes
@@ -350,7 +354,8 @@ static void dma_complete_callback(UNUSED uint unused, uint tag) {
 
     // increment the dma complete count for provenance generation
     dma_complete_count++;
-
+    log_info("dma_complete_callback");
+    
     log_debug("DMA transfer complete at time %u with tag %u", time, tag);
 
     // Get pointer to current buffer
@@ -365,6 +370,7 @@ static void dma_complete_callback(UNUSED uint unused, uint tag) {
     // count repeats of the current spike
     uint32_t n_rewires = dma_n_rewires;
     uint32_t n_spikes = dma_n_spikes;
+
     setup_synaptic_dma_read(current_buffer, &n_rewires, &n_spikes);
 
     // Assume no write back but assume any write back is plastic only
@@ -382,7 +388,6 @@ static void dma_complete_callback(UNUSED uint unused, uint tag) {
 
     // Process synaptic row repeatedly for any upcoming spikes
     while (n_spikes > 0) {
-
         // Process synaptic row, writing it back if it's the last time
         // it's going to be processed
         bool write_back_now = false;
@@ -420,6 +425,7 @@ void user_event_callback(UNUSED uint unused0, UNUSED uint unused1) {
     // Reset the counters as this is a new process
     dma_n_rewires = 0;
     dma_n_spikes = 0;
+    
 
     if (buffer_being_read < N_DMA_BUFFERS) {
         // If the DMA buffer is full of valid data, attempt to reuse it on the
@@ -428,6 +434,7 @@ void user_event_callback(UNUSED uint unused0, UNUSED uint unused1) {
         dma_complete_callback(0, DMA_TAG_READ_SYNAPTIC_ROW);
     } else {
         // If the DMA buffer is invalid, just do the first transfer possible
+        log_info("dma null");//remove it in futur
         setup_synaptic_dma_read(NULL, NULL, NULL);
     }
 }

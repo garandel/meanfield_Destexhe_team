@@ -32,6 +32,8 @@
  *
  * @image html spynnaker_c_code_flow.png
  */
+//#define SPIKES_WITH_PAYLOADS
+
 
 #include "../meanfield_and_syn/c_main_common.h"
 #include "../meanfield_and_syn/c_main_neuron_common.h"

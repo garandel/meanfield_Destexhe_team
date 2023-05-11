@@ -24,7 +24,6 @@
 
 #ifndef _MEANFIELD_MODEL_H_
 #define _MEANFIELD_MODEL_H_
-
 #include <common/neuron-typedefs.h>
 
 //! Forward declaration of neuron type (creates a definition for a pointer to a

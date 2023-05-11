@@ -25,7 +25,7 @@
 #include <utils.h>
 #include "../meanfield_and_syn/meanfield.h"
 #include "../meanfield_and_syn/plasticity/synapse_dynamics.h"
-#include "../meanfield_and_syn/spike_processing.h"
+//#include "../meanfield_and_syn/spike_processing.h"
 
 //! if using profiler import profiler tags
 #ifdef PROFILER_ENABLED
@@ -350,8 +350,8 @@ bool synapses_process_synaptic_row(
 
     // Get address of non-plastic region from row
     synapse_row_fixed_part_t *fixed_region = synapse_row_fixed_region(row);
-    log_info("the_row_data = %d ", fixed_region->data[fixed_region->num_fixed]);
-    log_info("yep _fixe"); // think to remove it
+    log_info("the_row_data = 0x%08x ", fixed_region->data[fixed_region->num_fixed]);
+    
     
     //log_info("cc[CC_TXDATA] = 0x%08x", &cc[CC_TXDATA]);// think to remove it
     //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it

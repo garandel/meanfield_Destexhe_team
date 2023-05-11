@@ -455,7 +455,7 @@ static void neuron_impl_do_timestep_update(
             uint32_t r_int = number.as_int;
             //weight_t r_weight = number.as_weight;
             //log_info("firing reel = %8.6k", number.as_real);
-            //log_info("firing_int = %d",r_int);
+            log_info("firing_int = %d",r_int);
             
             // update neuron parameters
             /*
@@ -482,7 +482,10 @@ static void neuron_impl_do_timestep_update(
             
             
             //neuron_model_has_spiked(this_meanfield);
-            send_spike(r_int, time, meanfield_index);
+            
+            //send_spike(r_int, time, meanfield_index);
+            spin1_send_mc_packet(key, r_int, WITH_PAYLOAD);
+            
             //log_info("time = %d", time);
             //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
             //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it

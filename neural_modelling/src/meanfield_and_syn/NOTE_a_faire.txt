@@ -132,6 +132,90 @@ IDEE : utilisation de SPIKES_WITH_PAYLOADS et _spike_t_
     -> def spike tq spike.payload = data et use send_spike pour projeter avec table
     
 Q? : où est créé le spike au sens l'appelation?
+ => mettre #define SPIKES_WITH_PAYLOADS dans c_main ou neuron.h ou bien synapse_rox mais avec risque de overflowed le buffer
 
 ------------------------------------------------------------------------------------
 recaller avec send_spike pour pouvoir utiliser la table de répartition population_table... 
+
+------------------------------------------------------------------------------------
+
+RQ IMPORTANTE:
+void user_event_callback(UNUSED uint unused0, UNUSED uint unused1) {
+    // Reset the counters as this is a new process
+    dma_n_rewires = 0;
+    dma_n_spikes = 0;
+    
+
+    if (buffer_being_read < N_DMA_BUFFERS) {
+        // If the DMA buffer is full of valid data, attempt to reuse it on the
+        // next data to be used, as this might be able to make use of the buffer
+        // without transferring data
+        dma_complete_callback(0, DMA_TAG_READ_SYNAPTIC_ROW);
+    } else {
+        // If the DMA buffer is invalid, just do the first transfer possible
+        setup_synaptic_dma_read(NULL, NULL, NULL);
+    }
+}
+
+=> setup_synaptic_dma_read(NULL, NULL, NULL); 
+        EST UTILISÉ AVEC NULL DONC RIEN NE SE PASSE
+
+--------------------------------------------------------
+static inline bool is_something_to_do(
+        synaptic_row_t *row, size_t *n_bytes_to_transfer,
+        spike_t *spike, uint32_t *n_rewire, uint32_t *n_process_spike) {
+    // Disable interrupts here as dma_busy modification is a critical section
+    uint cpsr = spin1_int_disable();
+
+    // Check for synaptic rewiring
+    while (rewires_to_do) {
+        rewires_to_do--;
+        spin1_mode_restore(cpsr);
+        if (synaptogenesis_dynamics_rewire(time, spike, row,
+                n_bytes_to_transfer)) {
+            *n_rewire += 1;
+            return true;
+        }
+        cpsr = spin1_int_disable();
+    }
+    log_info("spike process =%d",*spike);
+    // Is there another address in the population table?
+    spin1_mode_restore(cpsr);
+    if (population_table_get_next_address(spike, row, n_bytes_to_transfer)) {
+        *n_process_spike += 1;
+        return true;
+    }
+    cpsr = spin1_int_disable();
+
+    // track for provenance
+    uint32_t input_buffer_filled_size = in_spikes_size();
+    if (biggest_fill_size_of_input_buffer < input_buffer_filled_size) {
+        biggest_fill_size_of_input_buffer = input_buffer_filled_size;
+    }
+
+    // Are there any more spikes to process?
+    while (in_spikes_get_next_spike(spike)) { => TRUE
+        log_info("yep");
+        // Enable interrupts while looking up in the master pop table,
+        // as this can be slow
+        spin1_mode_restore(cpsr);
+        if (population_table_get_first_address(
+                *spike, row, n_bytes_to_transfer)) {=>>TRUE
+            synaptogenesis_spike_received(time, *spike);
+            *n_process_spike += 1;
+            return true;
+        }
+
+        // Disable interrupts before checking if there is another spike
+        cpsr = spin1_int_disable();
+    }
+
+    // If nothing to do, the DMA is not busy
+    dma_busy = false;
+
+    // Restore interrupts
+    spin1_mode_restore(cpsr);
+    return false;
+}
+
+
