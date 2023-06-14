@@ -151,6 +151,7 @@ static inline void process_ring_buffers(void) {
     uint32_t first_index = synapse_row_get_first_ring_buffer_index(
             time, synapse_type_index_bits, synapse_delay_mask);
     neuron_transfer(&ring_buffers[first_index]);
+    //log_info("ring_buffer");//remove it in futur
 
     // Print the neuron inputs.
     #if LOG_LEVEL >= LOG_DEBUG
@@ -175,6 +176,7 @@ void background_callback(uint timer_count, uint local_time) {
 
     profiler_write_entry_disable_irq_fiq(PROFILER_EXIT | PROFILER_TIMER);
     n_backgrounds_queued--;
+    //log_info("background_callback");//remove it in futur
 }
 
 //! \brief Timer interrupt callback
@@ -187,6 +189,8 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
 
     // Increment time step
     time++;
+    
+    log_info("timer_callback %d",time);//remove it in futur
 
     // Clear any outstanding spikes
     spike_processing_clear_input_buffer(time);

@@ -218,4 +218,50 @@ static inline bool is_something_to_do(
     return false;
 }
 
+--------------------------------------------------------------------
+COMS faite enfin!!!
 
+cherche par où ça passe?
+    spike_process :
+        // Set up the callbacks
+        spin1_callback_on(MC_PACKET_RECEIVED,
+                multicast_packet_received_callback, mc_packet_callback_priority);
+        spin1_callback_on(MCPL_PACKET_RECEIVED,
+                multicast_packet_pl_received_callback, mc_packet_callback_priority); => CE QUI FAIT LE TRANSFERT
+        simulation_dma_transfer_done_callback_on(
+                DMA_TAG_READ_SYNAPTIC_ROW, dma_complete_callback);
+        spin1_callback_on(USER_EVENT, user_event_callback, user_event_priority); => NE FAIT PLUS RIEN DE NEC
+        
+        
+        static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
+            uint32_t *n_rewires, uint32_t *n_synapse_processes) {
+        ...
+
+        // Keep looking if there is something to do until a DMA can be done
+        bool setup_done = false;
+        while (!setup_done && is_something_to_do(&row, &n_bytes_to_transfer, => FALSE bcs plus rien à faire is_something_to_do = FALSE
+                &spike, &dma_n_rewires, &dma_n_spikes)) {
+            ...
+
+        }
+        return setup_done;=>FALSE
+    }
+
+
+--------------------------------------------------------------------------
+BESOIN!!!!!
+------------
+
+d'un buffer dans lequel stocker les payload pour ensuite les traiter!!!
+=> circular_buffer CF in_spikes.h
+
+faire attention à spin1_trigger_user_event
+
+QUESTION???*
+    comment multicast_packet_pl_received_callback est nourrit? par la fonction spin_callback_on
+    
+    idée : while dma_busy!=0 then OP over payload=> SURTOUT PAS
+    
+    
+------------------------------------------------------------------------------
+CF circular_buffer + c_main + spike_processing+  meanfield_impl + spin1_api

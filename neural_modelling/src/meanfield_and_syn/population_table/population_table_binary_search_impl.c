@@ -587,10 +587,10 @@ bool population_table_get_next_address(
                 *row_address = (synaptic_row_t) (get_direct_address(item) +
                     (last_neuron_id * sizeof(uint32_t)));
                 *n_bytes_to_transfer = 0;
-                log_info("spike table = 0x%.8x", spike);
+                log_info("spike table = 0x%.8x", spike);//remove it in future
                 
             } else {
-                log_info("not single");
+                log_info("not single");//remove it in future
 
                 uint32_t row_length = get_row_length(item);
                 uint32_t block_address = get_address(item);
