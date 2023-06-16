@@ -341,6 +341,7 @@ static union {
 
 //! Key from meanfield.c
 extern uint32_t key;
+extern uint32_t total_op;
 
 SOMETIMES_UNUSED // Marked unused as only used sometimes
 static void neuron_impl_do_timestep_update(
@@ -386,6 +387,9 @@ static void neuron_impl_do_timestep_update(
             //!!Add to mimic an input from synapses (just to test) will be remove!!!*
             //***********************************************************************
             
+            
+            
+            
             the_synapse_type->exc.synaptic_input_value = firing_rate_Ve;
             the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
             
@@ -401,7 +405,7 @@ static void neuron_impl_do_timestep_update(
             //log_info("exc_syn_adds=%08x", exc_syn_values);
             //log_info("inh_syn_add=%08x", inh_syn_values);
             
-            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            log_info("exc_syn_val=%5.5k",*exc_syn_values);
             //log_info("inh_syn_val=%5.5k",*inh_syn_values);
             //input_types->Ve_input = firing_rate_Ve ;// remplace pour tester exc_syn_values
             
@@ -446,7 +450,11 @@ static void neuron_impl_do_timestep_update(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
             }
             
-            input_t external_bias=0.;
+            number.as_int = total_op;
+            input_t total_op_real = number.as_real;
+            log_info("total_op_real = %5.5k", total_op_real);
+            
+            input_t external_bias = total_op_real;
             
             //TODO implement external bias
             
@@ -456,6 +464,10 @@ static void neuron_impl_do_timestep_update(
             //weight_t r_weight = number.as_weight;
             //log_info("firing reel = %8.6k", number.as_real);
             log_info("firing_int = %d",r_int);
+            
+            log_info("total_op = %d", total_op);
+            total_op = 0;
+
             
             // update neuron parameters
             /*

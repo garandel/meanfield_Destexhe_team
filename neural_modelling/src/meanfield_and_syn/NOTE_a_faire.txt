@@ -265,3 +265,15 @@ QUESTION???*
     
 ------------------------------------------------------------------------------
 CF circular_buffer + c_main + spike_processing+  meanfield_impl + spin1_api
+
+------------------------------------------------------------------------------
+
+c_main() background_callback -> neuron_do_timestep_update (modif du nombre d'arguments) -> neuron_impl_do_timestep_update (modif du nombre d'arguments)
+
+rq seul petite diff faire une buffer pour réaliuser l'opération avant de transferer le resulat.
+    originating_spike donne 0 ->job done
+    
+RQ aurais pas pus utiliser *ring_buffers de c_main.c???????? en changeant weight_t par uint32_t
+
+
+total_op=0 trouver la bonne place entre main.c ou spike_process ou meanfield_impl??

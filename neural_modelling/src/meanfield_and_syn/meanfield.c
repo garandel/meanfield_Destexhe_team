@@ -169,6 +169,7 @@ void neuron_pause(void) { // EXPORTED
     neuron_impl_store_neuron_parameters(saved_params_address, 0, n_neurons);
 }
 
+
 void neuron_do_timestep_update(timer_t time, uint timer_count) { // EXPORTED
 
     // the phase in this timer tick im in (not tied to neuron index)

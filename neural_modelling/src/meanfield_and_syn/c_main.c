@@ -118,6 +118,10 @@ static uint32_t max_backgrounds_queued = 0;
 //! The ring buffers to be used in the simulation
 static weight_t *ring_buffers;
 
+//! result of the operation on all payloads received from all keys
+uint32_t total_op;
+
+
 //! \brief Callback to store provenance data (format: neuron_provenance).
 //! \param[out] provenance_region: Where to write the provenance data
 static void c_main_store_provenance_data(address_t provenance_region) {
@@ -173,6 +177,7 @@ void background_callback(uint timer_count, uint local_time) {
 
     // Now do neuron time step update
     neuron_do_timestep_update(local_time, timer_count);
+    
 
     profiler_write_entry_disable_irq_fiq(PROFILER_EXIT | PROFILER_TIMER);
     n_backgrounds_queued--;

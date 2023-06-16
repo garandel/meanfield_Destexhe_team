@@ -68,6 +68,7 @@ static volatile bool dma_busy;
 //! The DTCM buffers for the synapse rows
 static dma_buffer dma_buffers[N_DMA_BUFFERS];
 
+
 //! The index of the next buffer to be filled by a DMA
 static uint32_t next_buffer_to_fill;
 
@@ -112,6 +113,9 @@ static struct {
     uint32_t time;
     uint32_t packets_this_time_step;
 } p_per_ts_struct;
+
+//! result of the operation on all payloads received from all keys
+extern uint32_t total_op;
 
 //! the region to record the packets per timestep in
 static uint32_t p_per_ts_region;
@@ -230,7 +234,6 @@ static bool setup_synaptic_dma_read(dma_buffer *current_buffer,
     
     dma_n_spikes = 0;
     dma_n_rewires = 0;
-    log_info("commence");//remove it in future
 
     // Keep looking if there is something to do until a DMA can be done
     bool setup_done = false;
@@ -335,37 +338,46 @@ static void multicast_packet_received_callback(uint key, UNUSED uint unused) {
 //! \param[in] payload: the payload of the packet. The count.
 static void multicast_packet_pl_received_callback(uint key, uint payload) {
     p_per_ts_struct.packets_this_time_step += 1;
+    
     log_info("Received spike %x with payload %d at %d, DMA Busy = %d",
         key, payload, time, dma_busy);
     //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
-    /*if(in_spikes_add_spike(key)){
-        //log_info("yep");
-    }
-    */
     
-    // cycle through the packet insertion
+    total_op += payload;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
+    
     /*
-    bool added = false;
-    added = in_spikes_add_spike(key);
-    uint32_t output = in_spikes_output_index();
-    log_info("output = %d", output);
-    */
-    /*
-    for (uint count = p_per_ts_struct.packets_this_time_step; count > 0; count--) {
-        added = in_spikes_add_spike(key);
-        //log_info("count = %d", count);
+    dma_buffer *next_buffer = &dma_buffers[next_buffer_to_fill];
+    next_buffer->row = payload;
+    next_buffer->originating_spike = key;
+    
+    //RQ N_DMA_BUFFERS n'est pas le best pour ça il faut un buffers qui soit dynamique en fonction du nombre max de connection cad de key
+    for (uint32_t i = 0; i < N_DMA_BUFFERS; i++) {
+        //dma_buffers[i].row = payload;
+        log_info("DMA buffer %u allocated at 0x%08x (%d) with spike %d",
+                i, dma_buffers[i].row, dma_buffers[i].row, dma_buffers[i].originating_spike);
     }
-    */
-    /*
-    if (added) {
-        //start_dma_loop();
-        for(uint count = p_per_ts_struct.packets_this_time_step; count > 0; count--) {
-            uint32_t output = in_spikes_output_index();
-            log_info("output = %d", output);
+    
+    
+    next_buffer_to_fill = (next_buffer_to_fill + 1) % N_DMA_BUFFERS;
+    
+    if(next_buffer_to_fill==0) {
+        //if number of spike are the good ones then do
+        uint32_t total_op;
+        for(uint32_t i = 0; i < N_DMA_BUFFERS; i++) {
+            uint32_t data = dma_buffers[i].row;
+            total_op += data;
+            //log_info("DMA buffer %u with (%d)", i, dma_buffers[i].row);
         }
-        
+        log_info("total_op = %d", total_op);
+    }*/
+    
+    if(dma_busy){
+        // CLEAR spike_processing_clear_input_buffer(time);
     }
-    */
+            
+        
+    
+    
     /*
     // cycle through the packet insertion
     bool added = false;
@@ -485,6 +497,9 @@ void spike_processing_clear_input_buffer(timer_t time) {
     p_per_ts_struct.time = time;
     recording_record(p_per_ts_region, &p_per_ts_struct, sizeof(p_per_ts_struct));
     p_per_ts_struct.packets_this_time_step = 0;
+    
+    log_info("total_op = %d", total_op);
+    //total_op = 0;
 
     // Record the count whether clearing or not for provenance
     count_input_buffer_packets_late += n_spikes;
