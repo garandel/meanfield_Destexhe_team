@@ -266,6 +266,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
                      ParamsFromNetwork_t *restrict pNetwork,
                      pFitPolynomial_t *restrict Pfit_exc,
                      pFitPolynomial_t *restrict Pfit_inh,
+                     REAL total_exc, REAL total_inh,
                      REAL input_this_timestep){
     
     /* 
@@ -280,9 +281,9 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + input_this_timestep;//+ ext_drive
+    REAL lastVepExtD = lastVe + input_this_timestep + total_exc;//+ ext_drive
     
-    REAL lastVi = meanfield->Vi;
+    REAL lastVi = meanfield->Vi + total_inh;
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
     
@@ -400,6 +401,8 @@ state_t meanfield_model_state_update(
                     pNetwork,
                     Pfit_exc,
                     Pfit_inh,
+                    total_exc,
+                    total_inh,
                     input_this_timestep);
                     
     //meanfield->this_h = global_params->machine_timestep_ms;

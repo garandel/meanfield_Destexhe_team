@@ -388,11 +388,17 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
             
+            number.as_int = total_op;
+            input_t total_op_real = number.as_real;
+            log_info("total_op_real = %5.5k", total_op_real);
             
+            input_t external_bias = total_op_real;
             
-            the_synapse_type->exc.synaptic_input_value = firing_rate_Ve;
+            the_synapse_type->exc.synaptic_input_value = total_op_real;//firing_rate_Ve;
             //+total_op_real;
             the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
+            
+            
             
 
             // Get the exc and inh values from the synapses
@@ -451,11 +457,7 @@ static void neuron_impl_do_timestep_update(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
             }
             
-            number.as_int = total_op;
-            input_t total_op_real = number.as_real;
-            log_info("total_op_real = %5.5k", total_op_real);
             
-            input_t external_bias = total_op_real;
             
             //TODO implement external bias
             
