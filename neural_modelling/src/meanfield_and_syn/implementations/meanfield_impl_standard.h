@@ -391,6 +391,7 @@ static void neuron_impl_do_timestep_update(
             
             
             the_synapse_type->exc.synaptic_input_value = firing_rate_Ve;
+            //+total_op_real;
             the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
             
 
@@ -460,7 +461,8 @@ static void neuron_impl_do_timestep_update(
             
             //<- with this one that's work with mimic synapses coms
             number.as_real = *exc_syn_values;
-            uint32_t r_int = number.as_int;
+            uint32_t r_int = number.as_int; 
+            //! faire opération juste avant d'envoyer r_int avec r_int*weight
             //weight_t r_weight = number.as_weight;
             //log_info("firing reel = %8.6k", number.as_real);
             log_info("firing_int = %d",r_int);

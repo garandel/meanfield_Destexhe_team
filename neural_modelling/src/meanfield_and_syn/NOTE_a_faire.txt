@@ -277,3 +277,47 @@ RQ aurais pas pus utiliser *ring_buffers de c_main.c???????? en changeant weight
 
 
 total_op=0 trouver la bonne place entre main.c ou spike_process ou meanfield_impl??
+
+
+
+--------------------------------------------------------------------------------
+OPTIMISATION
+--------------------------------------------------------------------------------
+remplacer dans:
+
+the_synapse_type->exc.synaptic_input_value = firing_rate_Ve;
+            //+total_op_real;
+the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
+
+
+firing_rate_Ve
+par
+total_op_exc
+
+demême pour inh.
+
+----------------------------
+pour spin1_send_mc_packet
+
+faire 
+number.as_real = *exc_syn_values; => remplace par state_t firing_rate_Ve
+uint32_t r_int = number.as_int; 
+
+de même inh
+-----------------------------
+DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_send_mc_packet
+
+-----------------------------
+ enlever total_exc et inh de input_this timestep et metre deux nouveaux arguments
+ dans RK2_midpoint_MF 
+ ou
+ external_bias div en 2 parties (inh et exc) et garde total_exc dispo
+ 
+ 
+ QUESTION:
+ Il se pourrais que descendre d'un niveau dans le code ie. aller dans 
+ meanfield_model_state_update soit plus en accord avec le temprorelle
+ 
+ 
+ 
+ 
