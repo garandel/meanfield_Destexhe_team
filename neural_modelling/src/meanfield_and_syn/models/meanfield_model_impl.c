@@ -281,9 +281,9 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + input_this_timestep + total_exc;//+ ext_drive
+    REAL lastVepExtD = lastVe + input_this_timestep;// + total_exc;//+ ext_drive
     
-    REAL lastVi = meanfield->Vi + total_inh;
+    REAL lastVi = meanfield->Vi;// + total_inh;
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
     
@@ -387,12 +387,12 @@ state_t meanfield_model_state_update(
     for (int i =0; i<num_inhibitory_inputs; i++) {
         total_inh += inh_input[i];
     }
-    /*
+    
     log_info("total_exc=%8.6k",total_exc);
     log_info("total_inh=%8.6k",total_inh);
-    */
+    
 
-    input_t input_this_timestep = total_exc + total_inh + external_bias;// + neuron->I_offset;
+    input_t input_this_timestep = external_bias;//total_exc + total_inh + external_bias;// + neuron->I_offset;
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     // the best AR update so far

@@ -115,7 +115,7 @@ static struct {
 } p_per_ts_struct;
 
 //! result of the operation on all payloads received from all keys
-extern uint32_t total_op;
+extern uint32_t total_neighbour;
 
 //! the region to record the packets per timestep in
 static uint32_t p_per_ts_region;
@@ -172,7 +172,7 @@ static inline bool is_something_to_do(
         cpsr = spin1_int_disable();
     }
     */
-    log_info("spike process =0x%.8x",spike);
+    //log_info("spike process =0x%.8x",spike);
     //log_info("spike process =%d", spike);
     // Is there another address in the population table?
     spin1_mode_restore(cpsr);
@@ -343,7 +343,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
         key, payload, time, dma_busy);
     //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
     
-    total_op += payload;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
+    total_neighbour += payload;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
     
     /*
     dma_buffer *next_buffer = &dma_buffers[next_buffer_to_fill];
@@ -362,18 +362,16 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     
     if(next_buffer_to_fill==0) {
         //if number of spike are the good ones then do
-        uint32_t total_op;
+        uint32_t total_neighbour;
         for(uint32_t i = 0; i < N_DMA_BUFFERS; i++) {
             uint32_t data = dma_buffers[i].row;
-            total_op += data;
+            total_neighbour += data;
             //log_info("DMA buffer %u with (%d)", i, dma_buffers[i].row);
         }
-        log_info("total_op = %d", total_op);
+        log_info("total_neighbour = %d", total_neighbour);
     }*/
     
-    if(dma_busy){
-        // CLEAR spike_processing_clear_input_buffer(time);
-    }
+    
             
         
     
@@ -498,8 +496,8 @@ void spike_processing_clear_input_buffer(timer_t time) {
     recording_record(p_per_ts_region, &p_per_ts_struct, sizeof(p_per_ts_struct));
     p_per_ts_struct.packets_this_time_step = 0;
     
-    log_info("total_op = %d", total_op);
-    //total_op = 0;
+    log_info("total_neighbour = %d", total_neighbour);
+    //total_neighbour = 0;
 
     // Record the count whether clearing or not for provenance
     count_input_buffer_packets_late += n_spikes;

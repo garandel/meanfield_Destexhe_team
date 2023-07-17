@@ -319,5 +319,12 @@ DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_
  meanfield_model_state_update soit plus en accord avec le temprorelle
  
  
+ si payload+=0 => payload=0 ALORS pas de connection réellement
  
+ 
+ 
+ -------------------------7.17------------------------------------
+ * introduire inh dans le send_packet -> peu gourmand en mémoire mais bcp en temps
+ * trouver une solution pour l'exponentiel -> gourmand en mémoire et en temps
+ * 
  

@@ -341,7 +341,7 @@ static union {
 
 //! Key from meanfield.c
 extern uint32_t key;
-extern uint32_t total_op;
+extern uint32_t total_neighbour;
 
 SOMETIMES_UNUSED // Marked unused as only used sometimes
 static void neuron_impl_do_timestep_update(
@@ -388,14 +388,15 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
             
-            number.as_int = total_op;
-            input_t total_op_real = number.as_real;
-            log_info("total_op_real = %5.5k", total_op_real);
+            number.as_int = total_neighbour;
+            input_t total_neighbour_real = number.as_real;
             
-            input_t external_bias = total_op_real;
+            log_info("total_neighbour_real = %5.5k", total_neighbour_real);
             
-            the_synapse_type->exc.synaptic_input_value = total_op_real;//firing_rate_Ve;
-            //+total_op_real;
+            input_t external_bias = 0;//total_neighbour_real;
+            
+            the_synapse_type->exc.synaptic_input_value = total_neighbour_real;// firing_rate_Ve + total_neighbour_real;//
+            //+total_neighbour_real;
             the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
             
             
@@ -413,8 +414,8 @@ static void neuron_impl_do_timestep_update(
             //log_info("inh_syn_add=%08x", inh_syn_values);
             
             log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            //log_info("inh_syn_val=%5.5k",*inh_syn_values);
-            //input_types->Ve_input = firing_rate_Ve ;// remplace pour tester exc_syn_values
+            log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            
             
             /*
             // Call functions to obtain exc_input and inh_input
@@ -462,15 +463,22 @@ static void neuron_impl_do_timestep_update(
             //TODO implement external bias
             
             //<- with this one that's work with mimic synapses coms
-            number.as_real = *exc_syn_values;
-            uint32_t r_int = number.as_int; 
+            number.as_real = firing_rate_Ve;//*exc_syn_values;//
+            uint32_t firing_rate_exc_int = number.as_int; 
+            
+            number.as_real = firing_rate_Vi;//*exc_syn_values;//
+            uint32_t firing_rate_inh_int = number.as_int; 
+            
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             //weight_t r_weight = number.as_weight;
             //log_info("firing reel = %8.6k", number.as_real);
-            log_info("firing_int = %d",r_int);
+            //log_info("firing_rate = %5.5k", firing_rate_Ve);
+            log_info("firing_int_exc = %d",firing_rate_exc_int);
+            log_info("firing_int_inh = %d",firing_rate_inh_int);
+            log_info("size of firing_rate_exc_int = %d", sizeof(firing_rate_exc_int)); 
             
-            log_info("total_op = %d", total_op);
-            total_op = 0;
+            log_info("total_neighbour = %d", total_neighbour);
+            total_neighbour = 0;
 
             
             // update neuron parameters
@@ -483,7 +491,9 @@ static void neuron_impl_do_timestep_update(
                                                           NUM_EXCITATORY_RECEPTORS,
                                                           exc_syn_values,
                                                           NUM_INHIBITORY_RECEPTORS,
-                                                          inh_syn_values);*/                                                          
+                                                          inh_syn_values);
+            */                                                          
+            
             meanfield_model_state_update(this_meanfield,
                                           pNetwork_types,
                                           Pfit_exc_types,
@@ -500,7 +510,7 @@ static void neuron_impl_do_timestep_update(
             //neuron_model_has_spiked(this_meanfield);
             
             //send_spike(r_int, time, meanfield_index);
-            spin1_send_mc_packet(key, r_int, WITH_PAYLOAD);
+            spin1_send_mc_packet(key, firing_rate_exc_int, WITH_PAYLOAD);
             
             //log_info("time = %d", time);
             //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
