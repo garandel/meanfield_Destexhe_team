@@ -119,7 +119,8 @@ static uint32_t max_backgrounds_queued = 0;
 static weight_t *ring_buffers;
 
 //! result of the operation on all payloads received from all keys
-uint32_t total_neighbour;
+uint32_t total_neighbour_exc;
+uint32_t total_neighbour_inh;
 
 
 //! \brief Callback to store provenance data (format: neuron_provenance).

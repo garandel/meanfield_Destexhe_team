@@ -341,7 +341,8 @@ static union {
 
 //! Key from meanfield.c
 extern uint32_t key;
-extern uint32_t total_neighbour;
+extern uint32_t total_neighbour_exc;
+extern uint32_t total_neighbour_inh;
 
 SOMETIMES_UNUSED // Marked unused as only used sometimes
 static void neuron_impl_do_timestep_update(
@@ -388,16 +389,20 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
             
-            number.as_int = total_neighbour;
-            input_t total_neighbour_real = number.as_real;
+            number.as_int = total_neighbour_exc;
+            input_t total_neighbour_exc_real = number.as_real;
             
-            log_info("total_neighbour_real = %5.5k", total_neighbour_real);
+            number.as_int = total_neighbour_inh;
+            input_t total_neighbour_inh_real = number.as_real;
+            
+            log_info("total_neighbour_exc_real = %5.5k", total_neighbour_exc_real);
+            log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
             input_t external_bias = 0;//total_neighbour_real;
             
-            the_synapse_type->exc.synaptic_input_value = total_neighbour_real;// firing_rate_Ve + total_neighbour_real;//
+            the_synapse_type->exc.synaptic_input_value = total_neighbour_exc_real;// firing_rate_Ve + total_neighbour_real;//
             //+total_neighbour_real;
-            the_synapse_type->inh.synaptic_input_value = firing_rate_Vi;
+            the_synapse_type->inh.synaptic_input_value = total_neighbour_inh_real;
             
             
             
@@ -460,6 +465,7 @@ static void neuron_impl_do_timestep_update(
             
             
             
+            
             //TODO implement external bias
             
             //<- with this one that's work with mimic synapses coms
@@ -469,16 +475,25 @@ static void neuron_impl_do_timestep_update(
             number.as_real = firing_rate_Vi;//*exc_syn_values;//
             uint32_t firing_rate_inh_int = number.as_int; 
             
+            /*
+            uint32_t firing_rate_vec[SYNAPSE_TYPE_COUNT];
+            firing_rate_vec[0] = firing_rate_exc_int;
+            firing_rate_vec[1] = firing_rate_inh_int;
+            log_info("size of firing_rate_vec = %d", sizeof(firing_rate_vec)); 
+            */
+            
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             //weight_t r_weight = number.as_weight;
             //log_info("firing reel = %8.6k", number.as_real);
             //log_info("firing_rate = %5.5k", firing_rate_Ve);
             log_info("firing_int_exc = %d",firing_rate_exc_int);
             log_info("firing_int_inh = %d",firing_rate_inh_int);
-            log_info("size of firing_rate_exc_int = %d", sizeof(firing_rate_exc_int)); 
             
-            log_info("total_neighbour = %d", total_neighbour);
-            total_neighbour = 0;
+            
+            log_info("total_neighbour_exc = %d", total_neighbour_exc);
+            log_info("total_neighbour_inh = %d", total_neighbour_inh);
+            total_neighbour_exc = 0;
+            total_neighbour_inh = 0;
 
             
             // update neuron parameters
@@ -508,9 +523,18 @@ static void neuron_impl_do_timestep_update(
             
             
             //neuron_model_has_spiked(this_meanfield);
-            
+            //uint32_t key_exc = 2*key;
+            //uint32_t key_inh = 2*key+1;
             //send_spike(r_int, time, meanfield_index);
-            spin1_send_mc_packet(key, firing_rate_exc_int, WITH_PAYLOAD);
+            bool exc = 0;
+            bool inh = 1;
+            uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
+            uint32_t concat_inh = firing_rate_inh_int<<1 | inh;
+            
+            spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
+            spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
+            
+            //spin1_send_mc_packet(key, firing_rate_exc_int, WITH_PAYLOAD);
             
             //log_info("time = %d", time);
             //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);

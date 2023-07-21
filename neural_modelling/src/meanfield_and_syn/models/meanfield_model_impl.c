@@ -191,7 +191,6 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     REAL Ui = Qi*(Ei-muV)/muG;
     
     
-    //problem is multiplication '*' that give 0 bcs not saturated arithm
     REAL Tv_num_e = Fe*(Ue*Te)*(Ue*Te) ;
     REAL Tv_num_i = Fi*(Ti*Ui)*(Ti*Ui) ;
     REAL Tv_denom_e = Fe*(Ue*Te)*(Ue*Te)/(Te+Tm);

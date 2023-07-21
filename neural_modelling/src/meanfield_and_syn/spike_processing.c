@@ -115,7 +115,8 @@ static struct {
 } p_per_ts_struct;
 
 //! result of the operation on all payloads received from all keys
-extern uint32_t total_neighbour;
+extern uint32_t total_neighbour_exc;
+extern uint32_t total_neighbour_inh;
 
 //! the region to record the packets per timestep in
 static uint32_t p_per_ts_region;
@@ -333,17 +334,29 @@ static void multicast_packet_received_callback(uint key, UNUSED uint unused) {
     }
 }
 
+#define MASK ((uint32_t) 0x1)
 //! \brief Called when a multicast packet is received
 //! \param[in] key: The key of the packet. The spike.
 //! \param[in] payload: the payload of the packet. The count.
 static void multicast_packet_pl_received_callback(uint key, uint payload) {
     p_per_ts_struct.packets_this_time_step += 1;
     
+    uint32_t firing_rate = payload>>1;
     log_info("Received spike %x with payload %d at %d, DMA Busy = %d",
-        key, payload, time, dma_busy);
-    //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
+        key, firing_rate, time, dma_busy);
     
-    total_neighbour += payload;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
+    uint32_t diff = (payload >> 0) & MASK;
+    log_info("diff = %d", diff);
+    
+    
+    
+    //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
+    if(diff == 0){
+        total_neighbour_exc += firing_rate;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
+    }
+    else if(diff == 1){
+        total_neighbour_inh += firing_rate;
+    }
     
     /*
     dma_buffer *next_buffer = &dma_buffers[next_buffer_to_fill];
@@ -496,7 +509,8 @@ void spike_processing_clear_input_buffer(timer_t time) {
     recording_record(p_per_ts_region, &p_per_ts_struct, sizeof(p_per_ts_struct));
     p_per_ts_struct.packets_this_time_step = 0;
     
-    log_info("total_neighbour = %d", total_neighbour);
+    log_info("total_neighbour_exc = %d", total_neighbour_exc);
+    log_info("total_neighbour_inh = %d", total_neighbour_inh);
     //total_neighbour = 0;
 
     // Record the count whether clearing or not for provenance
@@ -515,7 +529,7 @@ bool spike_processing_initialise( // EXPORTED
             log_error("Could not initialise DMA buffers");
             return false;
         }
-        log_debug("DMA buffer %u allocated at 0x%08x",
+        log_info("DMA buffer %u allocated at 0x%08x",
                 i, dma_buffers[i].row);
     }
     dma_busy = false;

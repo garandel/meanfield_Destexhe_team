@@ -328,3 +328,5 @@ DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_
  * trouver une solution pour l'exponentiel -> gourmand en mémoire et en temps
  * 
  
+ 
+ RQ MENAGE: synapse

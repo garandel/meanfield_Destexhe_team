@@ -95,7 +95,7 @@ static inline void synapse_types_shape_input(
 	exp_shaping(&parameters->exc);
     //log_info("exc : 0x%08x", &parameters->exc);
 	exp_shaping(&parameters->inh);
-//    log_info("inh : 0x%08x", &parameters->inh);
+    //log_info("inh : 0x%08x", &parameters->inh);
 }
 
 //! \brief helper function to add input for a given timer period to a given
@@ -124,9 +124,11 @@ static inline void synapse_types_add_neuron_input(
     switch (synapse_type_index) {
     case EXCITATORY:
     	add_input_exp(&parameters->exc, input);
+        log_info("exc");
     	break;
     case INHIBITORY:
     	add_input_exp(&parameters->inh, input);
+        log_info("inh");
     	break;
     }
 }
