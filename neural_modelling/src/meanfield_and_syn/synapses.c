@@ -194,8 +194,6 @@ static inline bool process_fixed_synapses(
     uint32_t *synaptic_words = synapse_row_fixed_weight_controls(fixed_region);
     uint32_t fixed_synapse = synapse_row_num_fixed_synapses(fixed_region);
     
-    //log_info("fixed_synapse=%d",fixed_synapse);
-
     num_fixed_pre_synaptic_events += fixed_synapse;
 
     // Pre-mask the time
@@ -351,12 +349,6 @@ bool synapses_process_synaptic_row(
     // Get address of non-plastic region from row
     synapse_row_fixed_part_t *fixed_region = synapse_row_fixed_region(row);
     log_info("the_row_data = 0x%08x ", fixed_region->data[fixed_region->num_fixed]);
-    
-    
-    //log_info("cc[CC_TXDATA] = 0x%08x", &cc[CC_TXDATA]);// think to remove it
-    //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
-    
-    //how create a plastic region???
     
     // **TODO** multiple optimised synaptic row formats
     //if (plastic_tag(row) == 0) {

@@ -200,7 +200,7 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
             }
             input_t val_to_add = synapse_row_convert_weight_to_input(value, rb_shift); ///modif ici pour avoir les input en direct
                             
-            neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);//val=val_to_add normaly here do a artefact like /!\
+            neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);
                 
             //log_info("value = %d, ring_buffer_index = %d, val_to_add = %4.7k, rb_shift=%d", value, ring_buffer_index, val_to_add, rb_shift);
             

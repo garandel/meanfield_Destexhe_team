@@ -188,50 +188,6 @@ static inline void sum(weight_t *syns) {
     }
 }
 
-/*
-//! \brief Add up all the synaptic contributions into a global buffer
-//! \param[in] syns The weights to be added CONSTRUCTION
-static inline void sum_mf_contribution(input_t *syns) {
-    uint32_t n_words = sdram_inputs.size_in_bytes >> 2;
-    const uint32_t *src = (const uint32_t *) syns;
-    //log_info("src_add=0x%08x", src);
-    //log_info("src=%d", *src);
-    uint32_t *tgt = all_meanfield_contributions.as_int;
-    for (uint32_t i = n_words; i > 0; i--) {
-        *tgt++ += *src++;
-        //log_info("tgt=%d", *tgt);
-    }
-}
-*/
-
-
-/****f* conways.c/receive_data CONSTRUCTION
- *
- * SUMMARY
- *  This function is used as a callback for packet received events.
- * receives data from 8 neighbours and updates the states params
- *
- * SYNOPSIS
- *  void receive_data (uint key, uint payload)
- *
- * INPUTS
- *   uint key: packet routing key - provided by the RTS
- *   uint payload: packet payload - provided by the RTS
- *
- * SOURCE
- */
-/*
-void receive_data(uint key, uint payload) {
-    use(key);
-    //log_info("the key i've received is %d\n", key);
-    //log_info("the payload i've received is %d\n", payload);
-    // If there was space to add spike to incoming spike queue
-    if (!circular_buffer_add(input_buffer, payload)) {
-        log_info("Could not add state");
-    }
-}
-*/
-
 //! \brief Timer interrupt callback
 //! \param[in] timer_count: the number of times this call back has been
 //!            executed since start of simulation
@@ -274,17 +230,6 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
     uint32_t write_index = 0;
     uint32_t read_index = 0;
     
-    
-    
-    //try a little hack I let it here in order to retry this one
-    //log_info("&cc[CC_TXDATA] addr = 0x%08x", &cc[CC_TXDATA]);
-    //log_info("cc[CC_TXDATA] val = %d", cc[CC_TXDATA]);
-    //uint taille = sizeof(cc[CC_TXDATA]);
-    //spin1_memcpy(meanfield_contributions[write_index], &cc[CC_TXDATA], sdram_inputs.size_in_bytes);
-    //do_fast_dma_write(meanfield_contributions[write_index], sdram, sdram_inputs.size_in_bytes);
-    
-    //log_info("sdram addr= 0x%08x", sdram);
-
     // Start the first DMA
     do_fast_dma_read(sdram, synaptic_contributions[write_index],
             sdram_inputs.size_in_bytes);
@@ -302,34 +247,14 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
             write_index = !write_index;
         }
         
-        //receive_data(key_bis, payload); //CONSTRUCTION PLAN B
-
         // Add in the contributions from the last read item
         sum(synaptic_contributions[read_index]);
-        //sum_mf_contribution(meanfield_contributions[read_index]); //CONSTRUCTION
         
         read_index = !read_index;
     }
-    //uint32_t constant_test = 42;
-    //log_info("cc[CC_TXDATA] = %5.5k", cc[CC_TXDATA]);
-    //log_info("cc[CC_TXKEY] = %d", cc[CC_TXKEY]);
-    //uint32_t *r_int = all_synaptic_contributions.as_int;
-    //*r_int += constant_test; //cc[CC_TXDATA];
-    
-    //log_info("r_int d=%d", *r_int);
-    //log_info("addr r_int = 0x%08x ET addre constante_test=0x%08x", r_int, &constant_test);
-    
     
     neuron_transfer(all_synaptic_contributions.as_weight);
-    //meanfield_transfer(all_meanfield_contributions.as_input); // CONSTRUCTION
     
-    //log_info("address synaptic_contributions buffer = 0x%08x", synaptic_contributions);
-    
-    //uint core_id = spin1_get_core_id();
-    //uint chip_id = spin1_get_chip_id();
-    
-    //log_info("core_id = %d AND chip_id = %d",core_id, chip_id);
-
     // Now do neuron time step update
     neuron_do_timestep_update(time, timer_count);
 

@@ -173,9 +173,6 @@ static inline bool is_something_to_do(
         cpsr = spin1_int_disable();
     }
     */
-    //log_info("spike process =0x%.8x",spike);
-    //log_info("spike process =%d", spike);
-    // Is there another address in the population table?
     spin1_mode_restore(cpsr);
     if (population_table_get_next_address(spike, row, n_bytes_to_transfer)) {
         *n_process_spike += 1;
@@ -352,53 +349,12 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     
     //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
     if(diff == 0){
-        total_neighbour_exc += firing_rate;//peut le raffiner avec key et autre attribut comme p_per_ts_struct MS pas besoin à priori buffers
+        total_neighbour_exc += firing_rate;
     }
     else if(diff == 1){
         total_neighbour_inh += firing_rate;
     }
     
-    /*
-    dma_buffer *next_buffer = &dma_buffers[next_buffer_to_fill];
-    next_buffer->row = payload;
-    next_buffer->originating_spike = key;
-    
-    //RQ N_DMA_BUFFERS n'est pas le best pour ça il faut un buffers qui soit dynamique en fonction du nombre max de connection cad de key
-    for (uint32_t i = 0; i < N_DMA_BUFFERS; i++) {
-        //dma_buffers[i].row = payload;
-        log_info("DMA buffer %u allocated at 0x%08x (%d) with spike %d",
-                i, dma_buffers[i].row, dma_buffers[i].row, dma_buffers[i].originating_spike);
-    }
-    
-    
-    next_buffer_to_fill = (next_buffer_to_fill + 1) % N_DMA_BUFFERS;
-    
-    if(next_buffer_to_fill==0) {
-        //if number of spike are the good ones then do
-        uint32_t total_neighbour;
-        for(uint32_t i = 0; i < N_DMA_BUFFERS; i++) {
-            uint32_t data = dma_buffers[i].row;
-            total_neighbour += data;
-            //log_info("DMA buffer %u with (%d)", i, dma_buffers[i].row);
-        }
-        log_info("total_neighbour = %d", total_neighbour);
-    }*/
-    
-    
-            
-        
-    
-    
-    /*
-    // cycle through the packet insertion
-    bool added = false;
-    for (uint count = payload; count > 0; count--) {
-        added = in_spikes_add_spike(key);
-        log_info("count = %d", p_per_ts_struct.packets_this_time_step);
-    }
-    if (added) {
-        start_dma_loop();
-    }*/
 }
 
 //! \brief Called when a DMA completes

@@ -74,11 +74,6 @@ static mathsbox_t *mathsbox_array;
 static pFitPolynomial_t *Pfit_exc_array;
 static pFitPolynomial_t *Pfit_inh_array;
 
-//! Input states array
-//static input_type_t *input_type_array;
-
-//! Additional input array
-//static additional_input_t *additional_input_array;
 /*
 //! Threshold states array
 static threshold_type_t *threshold_type_array;
@@ -92,15 +87,6 @@ static synapse_param_t *neuron_synapse_shaping_params;
 //! The number of steps to run per timestep
 static uint n_steps_per_timestep;
 
-/*
-static inline void test(uint32_t time) {
-    for (uint32_t i = N_RECORDED_VARS; i > 0; i--) {
-        if (N_RECORDED_VARS==NULL){
-            log_error("fail at %u", time);
-        }
-    }
-}
-*/
 
 
 #ifndef SOMETIMES_UNUSED
@@ -158,28 +144,7 @@ static bool meanfield_impl_initialise(uint32_t n_meanfields) {
             return false;
         }
     }
-/*    
-    // Allocate DTCM for input type array and copy block of data
-    if (sizeof(input_type_t)) {
-        input_type_array = spin1_malloc(n_meanfields * sizeof(input_type_t));
-        if (input_type_array == NULL) {
-            log_error("Unable to allocate input type array - Out of DTCM");
-            return false;
-        }
-    }
-*/
-    /*
-    // Allocate DTCM for additional input array and copy block of data
-    if (sizeof(additional_input_t)) {
-        additional_input_array =
-                spin1_malloc(n_meanfields * sizeof(additional_input_t));
-        if (additional_input_array == NULL) {
-            log_error("Unable to allocate additional input array"
-                    " - Out of DTCM");
-            return false;
-        }
-    }
-    */
+
 /*
     // Allocate DTCM for threshold type array and copy block of data
     if (sizeof(threshold_type_t)) {
@@ -289,14 +254,7 @@ static void neuron_impl_load_neuron_parameters(
                 n_meanfields * sizeof(mathsbox_t));
         next += n_words_needed(n_meanfields * sizeof(mathsbox_t));
     }
-/*
-    if (sizeof(input_type_t)) {
-        log_debug("reading input type parameters");
-        spin1_memcpy(input_type_array, &address[next],
-                n_meanfields * sizeof(input_type_t));
-        next += n_words_needed(n_meanfields * sizeof(input_type_t));
-    }
-*/    
+  
 /*
     if (sizeof(threshold_type_t)) {
         log_debug("reading threshold type parameters");
@@ -311,15 +269,6 @@ static void neuron_impl_load_neuron_parameters(
                 n_meanfields * sizeof(synapse_param_t));
         next += n_words_needed(n_meanfields * sizeof(synapse_param_t));
     }
-
-    /*
-    if (sizeof(additional_input_t)) {
-        log_debug("reading additional input type parameters");
-        spin1_memcpy(additional_input_array, &address[next],
-                n_meanfields * sizeof(additional_input_t));
-        next += n_words_needed(n_meanfields * sizeof(additional_input_t));
-    }
-    */
 
     meanfield_model_set_global_neuron_params(global_parameters);
 
@@ -357,9 +306,6 @@ static void neuron_impl_do_timestep_update(
         pFitPolynomial_t *Pfit_exc_types = &Pfit_exc_array[meanfield_index];
         pFitPolynomial_t *Pfit_inh_types = &Pfit_inh_array[meanfield_index];
         
-        // Get the input_type parameters and voltage for this neuron
-        //input_type_t *input_types = &input_type_array[meanfield_index];
-
         /*
         // Get threshold and additional input parameters for this neuron
         threshold_type_t *the_threshold_type = &threshold_type_array[meanfield_index];
@@ -368,9 +314,6 @@ static void neuron_impl_do_timestep_update(
         */
         synapse_param_t *the_synapse_type =
                 &neuron_synapse_shaping_params[meanfield_index];
-
-        // Store whether the neuron has spiked
-        //bool has_spiked = false;
 
         // Loop however many times requested; do this in reverse for efficiency,
         // and because the index doesn't actually matter
@@ -431,7 +374,7 @@ static void neuron_impl_do_timestep_update(
             
             */
             
-            // could do what I want do in input_type here 
+            
             // Operation post synaptic
             
             // Sum g_syn contributions from all receptors for recording
@@ -483,9 +426,7 @@ static void neuron_impl_do_timestep_update(
             */
             
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
-            //weight_t r_weight = number.as_weight;
-            //log_info("firing reel = %8.6k", number.as_real);
-            //log_info("firing_rate = %5.5k", firing_rate_Ve);
+            
             log_info("firing_int_exc = %d",firing_rate_exc_int);
             log_info("firing_int_inh = %d",firing_rate_inh_int);
             
@@ -519,13 +460,6 @@ static void neuron_impl_do_timestep_update(
                                           NUM_INHIBITORY_RECEPTORS,
                                           inh_syn_values);
             
-            
-            
-            
-            //neuron_model_has_spiked(this_meanfield);
-            //uint32_t key_exc = 2*key;
-            //uint32_t key_inh = 2*key+1;
-            //send_spike(r_int, time, meanfield_index);
             bool exc = 0;
             bool inh = 1;
             uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
@@ -534,26 +468,6 @@ static void neuron_impl_do_timestep_update(
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
             spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
             
-            //spin1_send_mc_packet(key, firing_rate_exc_int, WITH_PAYLOAD);
-            
-            //log_info("time = %d", time);
-            //spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
-            //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
-            /*
-            // determine if a spike should occur
-            bool spike_now = TRUE;//threshold_type_is_above_threshold(result, the_threshold_type);
-            // If spike occurs, communicate to relevant parts of model
-            if (spike_now) {
-                // Call relevant model-based functions
-                // Tell the neuron model
-                neuron_model_has_spiked(this_meanfield);
-
-                send_spike(timer_count, time, meanfield_index);
-                spin1_send_fr_packet(key, r_int, WITH_PAYLOAD);
-                //spin1_get_chip_id(void);
-                
-            }
-            */
             //neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
 
             // Shape the existing input according to the included rule
