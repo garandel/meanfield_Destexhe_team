@@ -21,7 +21,7 @@
 
 #include <debug.h>
 //#include <math.h>
-//#include <stdfix-exp.h>
+#include <stdfix-exp.h>
 //#include <polynomial.h>
 #include "../../meanfield_and_syn/models/params_from_network.h"
 //#include "../../meanfield/models/mathsbox.h"
@@ -73,15 +73,28 @@ static inline REAL square_root_of(REAL number)
 
 //static int poly[3] = {1,5,3};
     
+static union {
+    s1615 as_s1615;
+    input_t as_real;
+} number;
 
 
 static inline REAL erfc_test(REAL x)
 {
+    number.as_real = x;//*exc_syn_values;//
+    s1615 x_s1615 = number.as_s1615; 
     
+    number.as_s1615 = expk(x_s1615);
+    input_t result = number.as_real;
+       
+        
+        
     //log_info("IT'S THE WRONG ONE JUST FOR TEST");
     //return __horner_int_b(poly,x,2);
-    //return expk(x);
-    return x+1.*20;
+    //return expk(x_s1615);
+    return result;
+    //return expf(x);
+    //return x+1.*20;
         
 }    
 
@@ -252,7 +265,11 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
-    pNetwork->Fout_th = erfc_test(argument) * (HALF*Gl)/(Cm*pNetwork->TvN) ;
+    
+    //log_info("Cm = %5.5k AND TvM = %5.5k", Cm, pNetwork->TvN);
+    REAL one_over_CmxTvN = (0,02001441);
+    
+    pNetwork->Fout_th = erfc_test(argument) * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
     
     if (pNetwork->Fout_th < ACS_DBL_TINY){
         pNetwork->Fout_th += ACS_DBL_TINY;
