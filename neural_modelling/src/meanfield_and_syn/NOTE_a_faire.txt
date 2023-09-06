@@ -330,3 +330,16 @@ DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_
  
  
  RQ MENAGE: synapse
+ -----------------------21/08------------------------------------------
+ 
+ tout fonctionne, inh introduit et exponetiel ok
+ Reste à tous mettre au même unité et ainsi rattraper les deux ordre de grandeurs de trop dans les firing rates.
+ 
+ 29/08
+ 
+ tout fonctionne mais exponetiel n'est pas erfc !!!!!!!
+ d'où l'explosage en reègle du buffer et des valeurs
+ 
+ -----------------------------6/09------------------------------------
+ ITCM 1208 avec expk
+480 avec expk et sans fabs

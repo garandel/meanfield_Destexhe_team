@@ -21,12 +21,16 @@
 
 #include <debug.h>
 //#include <math.h>
-#include <stdfix-exp.h>
+//#include <stdfix-exp.h>
+//#include "stdfix-erfc.h"
 //#include <polynomial.h>
-#include "../../meanfield_and_syn/models/params_from_network.h"
-//#include "../../meanfield/models/mathsbox.h"
-#include "../../meanfield_and_syn/models/P_fit_polynomial.h"
+
+#include "../../../src/common/maths-util.h"
 //#include "../../common/maths-util.h" // i.o to use SQRT(x) and SQR(a)
+
+#include "../../meanfield_and_syn/models/params_from_network.h"
+#include "../../meanfield_and_syn/models/P_fit_polynomial.h"
+
 
 //! The global parameters of the Izhekevich neuron model
 static const global_neuron_params_t *global_params;
@@ -72,7 +76,7 @@ static inline REAL square_root_of(REAL number)
 }
 
 //static int poly[3] = {1,5,3};
-    
+/*    
 static union {
     s1615 as_s1615;
     input_t as_real;
@@ -81,15 +85,17 @@ static union {
 
 static inline REAL erfc_test(REAL x)
 {
+    
     number.as_real = x;//*exc_syn_values;//
     s1615 x_s1615 = number.as_s1615; 
     
     number.as_s1615 = expk(x_s1615);
     input_t result = number.as_real;
        
+    
+    //REAL result = erfc(x); //region `ITCM' overflowed by 3448 bytes
         
-        
-    //log_info("IT'S THE WRONG ONE JUST FOR TEST");
+    log_info("IT'S THE WRONG ONE JUST FOR TEST => NEED ERFC NOT ONLY EXPK ");
     //return __horner_int_b(poly,x,2);
     //return expk(x_s1615);
     return result;
@@ -97,6 +103,7 @@ static inline REAL erfc_test(REAL x)
     //return x+1.*20;
         
 }    
+*/
 
 
 void threshold_func(ParamsFromNetwork_t *restrict pNetwork, pFitPolynomial_t *restrict Pfit)
@@ -262,14 +269,19 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
     
+    REAL error_func = erfc(argument); //EXP(argument);// with EXP is compiling 
+    
+    log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
+    
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
     
-    //log_info("Cm = %5.5k AND TvM = %5.5k", Cm, pNetwork->TvN);
-    REAL one_over_CmxTvN = (0,02001441);
+    log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
+    REAL one_over_CmxTvN = (0,02001441); //1/(Cm*pNetwork->TvN);//
     
-    pNetwork->Fout_th = erfc_test(argument) * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
+    pNetwork->Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
+    log_info("Fout_th = %5.5k \n", pNetwork->Fout_th);
     
     if (pNetwork->Fout_th < ACS_DBL_TINY){
         pNetwork->Fout_th += ACS_DBL_TINY;
@@ -297,7 +309,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + input_this_timestep;// + total_exc;//+ ext_drive
+    REAL lastVepExtD = lastVe + input_this_timestep + ext_drive;// + total_exc;//
     
     REAL lastVi = meanfield->Vi;// + total_inh;
     REAL lastWe = meanfield->w_exc;

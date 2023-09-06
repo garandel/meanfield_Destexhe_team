@@ -41,9 +41,9 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
                              "TvN", "Vthre",
                              "err_func", "isyn_exc", "isyn_inh"})
     def __init__(self,
-                 a_exc=4., 
-                 b_exc=20., #normaly 1e-12 SI unit pA
-                 tauw_exc=5.0, #normaly 1e-3 SI unit ms
+                 a_exc=4., #normaly 1e-9 SI unit
+                 b_exc=20., #normaly 1e-12 SI unit
+                 tauw_exc=500.0, #normaly 1e-3 SI unit
                  a_inh=0.,
                  b_inh=0., 
                  tauw_inh=0.000001, # normaly 1e-3 SI unit
@@ -52,31 +52,31 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
                  delta_v_exc=2.0, #normaly 1e-3 SI unit
                  delta_v_inh=0.5, #normaly 1e-3 SI unit
                  ampnoise=0.0,
-                 Timescale_inv=200., #normaly 1e3 SI unit so ms-1
+                 Timescale_inv=200.,
                  Ve=9.,
                  Vi=23.,
                  w_exc=0.25,
                  w_inh=0.00001, #arbitraire
 
                  pconnec=0.05,
-                 q_exc=1.0, #normaly 1e-9 SI unit nS
-                 q_inh=5., #normaly 1e-9 SI unit nS
-                 Tsyn_exc=5.0, # ms
-                 Tsyn_inh=5.0, # ms
-                 Erev_exc=0., # normaly 1e-3 unit mV
+                 q_exc=1.0, #normaly 1e-9 SI unit
+                 q_inh=5., #normaly 1e-9 SI unit
+                 Tsyn_exc=5.0,
+                 Tsyn_inh=5.0,
+                 Erev_exc=0.,
                  Erev_inh=-80.,
                  Ntot=10000.,
                  gei=0.2,
-                 ext_drive=2.5,
+                 ext_drive=3.5,
                  afferent_exc_fraction=1.,
 
-                 Gl=10., #normaly 1e-9 SI unit nS
+                 Gl=10., #normaly 1e-9 SI unit
                  Cm=200., #normaly 1e-12 SI unit
-                 El_exc=-70., #normaly 1e-3 SI unit mV
-                 El_inh=-65., #normaly 1e-3 SI unit mV
+                 El_exc=-70., #normaly 1e-3 SI unit
+                 El_inh=-65., #normaly 1e-3 SI unit
 
                  muV=0.,
-                 muV0=-0.06, #normaly in mV
+                 muV0=-0.06,
                  DmuV0=0.01,
 
                  sV=0.,
@@ -117,8 +117,8 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
                  p10_inh=-0.013830,
 
 
-                 tau_syn_E=5.0, #normaly 1e-3 SI unit ms
-                 tau_syn_I=5.0, #normaly 1e-3 SI unit ms
+                 tau_syn_E=5.0, #normaly 1e-3 SI unit
+                 tau_syn_I=5.0, #normaly 1e-3 SI unit
                  e_rev_E=0.0, #normaly 1e-3 SI unit
                  e_rev_I=-80.0, #normaly 1e-3 SI unit
 
@@ -140,7 +140,7 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
         muG_0 = Gl + muGe_0 + muGi_0
         muVV = ((muGe_0*Erev_exc + muGi_0*Erev_inh + Gl*El_exc\
                  - (Ve)*tauw_exc*(b_exc) + a_exc*El_exc) /muG_0)/ (1+a_exc/muG_0)
-        w_exc = Ve*tauw_exc*b_exc - a_exc * (El_exc-muVV) # maybe an error overthere second term should have tauw_exc
+        w_exc = Ve*tauw_exc*b_exc - a_exc * (El_exc-muVV)
         w_inh = 0.00001
         
        
