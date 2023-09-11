@@ -343,3 +343,5 @@ DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_
  -----------------------------6/09------------------------------------
  ITCM 1208 avec expk
 480 avec expk et sans fabs
+
+1352 -> 1192

@@ -21,8 +21,13 @@
 
 #include <debug.h>
 //#include <math.h>
+
+//#include "hls_math.h"
+//#inlcude "hls_erf.h"
+//#include "ap_fixed.h"
+
 //#include <stdfix-exp.h>
-//#include "stdfix-erfc.h"
+#include "stdfix-erfc.h"
 //#include <polynomial.h>
 
 #include "../../../src/common/maths-util.h"
@@ -269,7 +274,9 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
     
-    REAL error_func = erfc(argument); //EXP(argument);// with EXP is compiling 
+    REAL error_func = argument;//erfc(argument); //EXP(argument);// with EXP is compiling 
+    
+    
     
     log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
     
