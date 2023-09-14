@@ -156,33 +156,33 @@ do {                                              \
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
  */
-#define efx8 1.02703333676410069053e+00 /* 0x3FF06EBA, 0x8214DB69 */
-#define pp0 1.28379167095512558561e-01 /* 0x3FC06EBA, 0x8214DB68 */
-#define pp1 -3.25042107247001499370e-01 /* 0xBFD4CD7D, 0x691CB913 */
-#define pp2 -2.84817495755985104766e-02 /* 0xBF9D2A51, 0xDBD7194F */
-#define pp3 -5.77027029648944159157e-03 /* 0xBF77A291, 0x236668E4 */
-#define pp4 -2.37630166566501626084e-05 /* 0xBEF8EAD6, 0x120016AC */
-#define qq1 3.97917223959155352819e-01 /* 0x3FD97779, 0xCDDADC09 */
-#define qq2 6.50222499887672944485e-02 /* 0x3FB0A54C, 0x5536CEBA */
-#define qq3 5.08130628187576562776e-03 /* 0x3F74D022, 0xC4D36B0F */
-#define qq4 1.32494738004321644526e-04 /* 0x3F215DC9, 0x221C1A10 */
-#define qq5 -3.96022827877536812320e-06 /* 0xBED09C43, 0x42A26120 */
+#define efx8 1.027033e+00 /* 0x3FF06EBA, 0x8214DB69 */
+#define pp0 1.283792e-01 /* 0x3FC06EBA, 0x8214DB68 */
+#define pp1 -3.250421e-01 /* 0xBFD4CD7D, 0x691CB913 */
+#define pp2 -2.848175e-02 /* 0xBF9D2A51, 0xDBD7194F */
+#define pp3 -5.770270e-03 /* 0xBF77A291, 0x236668E4 */
+#define pp4 -2.376302e-05 /* 0xBEF8EAD6, 0x120016AC */
+#define qq1 3.9791722e-01 /* 0x3FD97779, 0xCDDADC09 */
+#define qq2 6.5022250e-02 /* 0x3FB0A54C, 0x5536CEBA */
+#define qq3 5.0813063e-03 /* 0x3F74D022, 0xC4D36B0F */
+#define qq4 1.3249474e-04 /* 0x3F215DC9, 0x221C1A10 */
+#define qq5 -3.960228e-06 /* 0xBED09C43, 0x42A26120 */
 /*
  * Coefficients for approximation to  erf  in [0.84375,1.25]
  */
-#define pa0 -2.36211856075265944077e-03 /* 0xBF6359B8, 0xBEF77538 */
-#define pa1 4.14856118683748331666e-01 /* 0x3FDA8D00, 0xAD92B34D */
-#define pa2 -3.72207876035701323847e-01 /* 0xBFD7D240, 0xFBB8C3F1 */
-#define pa3 3.18346619901161753674e-01 /* 0x3FD45FCA, 0x805120E4 */
-#define pa4 -1.10894694282396677476e-01 /* 0xBFBC6398, 0x3D3E28EC */
-#define pa5 3.54783043256182359371e-02 /* 0x3FA22A36, 0x599795EB */
-#define pa6 -2.16637559486879084300e-03 /* 0xBF61BF38, 0x0A96073F */
-#define qa1 1.06420880400844228286e-01 /* 0x3FBB3E66, 0x18EEE323 */
-#define qa2 5.40397917702171048937e-01 /* 0x3FE14AF0, 0x92EB6F33 */
-#define qa3 7.18286544141962662868e-02 /* 0x3FB2635C, 0xD99FE9A7 */
-#define qa4 1.26171219808761642112e-01 /* 0x3FC02660, 0xE763351F */
-#define qa5 1.36370839120290507362e-02 /* 0x3F8BEDC2, 0x6B51DD1C */
-#define qa6 1.19844998467991074170e-02 /* 0x3F888B54, 0x5735151D */
+#define pa0 -2.362190e-03 /* 0xBF6359B8, 0xBEF77538 */
+#define pa1 4.148561e-01 /* 0x3FDA8D00, 0xAD92B34D */
+#define pa2 -3.722079e-01 /* 0xBFD7D240, 0xFBB8C3F1 */
+#define pa3 3.183466e-01 /* 0x3FD45FCA, 0x805120E4 */
+#define pa4 -1.108947e-01 /* 0xBFBC6398, 0x3D3E28EC */
+#define pa5 3.547830e-02 /* 0x3FA22A36, 0x599795EB */
+#define pa6 -2.166376e-03 /* 0xBF61BF38, 0x0A96073F */
+#define qa1 1.064209e-01 /* 0x3FBB3E66, 0x18EEE323 */
+#define qa2 5.403979e-01 /* 0x3FE14AF0, 0x92EB6F33 */
+#define qa3 7.182865e-02 /* 0x3FB2635C, 0xD99FE9A7 */
+#define qa4 1.261712e-01 /* 0x3FC02660, 0xE763351F */
+#define qa5 1.363708e-02 /* 0x3F8BEDC2, 0x6B51DD1C */
+#define qa6 1.198450e-02 /* 0x3F888B54, 0x5735151D */
 /*
  * Coefficients for approximation to  erfc in [1.25,1/0.35]
  */
@@ -271,6 +271,31 @@ static double fonc_abs(double x){
     return x;
 };
 
+static double division_light(double num, double den){
+    uint32_t count;
+    uint8_t count_limit;
+    uint32_t count_decimal;
+    while (1) {
+        uint32_t result = num - den;
+        count++;
+        if (result == 0) {
+                count++;
+                break;
+        }
+        if (result < den){
+            result *= 10;
+            count_limit++;
+            if (count_limit == 6){
+                break;
+            }
+        }
+        if (result >= den){
+            result -= den;
+            count_decimal++;
+        }
+
+    }
+}
 
 static double erfc1(double x)
 {
@@ -293,8 +318,8 @@ static double erfc1(double x)
     P = pa0+s*(p_inter_5);
     */
     
-	//P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
-    
+	P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
+    /*
     input_t P1 = pa0 + s*pa1;
     input_t P2 = pa2 + s*pa3;
     input_t P3 = pa4 + s*pa5;
@@ -303,7 +328,7 @@ static double erfc1(double x)
     input_t s6 = s2*s4;
     
     P = P1 + s2*P2 + s4*P3 + s6*pa6;
-    
+    */
     /*
     q_inter_1 = qa5+s*qa6;
     q_inter_2 = qa4+s*(q_inter_1);
@@ -313,14 +338,14 @@ static double erfc1(double x)
     Q = 1+s*q_inter_5;
     */
     
-	//Q = 1+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
-    
+	Q = 1+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
+    /*
     input_t Q1 = 1 + s*qa1;
     input_t Q2 = qa2 + s*qa3;
     input_t Q3 = qa4 + s*qa5;
     
     Q = Q1 + s2*Q2 + s4*Q3 + s6*qa6;
-    
+    */
 	return 1 - erx - P/Q;
 }
 
