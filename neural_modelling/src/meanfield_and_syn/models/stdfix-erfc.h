@@ -19,11 +19,11 @@
 //! \brief complementary error function in fix number arithmetics
 
 #include <debug.h>
-#include <math.h>
-#include "../../../src/common/maths-util.h"
-//#include <stdfix-exp.h>
+//#include <math.h>
+//#include "../../../src/common/maths-util.h"
+#include <stdfix-exp.h>
 //#include <polynomial.h>
-#include <stdfix-full-iso.h>
+//#include <stdfix-full-iso.h>
 
 /* origin: FreeBSD /usr/src/lib/msun/src/s_erf.c */
 /*
@@ -131,7 +131,6 @@
  */
 
 //#include "libm.h"
-//static const REAL_N
 /* Set the less significant 32 bits of a double from an int.  */
 #define SET_LOW_WORD(d,lo)                        \
 do {                                              \
@@ -150,75 +149,78 @@ do {                                              \
   (hi) = __u.i >> 32;                             \
 } while (0)
 
+static const s1615
+erx = 27691, /* 0x3FEB0AC1, 0x60000000 */
 
-
-#define erx 8.45062911510467529297e-01 /* 0x3FEB0AC1, 0x60000000 */
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
  */
-#define efx8 1.027033e+00 /* 0x3FF06EBA, 0x8214DB69 */
-#define pp0 1.283792e-01 /* 0x3FC06EBA, 0x8214DB68 */
-#define pp1 -3.250421e-01 /* 0xBFD4CD7D, 0x691CB913 */
-#define pp2 -2.848175e-02 /* 0xBF9D2A51, 0xDBD7194F */
-#define pp3 -5.770270e-03 /* 0xBF77A291, 0x236668E4 */
-#define pp4 -2.376302e-05 /* 0xBEF8EAD6, 0x120016AC */
-#define qq1 3.9791722e-01 /* 0x3FD97779, 0xCDDADC09 */
-#define qq2 6.5022250e-02 /* 0x3FB0A54C, 0x5536CEBA */
-#define qq3 5.0813063e-03 /* 0x3F74D022, 0xC4D36B0F */
-#define qq4 1.3249474e-04 /* 0x3F215DC9, 0x221C1A10 */
-#define qq5 -3.960228e-06 /* 0xBED09C43, 0x42A26120 */
+/*
+ * Coefficients for approximation to  erf on [0,0.84375]
+ */
+efx8 = 33654, /* 0x3FF06EBA, 0x8214DB69 */
+pp0 = 4207, /* 0x3FC06EBA, 0x8214DB68 */
+pp1 = -10651, /* 0xBFD4CD7D, 0x691CB913 */
+pp2 = -933, /* 0xBF9D2A51, 0xDBD7194F */
+pp3 = -189, /* 0xBF77A291, 0x236668E4 */
+pp4 = -1, /* 0xBEF8EAD6, 0x120016AC */
+qq1 = 13039, /* 0x3FD97779, 0xCDDADC09 */
+qq2 = 2131, /* 0x3FB0A54C, 0x5536CEBA */
+qq3 = 167, /* 0x3F74D022, 0xC4D36B0F */
+qq4 = 4, /* 0x3F215DC9, 0x221C1A10 */
+qq5 = 0, /* 0xBED09C43, 0x42A26120 */
 /*
  * Coefficients for approximation to  erf  in [0.84375,1.25]
  */
-#define pa0 -2.362190e-03 /* 0xBF6359B8, 0xBEF77538 */
-#define pa1 4.148561e-01 /* 0x3FDA8D00, 0xAD92B34D */
-#define pa2 -3.722079e-01 /* 0xBFD7D240, 0xFBB8C3F1 */
-#define pa3 3.183466e-01 /* 0x3FD45FCA, 0x805120E4 */
-#define pa4 -1.108947e-01 /* 0xBFBC6398, 0x3D3E28EC */
-#define pa5 3.547830e-02 /* 0x3FA22A36, 0x599795EB */
-#define pa6 -2.166376e-03 /* 0xBF61BF38, 0x0A96073F */
-#define qa1 1.064209e-01 /* 0x3FBB3E66, 0x18EEE323 */
-#define qa2 5.403979e-01 /* 0x3FE14AF0, 0x92EB6F33 */
-#define qa3 7.182865e-02 /* 0x3FB2635C, 0xD99FE9A7 */
-#define qa4 1.261712e-01 /* 0x3FC02660, 0xE763351F */
-#define qa5 1.363708e-02 /* 0x3F8BEDC2, 0x6B51DD1C */
-#define qa6 1.198450e-02 /* 0x3F888B54, 0x5735151D */
+pa0 = -77, /* 0xBF6359B8, 0xBEF77538 */
+pa1 = 13594, /* 0x3FDA8D00, 0xAD92B34D */
+pa2 = -12197, /* 0xBFD7D240, 0xFBB8C3F1 */
+pa3 = 10432, /* 0x3FD45FCA, 0x805120E4 */
+pa4 = -3634, /* 0xBFBC6398, 0x3D3E28EC */
+pa5 = 1163, /* 0x3FA22A36, 0x599795EB */
+pa6 = -71, /* 0xBF61BF38, 0x0A96073F */
+qa1 = 3487, /* 0x3FBB3E66, 0x18EEE323 */
+qa2 = 17708, /* 0x3FE14AF0, 0x92EB6F33 */
+qa3 = 2354, /* 0x3FB2635C, 0xD99FE9A7 */
+qa4 = 4134, /* 0x3FC02660, 0xE763351F */
+qa5 = 447, /* 0x3F8BEDC2, 0x6B51DD1C */
+qa6 = 393, /* 0x3F888B54, 0x5735151D */
 /*
  * Coefficients for approximation to  erfc in [1.25,1/0.35]
  */
-#define ra0 -9.86494403484714822705e-03 /* 0xBF843412, 0x600D6435 */
-#define ra1 -6.93858572707181764372e-01 /* 0xBFE63416, 0xE4BA7360 */
-#define ra2 -1.05586262253232909814e+01 /* 0xC0251E04, 0x41B0E726 */
-#define ra3 -6.23753324503260060396e+01 /* 0xC04F300A, 0xE4CBA38D */
-#define ra4 -1.62396669462573470355e+02 /* 0xC0644CB1, 0x84282266 */
-#define ra5 -1.84605092906711035994e+02 /* 0xC067135C, 0xEBCCABB2 */
-#define ra6 -8.12874355063065934246e+01 /* 0xC0545265, 0x57E4D2F2 */
-#define ra7 -9.81432934416914548592e+00 /* 0xC023A0EF, 0xC69AC25C */
-#define sa1 1.96512716674392571292e+01 /* 0x4033A6B9, 0xBD707687 */
-#define sa2 1.37657754143519042600e+02 /* 0x4061350C, 0x526AE721 */
-#define sa3 4.34565877475229228821e+02 /* 0x407B290D, 0xD58A1A71 */
-#define sa4 6.45387271733267880336e+02 /* 0x40842B19, 0x21EC2868 */
-#define sa5 4.29008140027567833386e+02 /* 0x407AD021, 0x57700314 */
-#define sa6 1.08635005541779435134e+02 /* 0x405B28A3, 0xEE48AE2C */
-#define sa7 6.57024977031928170135e+00 /* 0x401A47EF, 0x8E484A93 */
-#define sa8 -6.04244152148580987438e-02 /* 0xBFAEEFF2, 0xEE749A62 */
+ra0 = -323, /* 0xBF843412, 0x600D6435 */
+ra1 = -22736, /* 0xBFE63416, 0xE4BA7360 */
+ra2 = -345985, /* 0xC0251E04, 0x41B0E726 */
+ra3 = -2043915, /* 0xC04F300A, 0xE4CBA38D */
+ra4 = -5321414, /* 0xC0644CB1, 0x84282266 */
+ra5 = -6049140, /* 0xC067135C, 0xEBCCABB2 */
+ra6 = -2663627, /* 0xC0545265, 0x57E4D2F2 */
+ra7 = -321596, /* 0xC023A0EF, 0xC69AC25C */
+sa1 = 643933, /* 0x4033A6B9, 0xBD707687 */
+sa2 = 4510769, /* 0x4061350C, 0x526AE721 */
+sa3 = 14239855, /* 0x407B290D, 0xD58A1A71 */
+sa4 = 21148050, /* 0x40842B19, 0x21EC2868 */
+sa5 = 14057739, /* 0x407AD021, 0x57700314 */
+sa6 = 3559752, /* 0x405B28A3, 0xEE48AE2C */
+sa7 = 215294, /* 0x401A47EF, 0x8E484A93 */
+sa8 = -1980, /* 0xBFAEEFF2, 0xEE749A62 */
 /*
  * Coefficients for approximation to  erfc in [1/.35,28]
  */
-#define rb0 -9.86494292470009928597e-03 /* 0xBF843412, 0x39E86F4A */
-#define rb1 -7.99283237680523006574e-01 /* 0xBFE993BA, 0x70C285DE */
-#define rb2 -1.77579549177547519889e+01 /* 0xC031C209, 0x555F995A */
-#define rb3 -1.60636384855821916062e+02 /* 0xC064145D, 0x43C5ED98 */
-#define rb4 -6.37566443368389627722e+02 /* 0xC083EC88, 0x1375F228 */
-#define rb5 -1.02509513161107724954e+03 /* 0xC0900461, 0x6A2E5992 */
-#define rb6 -4.83519191608651397019e+02 /* 0xC07E384E, 0x9BDC383F */
-#define sb1 3.03380607434824582924e+01 /* 0x403E568B, 0x261D5190 */
-#define sb2 3.25792512996573918826e+02 /* 0x40745CAE, 0x221B9F0A */
-#define sb3 1.53672958608443695994e+03 /* 0x409802EB, 0x189D5118 */
-#define sb4 3.19985821950859553908e+03 /* 0x40A8FFB7, 0x688C246A */
-#define sb5 2.55305040643316442583e+03 /* 0x40A3F219, 0xCEDF3BE6 */
-#define sb6 4.74528541206955367215e+02 /* 0x407DA874, 0xE79FE763 */
-#define sb7 -2.24409524465858183362e+01 /* 0xC03670E2, 0x42712D62 */
+rb0 = -323, /* 0xBF843412, 0x39E86F4A */
+rb1 = -26191, /* 0xBFE993BA, 0x70C285DE */
+rb2 = -581893, /* 0xC031C209, 0x555F995A */
+rb3 = -5263733, /* 0xC064145D, 0x43C5ED98 */
+rb4 = -20891777, /* 0xC083EC88, 0x1375F228 */
+rb5 = -33590317, /* 0xC0900461, 0x6A2E5992 */
+rb6 = -15843957, /* 0xC07E384E, 0x9BDC383F */
+sb1 = 994118, /* 0x403E568B, 0x261D5190 */
+sb2 = 10675569, /* 0x40745CAE, 0x221B9F0A */
+sb3 = 50355555, /* 0x409802EB, 0x189D5118 */
+sb4 = 104852954, /* 0x40A8FFB7, 0x688C246A */
+sb5 = 83658356, /* 0x40A3F219, 0xCEDF3BE6 */
+sb6 = 15549351, /* 0x407DA874, 0xE79FE763 */
+sb7 = -735345; /* 0xC03670E2, 0x42712D62 */
 /*
 static union {
     s1615 as_s1615;
@@ -228,7 +230,7 @@ static union {
 static inline REAL exp_changer(REAL x)
 {
     
-    number.as_real = x;//*exc_syn_values;//
+    number.as_real = x;//  *exc_syn_values;//
     s1615 x_s1615 = number.as_s1615; 
     
     number.as_s1615 = expk(x_s1615);
@@ -250,7 +252,7 @@ static inline REAL exp_changer(REAL x)
 static inline REAL abs_changer(REAL x)
 {
     
-    number.as_real = x;//*exc_syn_values;//
+    number.as_real = x;//  *exc_syn_values;//
     s1615 x_s1615 = number.as_s1615; 
     
     number.as_s1615 = absk(x_s1615);
@@ -263,7 +265,7 @@ static inline REAL abs_changer(REAL x)
 */
 
  //fait gagner vite fait 20 bytes
-static double fonc_abs(double x){
+static s1615 fonc_abs(s1615 x){
     if(x<0){
         x=-1*x;
     }
@@ -271,35 +273,9 @@ static double fonc_abs(double x){
     return x;
 };
 
-static double division_light(double num, double den){
-    uint32_t count;
-    uint8_t count_limit;
-    uint32_t count_decimal;
-    while (1) {
-        uint32_t result = num - den;
-        count++;
-        if (result == 0) {
-                count++;
-                break;
-        }
-        if (result < den){
-            result *= 10;
-            count_limit++;
-            if (count_limit == 6){
-                break;
-            }
-        }
-        if (result >= den){
-            result -= den;
-            count_decimal++;
-        }
-
-    }
-}
-
-static double erfc1(double x)
+static double erfc1(s1615 x)
 {
-	input_t s,P,Q;
+	s1615 s,P,Q;
     
     /*input_t p_inter_1, p_inter_2, p_inter_3;
     input_t p_inter_4, p_inter_5;
@@ -308,7 +284,7 @@ static double erfc1(double x)
     input_t q_inter_4, q_inter_5;
     */
     
-	s = fonc_abs(x) - 1;
+	s = fonc_abs(x) - 1; //fabs(x) - 1; 
     /*
     p_inter_1 = pa5+s*pa6;
     p_inter_2 = pa4+s*(p_inter_1);
@@ -349,15 +325,15 @@ static double erfc1(double x)
 	return 1 - erx - P/Q;
 }
 
-static double erfc2(uint32_t ix, double x)
+static double erfc2(uint32_t ix, s1615 x)
 {
-	input_t s,R,S;
-	REAL z;
+	s1615 s,R,S;
+	s1615 z;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
-	x = fonc_abs(x);
+	x = fonc_abs(x); //fabs(x);
 	s = 1/(x*x);
 	if (ix < 0x4006db6d) {  /* |x| < 1/.35 ~ 2.85714 */
 		R = ra0+s*(ra1+s*(ra2+s*(ra3+s*(ra4+s*(
@@ -372,9 +348,9 @@ static double erfc2(uint32_t ix, double x)
 	}
 	z = x;
 	SET_LOW_WORD(z,0);
-	return EXP(-z*z-0.5625)*EXP((z-x)*(z+x)+R/S)/x; //EXP
+	return expk(-z*z-0.5625)*expk((z-x)*(z+x)+R/S)/x; //EXP
 }
-
+/*
 double erf(double x)
 {
 	REAL r,s,z,y;
@@ -385,30 +361,30 @@ double erf(double x)
 	sign = ix>>31;
 	ix &= 0x7fffffff;
 	if (ix >= 0x7ff00000) {
-		/* erf(nan)=nan, erf(+-inf)=+-1 */
+		// erf(nan)=nan, erf(+-inf)=+-1 
 		return 1-2*sign + 1/x;
 	}
 	if (ix < 0x3feb0000) {  /* |x| < 0.84375 */
-		if (ix < 0x3e300000) {  /* |x| < 2**-28 */
+//		if (ix < 0x3e300000) {  /* |x| < 2**-28 */
 			/* avoid underflow */
-			return 0.125*(8*x + efx8*x);
-		}
-		z = x*x;
-		r = pp0+z*(pp1+z*(pp2+z*(pp3+z*pp4)));
-		s = 1.0+z*(qq1+z*(qq2+z*(qq3+z*(qq4+z*qq5))));
-		y = r/s;
-		return x + x*y;
-	}
-	if (ix < 0x40180000)  /* 0.84375 <= |x| < 6 */
-		y = 1 - erfc2(ix,x);
-	else
-		y = 1 - 0x1p-1022;
-	return sign ? -y : y;
-}
+//			return 0.125*(8*x + efx8*x);
+//		}
+//		z = x*x;
+//		r = pp0+z*(pp1+z*(pp2+z*(pp3+z*pp4)));
+//		s = 1.0+z*(qq1+z*(qq2+z*(qq3+z*(qq4+z*qq5))));
+//		y = r/s;
+//		return x + x*y;
+//	}
+//	if (ix < 0x40180000)  /* 0.84375 <= |x| < 6 */
+//		y = 1 - erfc2(ix,x);
+//	else
+//		y = 1 - 0x1p-1022;
+//	return sign ? -y : y;
+//}
 
-double erfc(double x)
+double erfc(s1615 x)
 {
-	REAL r,s,z,y;
+	s1615 r,s,z,y;
 	uint32_t ix;
 	int sign;
 
