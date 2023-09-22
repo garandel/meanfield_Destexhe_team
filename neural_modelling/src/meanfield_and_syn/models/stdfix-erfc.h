@@ -149,12 +149,11 @@ do {                                              \
   (hi) = __u.i >> 32;                             \
 } while (0)
 
-static const s1615
-erx = 27691, /* 0x3FEB0AC1, 0x60000000 */
+static const double
+erx  = 8.45062911510467529297e-01;
 
-/*
- * Coefficients for approximation to  erf on [0,0.84375]
- */
+//erx = 27691, /* 0x3FEB0AC1, 0x60000000 */
+static const s1615
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
  */
@@ -185,6 +184,8 @@ qa3 = 2354, /* 0x3FB2635C, 0xD99FE9A7 */
 qa4 = 4134, /* 0x3FC02660, 0xE763351F */
 qa5 = 447, /* 0x3F8BEDC2, 0x6B51DD1C */
 qa6 = 393, /* 0x3F888B54, 0x5735151D */
+
+//static const double
 /*
  * Coefficients for approximation to  erfc in [1.25,1/0.35]
  */
@@ -221,33 +222,13 @@ sb4 = 104852954, /* 0x40A8FFB7, 0x688C246A */
 sb5 = 83658356, /* 0x40A3F219, 0xCEDF3BE6 */
 sb6 = 15549351, /* 0x407DA874, 0xE79FE763 */
 sb7 = -735345; /* 0xC03670E2, 0x42712D62 */
-/*
+
 static union {
     s1615 as_s1615;
-    input_t as_real;
+    REAL as_real;
 } number;
 
-static inline REAL exp_changer(REAL x)
-{
-    
-    number.as_real = x;//  *exc_syn_values;//
-    s1615 x_s1615 = number.as_s1615; 
-    
-    number.as_s1615 = expk(x_s1615);
-    input_t result = number.as_real;
-       
-    
-    //REAL result = erfc(x); //region `ITCM' overflowed by 3448 bytes
-        
-    //log_info("IT'S THE WRONG ONE JUST FOR TEST => NEED ERFC NOT ONLY EXPK ");
-    //return __horner_int_b(poly,x,2);
-    //return expk(x_s1615);
-    return result;
-    //return expf(x);
-    //return x+1.*20;
-        
-}
-*/
+
 /*
 static inline REAL abs_changer(REAL x)
 {
@@ -265,7 +246,7 @@ static inline REAL abs_changer(REAL x)
 */
 
  //fait gagner vite fait 20 bytes
-static s1615 fonc_abs(s1615 x){
+static accum fonc_abs(s1615 x){
     if(x<0){
         x=-1*x;
     }
@@ -273,78 +254,52 @@ static s1615 fonc_abs(s1615 x){
     return x;
 };
 
-static double erfc1(s1615 x)
+static double erfc1(REAL x)
 {
 	s1615 s,P,Q;
     
-    /*input_t p_inter_1, p_inter_2, p_inter_3;
-    input_t p_inter_4, p_inter_5;
+    number.as_real = x;
+    s1615 x_s1615 = number.as_s1615;
     
-    input_t q_inter_1, q_inter_2, q_inter_3;
-    input_t q_inter_4, q_inter_5;
-    */
-    
-	s = fonc_abs(x) - 1; //fabs(x) - 1; 
-    /*
-    p_inter_1 = pa5+s*pa6;
-    p_inter_2 = pa4+s*(p_inter_1);
-    p_inter_3 = pa3+s*(p_inter_2);
-    p_inter_4 = pa2+s*(p_inter_3);
-    p_inter_5 = pa1+s*(p_inter_4);
-    P = pa0+s*(p_inter_5);
-    */
+	s = fonc_abs(x_s1615) - 32768;//1; //fabs(x) - 1; 
+
     
 	P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
-    /*
-    input_t P1 = pa0 + s*pa1;
-    input_t P2 = pa2 + s*pa3;
-    input_t P3 = pa4 + s*pa5;
-    input_t s2 = s*s;
-    input_t s4 = s2*s2;
-    input_t s6 = s2*s4;
-    
-    P = P1 + s2*P2 + s4*P3 + s6*pa6;
-    */
-    /*
-    q_inter_1 = qa5+s*qa6;
-    q_inter_2 = qa4+s*(q_inter_1);
-    q_inter_3 = qa3+s*(q_inter_2);
-    q_inter_4 = qa2+s*(q_inter_3);
-    q_inter_5 = qa1+s*(q_inter_4);
-    Q = 1+s*q_inter_5;
-    */
-    
 	Q = 1+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
     /*
-    input_t Q1 = 1 + s*qa1;
-    input_t Q2 = qa2 + s*qa3;
-    input_t Q3 = qa4 + s*qa5;
-    
-    Q = Q1 + s2*Q2 + s4*Q3 + s6*qa6;
+    number.as_s1615 = P;
+    input_t P_real = number.as_real;
+    number.as_s1615 = Q;
+    input_t Q_real = number.as_real;
     */
+
 	return 1 - erx - P/Q;
 }
 
-static double erfc2(uint32_t ix, s1615 x)
+static double erfc2(uint32_t ix, REAL x)
 {
-	s1615 s,R,S;
-	s1615 z;
+	s1615 R,S;
+	REAL z,s;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
 	x = fonc_abs(x); //fabs(x);
 	s = 1/(x*x);
+    
+    number.as_real = s;
+    s1615 s_s1615 = number.as_s1615;
+    
 	if (ix < 0x4006db6d) {  /* |x| < 1/.35 ~ 2.85714 */
-		R = ra0+s*(ra1+s*(ra2+s*(ra3+s*(ra4+s*(
-		     ra5+s*(ra6+s*ra7))))));
-		S = 1.0+s*(sa1+s*(sa2+s*(sa3+s*(sa4+s*(
-		     sa5+s*(sa6+s*(sa7+s*sa8)))))));
+		R = ra0+s_s1615*(ra1+s_s1615*(ra2+s_s1615*(ra3+s_s1615*(ra4+s_s1615*(
+		     ra5+s_s1615*(ra6+s_s1615*ra7))))));
+		S = 1.0+s_s1615*(sa1+s_s1615*(sa2+s_s1615*(sa3+s_s1615*(sa4+s_s1615*(
+		     sa5+s_s1615*(sa6+s_s1615*(sa7+s_s1615*sa8)))))));
 	} else {                /* |x| > 1/.35 */
-		R = rb0+s*(rb1+s*(rb2+s*(rb3+s*(rb4+s*(
-		     rb5+s*rb6)))));
-		S = 1.0+s*(sb1+s*(sb2+s*(sb3+s*(sb4+s*(
-		     sb5+s*(sb6+s*sb7))))));
+		R = rb0+s_s1615*(rb1+s_s1615*(rb2+s_s1615*(rb3+s_s1615*(rb4+s_s1615*(
+		     rb5+s_s1615*rb6)))));
+		S = 1.0+s_s1615*(sb1+s_s1615*(sb2+s_s1615*(sb3+s_s1615*(sb4+s_s1615*(
+		     sb5+s_s1615*(sb6+s_s1615*sb7))))));
 	}
 	z = x;
 	SET_LOW_WORD(z,0);
@@ -382,9 +337,9 @@ double erf(double x)
 //	return sign ? -y : y;
 //}
 
-double erfc(s1615 x)
+double erfc(REAL x)
 {
-	s1615 r,s,z,y;
+	REAL r,s,z,y;
 	uint32_t ix;
 	int sign;
 

@@ -287,7 +287,7 @@ void TF(REAL Ve, REAL Vi, REAL W,
     
     
     log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
-    REAL one_over_CmxTvN = (0,02001441); //1/(Cm*pNetwork->TvN);//
+    REAL one_over_CmxTvN =  1/(Cm*pNetwork->TvN);// (0,02001441);
     
     pNetwork->Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
     log_info("Fout_th = %5.5k \n", pNetwork->Fout_th);
