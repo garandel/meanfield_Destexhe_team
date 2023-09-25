@@ -149,8 +149,10 @@ do {                                              \
   (hi) = __u.i >> 32;                             \
 } while (0)
 
+
 static const double
 erx  = 8.45062911510467529297e-01;
+
 
 //erx = 27691, /* 0x3FEB0AC1, 0x60000000 */
 static const s1615
@@ -224,11 +226,6 @@ sb5 =  2553.0504064, /* 0x40A3F219, 0xCEDF3BE6 */
 sb6 =   474.5285412, /* 0x407DA874, 0xE79FE763 */
 sb7 =   -22.4409524; /* 0xC03670E2, 0x42712D62 */
 
-static union {
-    s1615 as_s1615;
-    REAL as_real;
-} number;
-
 
 /*
 static inline REAL abs_changer(REAL x)
@@ -257,11 +254,13 @@ static inline s1615 real_to_s1615(const REAL f){
 
 static double erfc1(REAL x)
 {
-	s1615 s,P,Q;
+	s1615 s,P,Q, P_over_Q;
     
-    s1615 x_s1615 = real_to_s1615(x);
+    int_k_t P_int, Q_int;
     
-	s = absk(x_s1615) - ONE;//1; //fabs(x) - 1; 
+    //s1615 x_s1615 = real_to_s1615(x);
+    
+	s = absk(real_to_s1615(x)) - ONE;//1; //fabs(x) - 1; 
 
     
 	P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
@@ -272,24 +271,30 @@ static double erfc1(REAL x)
     number.as_s1615 = Q;
     input_t Q_real = number.as_real;
     */
+    
+    P_int = bitsk(P);
+    Q_int = bitsk(Q);
+    
+    P_over_Q = kdivi(P_int, Q_int);
 
-	return 1 - erx - P/Q;
+	return 1.0 - erx - P/Q;
 }
 
 static double erfc2(uint32_t ix, REAL x)
 {
-	s1615 R,S,s;
+	s1615 R,S,s_s1615;
 	REAL z;
+    int_k_t x_int, x_square;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
 	x = absk(x); //fabs(x);
-    int_k_t x_int = bitsk(x);
-    int_k_t x_square = x_int*x_int;
+    x_int = bitsk(x);
+    x_square = x_int*x_int;
 	//s = kdivi(1, x_square); // 1/(x*x);
     
-    s1615 s_s1615 = kdivi(1, x_square);// real_to_s1615(s);
+    s_s1615 = kdivi(1, x_square);// real_to_s1615(s);
     
 	if (ix < 0x4006db6d) {  /* |x| < 1/.35 ~ 2.85714 */
 		R = ra0+s_s1615*(ra1+s_s1615*(ra2+s_s1615*(ra3+s_s1615*(ra4+s_s1615*(
