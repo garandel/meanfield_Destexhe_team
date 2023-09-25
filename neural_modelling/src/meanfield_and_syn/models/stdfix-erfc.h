@@ -154,74 +154,75 @@ erx  = 8.45062911510467529297e-01;
 
 //erx = 27691, /* 0x3FEB0AC1, 0x60000000 */
 static const s1615
+//erx  = 0.8450629,
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
  */
-efx8 = 33654, /* 0x3FF06EBA, 0x8214DB69 */
-pp0 = 4207, /* 0x3FC06EBA, 0x8214DB68 */
-pp1 = -10651, /* 0xBFD4CD7D, 0x691CB913 */
-pp2 = -933, /* 0xBF9D2A51, 0xDBD7194F */
-pp3 = -189, /* 0xBF77A291, 0x236668E4 */
-pp4 = -1, /* 0xBEF8EAD6, 0x120016AC */
-qq1 = 13039, /* 0x3FD97779, 0xCDDADC09 */
-qq2 = 2131, /* 0x3FB0A54C, 0x5536CEBA */
-qq3 = 167, /* 0x3F74D022, 0xC4D36B0F */
-qq4 = 4, /* 0x3F215DC9, 0x221C1A10 */
-qq5 = 0, /* 0xBED09C43, 0x42A26120 */
+efx8 = 1.0270333, /* 0x3FF06EBA, 0x8214DB69 */
+pp0 =  0.1283792, /* 0x3FC06EBA, 0x8214DB68 */
+pp1 = -0.3250421, /* 0xBFD4CD7D, 0x691CB913 */
+pp2 = -0.0284817, /* 0xBF9D2A51, 0xDBD7194F */
+pp3 = -0.0057703, /* 0xBF77A291, 0x236668E4 */
+pp4 = -0.0000238, /* 0xBEF8EAD6, 0x120016AC */
+qq1 =  0.3979172, /* 0x3FD97779, 0xCDDADC09 */
+qq2 =  0.0650222, /* 0x3FB0A54C, 0x5536CEBA */
+qq3 =  0.0050813, /* 0x3F74D022, 0xC4D36B0F */
+qq4 =  0.0001325, /* 0x3F215DC9, 0x221C1A10 */
+qq5 = -0.0000040, /* 0xBED09C43, 0x42A26120 */
 /*
  * Coefficients for approximation to  erf  in [0.84375,1.25]
  */
-pa0 = -77, /* 0xBF6359B8, 0xBEF77538 */
-pa1 = 13594, /* 0x3FDA8D00, 0xAD92B34D */
-pa2 = -12197, /* 0xBFD7D240, 0xFBB8C3F1 */
-pa3 = 10432, /* 0x3FD45FCA, 0x805120E4 */
-pa4 = -3634, /* 0xBFBC6398, 0x3D3E28EC */
-pa5 = 1163, /* 0x3FA22A36, 0x599795EB */
-pa6 = -71, /* 0xBF61BF38, 0x0A96073F */
-qa1 = 3487, /* 0x3FBB3E66, 0x18EEE323 */
-qa2 = 17708, /* 0x3FE14AF0, 0x92EB6F33 */
-qa3 = 2354, /* 0x3FB2635C, 0xD99FE9A7 */
-qa4 = 4134, /* 0x3FC02660, 0xE763351F */
-qa5 = 447, /* 0x3F8BEDC2, 0x6B51DD1C */
-qa6 = 393, /* 0x3F888B54, 0x5735151D */
+pa0 = -0.0023621, /* 0xBF6359B8, 0xBEF77538 */
+pa1 =  0.4148561, /* 0x3FDA8D00, 0xAD92B34D */
+pa2 = -0.3722079, /* 0xBFD7D240, 0xFBB8C3F1 */
+pa3 =  0.3183466, /* 0x3FD45FCA, 0x805120E4 */
+pa4 = -0.1108947, /* 0xBFBC6398, 0x3D3E28EC */
+pa5 =  0.0354783, /* 0x3FA22A36, 0x599795EB */
+pa6 = -0.0021664, /* 0xBF61BF38, 0x0A96073F */
+qa1 =  0.1064209, /* 0x3FBB3E66, 0x18EEE323 */
+qa2 =  0.5403979, /* 0x3FE14AF0, 0x92EB6F33 */
+qa3 =  0.0718287, /* 0x3FB2635C, 0xD99FE9A7 */
+qa4 =  0.1261712, /* 0x3FC02660, 0xE763351F */
+qa5 =  0.0136371, /* 0x3F8BEDC2, 0x6B51DD1C */
+qa6 =  0.0119845, /* 0x3F888B54, 0x5735151D */
 
 //static const double
 /*
  * Coefficients for approximation to  erfc in [1.25,1/0.35]
  */
-ra0 = -323, /* 0xBF843412, 0x600D6435 */
-ra1 = -22736, /* 0xBFE63416, 0xE4BA7360 */
-ra2 = -345985, /* 0xC0251E04, 0x41B0E726 */
-ra3 = -2043915, /* 0xC04F300A, 0xE4CBA38D */
-ra4 = -5321414, /* 0xC0644CB1, 0x84282266 */
-ra5 = -6049140, /* 0xC067135C, 0xEBCCABB2 */
-ra6 = -2663627, /* 0xC0545265, 0x57E4D2F2 */
-ra7 = -321596, /* 0xC023A0EF, 0xC69AC25C */
-sa1 = 643933, /* 0x4033A6B9, 0xBD707687 */
-sa2 = 4510769, /* 0x4061350C, 0x526AE721 */
-sa3 = 14239855, /* 0x407B290D, 0xD58A1A71 */
-sa4 = 21148050, /* 0x40842B19, 0x21EC2868 */
-sa5 = 14057739, /* 0x407AD021, 0x57700314 */
-sa6 = 3559752, /* 0x405B28A3, 0xEE48AE2C */
-sa7 = 215294, /* 0x401A47EF, 0x8E484A93 */
-sa8 = -1980, /* 0xBFAEEFF2, 0xEE749A62 */
+ra0 =   -0.0098649, /* 0xBF843412, 0x600D6435 */
+ra1 =   -0.6938586, /* 0xBFE63416, 0xE4BA7360 */
+ra2 =  -10.5586262, /* 0xC0251E04, 0x41B0E726 */
+ra3 =  -62.3753325, /* 0xC04F300A, 0xE4CBA38D */
+ra4 = -162.3966695, /* 0xC0644CB1, 0x84282266 */
+ra5 = -184.6050929, /* 0xC067135C, 0xEBCCABB2 */
+ra6 =  -81.2874355, /* 0xC0545265, 0x57E4D2F2 */
+ra7 =   -9.8143293, /* 0xC023A0EF, 0xC69AC25C */
+sa1 =   19.6512717, /* 0x4033A6B9, 0xBD707687 */
+sa2 =   13.7657754, /* 0x4061350C, 0x526AE721 */
+sa3 =  434.5658775, /* 0x407B290D, 0xD58A1A71 */
+sa4 =  645.3872717, /* 0x40842B19, 0x21EC2868 */
+sa5 =  429.0081400, /* 0x407AD021, 0x57700314 */
+sa6 =  108.6350055, /* 0x405B28A3, 0xEE48AE2C */
+sa7 =    6.5702498, /* 0x401A47EF, 0x8E484A93 */
+sa8 =   -0.0604244, /* 0xBFAEEFF2, 0xEE749A62 */
 /*
  * Coefficients for approximation to  erfc in [1/.35,28]
  */
-rb0 = -323, /* 0xBF843412, 0x39E86F4A */
-rb1 = -26191, /* 0xBFE993BA, 0x70C285DE */
-rb2 = -581893, /* 0xC031C209, 0x555F995A */
-rb3 = -5263733, /* 0xC064145D, 0x43C5ED98 */
-rb4 = -20891777, /* 0xC083EC88, 0x1375F228 */
-rb5 = -33590317, /* 0xC0900461, 0x6A2E5992 */
-rb6 = -15843957, /* 0xC07E384E, 0x9BDC383F */
-sb1 = 994118, /* 0x403E568B, 0x261D5190 */
-sb2 = 10675569, /* 0x40745CAE, 0x221B9F0A */
-sb3 = 50355555, /* 0x409802EB, 0x189D5118 */
-sb4 = 104852954, /* 0x40A8FFB7, 0x688C246A */
-sb5 = 83658356, /* 0x40A3F219, 0xCEDF3BE6 */
-sb6 = 15549351, /* 0x407DA874, 0xE79FE763 */
-sb7 = -735345; /* 0xC03670E2, 0x42712D62 */
+rb0 =    -0.0098649, /* 0xBF843412, 0x39E86F4A */
+rb1 =    -0.7992832, /* 0xBFE993BA, 0x70C285DE */
+rb2 =   -17.7579549, /* 0xC031C209, 0x555F995A */
+rb3 =  -160.6363849, /* 0xC064145D, 0x43C5ED98 */
+rb4 =  -637.5664434, /* 0xC083EC88, 0x1375F228 */
+rb5 = -1025.0951316, /* 0xC0900461, 0x6A2E5992 */
+rb6 =   483.5191916, /* 0xC07E384E, 0x9BDC383F */
+sb1 =    30.3380607, /* 0x403E568B, 0x261D5190 */
+sb2 =   325.7925130, /* 0x40745CAE, 0x221B9F0A */
+sb3 =  1536.7295861, /* 0x409802EB, 0x189D5118 */
+sb4 =  3199.8582195, /* 0x40A8FFB7, 0x688C246A */
+sb5 =  2553.0504064, /* 0x40A3F219, 0xCEDF3BE6 */
+sb6 =   474.5285412, /* 0x407DA874, 0xE79FE763 */
+sb7 =   -22.4409524; /* 0xC03670E2, 0x42712D62 */
 
 static union {
     s1615 as_s1615;
@@ -245,27 +246,26 @@ static inline REAL abs_changer(REAL x)
 } 
 */
 
- //fait gagner vite fait 20 bytes
-static accum fonc_abs(s1615 x){
-    if(x<0){
-        x=-1*x;
-    }
+static inline s1615 real_to_s1615(const REAL f){
     
-    return x;
-};
+    union {s1615 r; REAL fx;} x;
+    
+    x.fx = f;
+    return x.r;
+}
+
 
 static double erfc1(REAL x)
 {
 	s1615 s,P,Q;
     
-    number.as_real = x;
-    s1615 x_s1615 = number.as_s1615;
+    s1615 x_s1615 = real_to_s1615(x);
     
-	s = fonc_abs(x_s1615) - 32768;//1; //fabs(x) - 1; 
+	s = absk(x_s1615) - ONE;//1; //fabs(x) - 1; 
 
     
 	P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
-	Q = 1+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
+	Q = 1.0+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
     /*
     number.as_s1615 = P;
     input_t P_real = number.as_real;
@@ -278,17 +278,18 @@ static double erfc1(REAL x)
 
 static double erfc2(uint32_t ix, REAL x)
 {
-	s1615 R,S;
-	REAL z,s;
+	s1615 R,S,s;
+	REAL z;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
-	x = fonc_abs(x); //fabs(x);
-	s = 1/(x*x);
+	x = absk(x); //fabs(x);
+    int_k_t x_int = bitsk(x);
+    int_k_t x_square = x_int*x_int;
+	//s = kdivi(1, x_square); // 1/(x*x);
     
-    number.as_real = s;
-    s1615 s_s1615 = number.as_s1615;
+    s1615 s_s1615 = kdivi(1, x_square);// real_to_s1615(s);
     
 	if (ix < 0x4006db6d) {  /* |x| < 1/.35 ~ 2.85714 */
 		R = ra0+s_s1615*(ra1+s_s1615*(ra2+s_s1615*(ra3+s_s1615*(ra4+s_s1615*(
@@ -305,41 +306,12 @@ static double erfc2(uint32_t ix, REAL x)
 	SET_LOW_WORD(z,0);
 	return expk(-z*z-0.5625)*expk((z-x)*(z+x)+R/S)/x; //EXP
 }
-/*
-double erf(double x)
-{
-	REAL r,s,z,y;
-	uint32_t ix;
-	int sign;
 
-	GET_HIGH_WORD(ix, x);
-	sign = ix>>31;
-	ix &= 0x7fffffff;
-	if (ix >= 0x7ff00000) {
-		// erf(nan)=nan, erf(+-inf)=+-1 
-		return 1-2*sign + 1/x;
-	}
-	if (ix < 0x3feb0000) {  /* |x| < 0.84375 */
-//		if (ix < 0x3e300000) {  /* |x| < 2**-28 */
-			/* avoid underflow */
-//			return 0.125*(8*x + efx8*x);
-//		}
-//		z = x*x;
-//		r = pp0+z*(pp1+z*(pp2+z*(pp3+z*pp4)));
-//		s = 1.0+z*(qq1+z*(qq2+z*(qq3+z*(qq4+z*qq5))));
-//		y = r/s;
-//		return x + x*y;
-//	}
-//	if (ix < 0x40180000)  /* 0.84375 <= |x| < 6 */
-//		y = 1 - erfc2(ix,x);
-//	else
-//		y = 1 - 0x1p-1022;
-//	return sign ? -y : y;
-//}
 
 double erfc(REAL x)
 {
-	REAL r,s,z,y;
+	s1615 r,s,z;
+    REAL y;
 	uint32_t ix;
 	int sign;
 
@@ -354,9 +326,14 @@ double erfc(REAL x)
 		if (ix < 0x3c700000)  /* |x| < 2**-56 */
 			return 1.0 - x;
 		z = x*x;
-		r = pp0+z*(pp1+z*(pp2+z*(pp3+z*pp4)));
-		s = 1.0+z*(qq1+z*(qq2+z*(qq3+z*(qq4+z*qq5))));
-		y = r/s;
+        
+        s1615 z_s1615 = real_to_s1615(z);
+        
+		r = pp0+z_s1615*(pp1+z_s1615*(pp2+z_s1615*(pp3+z_s1615*pp4)));
+		s = 1.0+z_s1615*(qq1+z_s1615*(qq2+z_s1615*(qq3+z_s1615*(qq4+z_s1615*qq5))));
+        int_k_t r_int = bitsk(r);
+        int_k_t s_int = bitsk(s);
+		y = kdivi(r_int, s_int);// r/s;
 		if (sign || ix < 0x3fd00000) {  /* x < 1/4 */
 			return 1.0 - (x+x*y);
 		}

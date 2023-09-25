@@ -93,7 +93,7 @@ static union {
 static inline REAL erfc_test(REAL x)
 {
     
-    number.as_real = x;//*exc_syn_values;//
+    number.as_real = x;//  *exc_syn_values;//
     s1615 x_s1615 = number.as_s1615; 
     
     number.as_s1615 = expk(x_s1615);
