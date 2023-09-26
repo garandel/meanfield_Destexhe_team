@@ -226,23 +226,6 @@ sb5 =  2553.0504064, /* 0x40A3F219, 0xCEDF3BE6 */
 sb6 =   474.5285412, /* 0x407DA874, 0xE79FE763 */
 sb7 =   -22.4409524; /* 0xC03670E2, 0x42712D62 */
 
-
-/*
-static inline REAL abs_changer(REAL x)
-{
-    
-    number.as_real = x;//  *exc_syn_values;//
-    s1615 x_s1615 = number.as_s1615; 
-    
-    number.as_s1615 = absk(x_s1615);
-    input_t result = number.as_real;
-
-    return result;
-    
-        
-} 
-*/
-
 static inline s1615 real_to_s1615(const REAL f){
     
     union {s1615 r; REAL fx;} x;
@@ -260,38 +243,33 @@ static double erfc1(REAL x)
     
     //s1615 x_s1615 = real_to_s1615(x);
     
-	s = absk(real_to_s1615(x)) - ONE;//1; //fabs(x) - 1; 
+	s = absk(real_to_s1615(x)) - ONE;
 
     
 	P = pa0+s*(pa1+s*(pa2+s*(pa3+s*(pa4+s*(pa5+s*pa6)))));
 	Q = 1.0+s*(qa1+s*(qa2+s*(qa3+s*(qa4+s*(qa5+s*qa6)))));
-    /*
-    number.as_s1615 = P;
-    input_t P_real = number.as_real;
-    number.as_s1615 = Q;
-    input_t Q_real = number.as_real;
-    */
-    
+        
     P_int = bitsk(P);
     Q_int = bitsk(Q);
     
-    P_over_Q = kdivi(P_int, Q_int);
+    P_over_Q = kdivi(P_int, Q_int); // kbits(idivk(P,Q)); // 
+    
 
-	return 1.0 - erx - P/Q;
+	return 1.0 - erx - P_over_Q;
 }
 
 static double erfc2(uint32_t ix, REAL x)
 {
-	s1615 R,S,s_s1615;
+	s1615 R,S,s_s1615, R_over_S, second_term_int_over_x;
 	REAL z;
-    int_k_t x_int, x_square;
+    int_k_t x_square, R_int, S_int, second_term_int;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
-	x = absk(x); //fabs(x);
-    x_int = bitsk(x);
-    x_square = x_int*x_int;
+	x = absk(x);//real_to_s1615(x)); //fabs(x);
+    //x_int = bitsk(x);
+    x_square = bitsk(x)*bitsk(x);// x_int*x_int;
 	//s = kdivi(1, x_square); // 1/(x*x);
     
     s_s1615 = kdivi(1, x_square);// real_to_s1615(s);
@@ -307,9 +285,18 @@ static double erfc2(uint32_t ix, REAL x)
 		S = 1.0+s_s1615*(sb1+s_s1615*(sb2+s_s1615*(sb3+s_s1615*(sb4+s_s1615*(
 		     sb5+s_s1615*(sb6+s_s1615*sb7))))));
 	}
-	z = x;
+	//z = real_to_s1615(x);
 	SET_LOW_WORD(z,0);
-	return expk(-z*z-0.5625)*expk((z-x)*(z+x)+R/S)/x; //EXP
+    
+    R_int = bitsk(R);
+    S_int = bitsk(S);
+    
+    R_over_S = kdivi(R_int, S_int);
+    
+    //second_term_int = bitsk(expk((z-x)*(z+x)+R_over_S));
+    //second_term_int_over_x = kdivi(second_term_int,x_int);
+    //expk(-z*z-0.5625)*second_term_int_over_x;//expk((z-x)*(z+x)+R_over_S)/x; //EXP
+	return expk(-z*z-0.5625)*expk((z-x)*(z+x));//+R_over_S);///x; //EXP
 }
 
 

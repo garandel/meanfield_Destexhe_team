@@ -345,3 +345,12 @@ DE PLUS doit trouver un moyen de ne pas interférer entre inh et exc pour spin1_
 480 avec expk et sans fabs
 
 1352 -> 1192
+
+
+===============================26/09====================================
+
+faire attention au type real peut être double  floating point ou accum arm style
+convertion voir dans stdfix-full-iso.h
+
+PBL avec REAL one_over_CmxTvN = (0,02001441); // 1/(Cm*pNetwork->TvN);// 
+        dans meanfield_model_impl.c

@@ -332,11 +332,11 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
             
-            number.as_int = total_neighbour_exc;
-            input_t total_neighbour_exc_real = number.as_real;
+            //number.as_int = total_neighbour_exc;
+            s1615 total_neighbour_exc_real = kbits(total_neighbour_exc);// number.as_real;
             
-            number.as_int = total_neighbour_inh;
-            input_t total_neighbour_inh_real = number.as_real;
+            //number.as_int = total_neighbour_inh;
+            s1615 total_neighbour_inh_real = kbits(total_neighbour_inh); number.as_real;
             
             log_info("total_neighbour_exc_real = %5.5k", total_neighbour_exc_real);
             log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
@@ -361,8 +361,8 @@ static void neuron_impl_do_timestep_update(
             //log_info("exc_syn_adds=%08x", exc_syn_values);
             //log_info("inh_syn_add=%08x", inh_syn_values);
             
-            log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            log_info("inh_syn_val=%5.5k",*inh_syn_values);
+            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
+            //log_info("inh_syn_val=%5.5k",*inh_syn_values);
             
             
             /*
@@ -427,12 +427,12 @@ static void neuron_impl_do_timestep_update(
             
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             
+            /*
             log_info("firing_int_exc = %d",firing_rate_exc_int);
             log_info("firing_int_inh = %d",firing_rate_inh_int);
-            
-            
             log_info("total_neighbour_exc = %d", total_neighbour_exc);
             log_info("total_neighbour_inh = %d", total_neighbour_inh);
+            */
             total_neighbour_exc = 0;
             total_neighbour_inh = 0;
 

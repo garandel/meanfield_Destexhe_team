@@ -276,18 +276,18 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
     
-    REAL error_func = erfc(argument); //EXP(argument);//  with EXP is compiling 
+    REAL error_func = erfc(argument);// erfc(argument); //EXP(argument);//  with EXP is compiling 
     
     
     
-    log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
+    //log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
     
     REAL Gl = pNetwork->Gl;
     REAL Cm = pNetwork->Cm;
     
     
-    log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
-    REAL one_over_CmxTvN =  1/(Cm*pNetwork->TvN);// (0,02001441);
+    //log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
+    REAL one_over_CmxTvN = (0,02001441); // 1/(Cm*pNetwork->TvN);// 
     
     pNetwork->Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
     log_info("Fout_th = %5.5k \n", pNetwork->Fout_th);

@@ -343,7 +343,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
         key, firing_rate, time, dma_busy);
     
     uint32_t diff = (payload >> 0) & MASK;
-    log_info("diff = %d", diff);
+    //log_info("diff = %d", diff);
     
     
     
@@ -465,8 +465,8 @@ void spike_processing_clear_input_buffer(timer_t time) {
     recording_record(p_per_ts_region, &p_per_ts_struct, sizeof(p_per_ts_struct));
     p_per_ts_struct.packets_this_time_step = 0;
     
-    log_info("total_neighbour_exc = %d", total_neighbour_exc);
-    log_info("total_neighbour_inh = %d", total_neighbour_inh);
+    //log_info("total_neighbour_exc = %d", total_neighbour_exc);
+    //log_info("total_neighbour_inh = %d", total_neighbour_inh);
     //total_neighbour = 0;
 
     // Record the count whether clearing or not for provenance

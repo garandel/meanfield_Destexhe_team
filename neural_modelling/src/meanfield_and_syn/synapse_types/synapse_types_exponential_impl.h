@@ -124,11 +124,9 @@ static inline void synapse_types_add_neuron_input(
     switch (synapse_type_index) {
     case EXCITATORY:
     	add_input_exp(&parameters->exc, input);
-        log_info("exc");
     	break;
     case INHIBITORY:
     	add_input_exp(&parameters->inh, input);
-        log_info("inh");
     	break;
     }
 }
