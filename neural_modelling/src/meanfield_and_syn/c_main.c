@@ -196,7 +196,8 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
     // Increment time step
     time++;
     
-    log_info("timer_callback %d",time);//remove it in futur
+    //log_info("timer_callback %d",time);//remove it in futur
+    
 
     // Clear any outstanding spikes
     spike_processing_clear_input_buffer(time);

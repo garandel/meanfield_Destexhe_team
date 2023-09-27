@@ -339,7 +339,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     p_per_ts_struct.packets_this_time_step += 1;
     
     uint32_t firing_rate = payload>>1;
-    log_info("Received spike %x with payload %d at %d, DMA Busy = %d",
+    log_info("Received spike %x with firing rate %d at %d, DMA Busy = %d",
         key, firing_rate, time, dma_busy);
     
     uint32_t diff = (payload >> 0) & MASK;

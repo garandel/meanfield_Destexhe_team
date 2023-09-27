@@ -327,11 +327,17 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + input_this_timestep + ext_drive + total_exc;//
-    
-    REAL lastVi = meanfield->Vi + total_inh;
+    REAL lastVepInput = lastVe + input_this_timestep + ext_drive  + total_exc;
+    // + total_exc; increase too much and so by circular go to 0 et so DIVBY0 error
+    //REAL_HALF(total_exc);//
+    REAL lastVi = meanfield->Vi;
+    REAL lastVipInput = meanfield->Vi + total_inh;
+    //+ total_inh; DIVBY0 error
+    //REAL_HALF(total_inh);
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
+    
+    //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
     
     //REAL lastW_exc = meanfield->w_exc;
     //REAL lastW_inh = lastW_exc - b*lastVe;
@@ -366,17 +372,19 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
 /************************************************
  *  RUNGE-KUTTA 2nd order Midpoint Try precision*
  ***********************************************/
-    TF(lastVepExtD, lastVi, lastWe, pNetwork, Pfit_exc);    
+    TF(lastVepInput, lastVipInput, lastWe, pNetwork, Pfit_exc);    
     REAL lastmuV = pNetwork->muV;
     REAL lastTF_exc_1 = pNetwork->Fout_th;
        
-    TF(lastVepExtD, lastVi, lastWi, pNetwork, Pfit_inh);
+    TF(lastVepInput, lastVipInput, lastWi, pNetwork, Pfit_inh);
     REAL lastTF_inh_1 = pNetwork->Fout_th;
     
     h=h*0.001;
         
-    REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVepExtD);
-    REAL lastVe_n2 = lastVepExtD + REAL_HALF(h*alpha_exc_1);
+    //REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVepInput);
+    //REAL lastVe_n2 = lastVepInput + REAL_HALF(h*alpha_exc_1);
+    REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVe);
+    REAL lastVe_n2 = lastVe + REAL_HALF(h*alpha_exc_1);
     
     REAL alpha_inh_1 = T_inv*(lastTF_inh_1 - lastVi);
     REAL lastVi_n2 = lastVi + REAL_HALF(h*alpha_inh_1);
@@ -390,15 +398,22 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL alpha_exc_2 = T_inv*(TF_exc_2 - lastVe_n2);
     REAL alpha_inh_2 = T_inv*(TF_inh_2 - lastVi_n2);
     
-    meanfield->Ve += h*alpha_exc_2;
-    meanfield->Vi += h*alpha_inh_2;
+    REAL Ve, Vi;
     
-    // Control if output are realistic
-    //log_info("%6.1k  %4.9k  %4.9k", h, meanfield->Ve, meanfield->Vi);
+    Ve += h*alpha_exc_2;
+    Vi += h*alpha_inh_2;
     
-    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepExtD + a_exc*(lastmuV-El_exc);
+    if(Ve > REAL_CONST(250.)){
+        meanfield->Ve = REAL_CONST(200.);
+    }
+    if(Vi > REAL_CONST(250.)){
+        meanfield->Vi = REAL_CONST(200.);
+    }
+    
+        
+    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
-    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVepExtD + a_exc*(lastmuV-El_exc);
+    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
  
     meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
 
@@ -423,21 +438,24 @@ state_t meanfield_model_state_update(
     uint16_t num_excitatory_inputs, const input_t *exc_input,
     uint16_t num_inhibitory_inputs, const input_t *inh_input) {
     
-    REAL total_exc = NULL;
-    REAL total_inh = NULL;
+    
+    REAL total_exc = 0.;
+    REAL total_inh = 0.;
+    
+    
 
     for (int i =0; i<num_excitatory_inputs; i++) {
-        total_exc += exc_input[i];
-        //log_info("exc_inputs = %6.6k",exc_input[i]);
+        total_exc = REAL_HALF(exc_input[i]);
+        //log_info("total_exc = %6.6k i = %d \n",exc_input[i], i);
     }
     for (int i =0; i<num_inhibitory_inputs; i++) {
-        total_inh += inh_input[i];
+        total_inh = REAL_HALF(inh_input[i]);
     }
     
-    /*
-    log_info("total_exc=%8.6k",total_exc);
-    log_info("total_inh=%8.6k",total_inh);
-    */
+    
+   
+    log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
+
 
     input_t input_this_timestep = external_bias;// + neuron->I_offset;
 

@@ -331,19 +331,21 @@ static void neuron_impl_do_timestep_update(
             //!!Add to mimic an input from synapses (just to test) will be remove!!!*
             //***********************************************************************
             
-            
+
+            //total_neighbour_exc = total_neighbour_exc>>1;
             number.as_int = total_neighbour_exc;
             REAL total_neighbour_exc_real = number.as_real;
             // kbits(total_neighbour_exc);
             
+            //total_neighbour_inh = total_neighbour_inh>>1;
             number.as_int = total_neighbour_inh;
             REAL total_neighbour_inh_real = number.as_real;
             //kbits(total_neighbour_inh);
             
-            //log_info("total_neighbour_exc_real = %5.5k", total_neighbour_exc_real);
+            //log_info("total_neighbour_exc_real= %5.5k\n", total_neighbour_exc_real);
             //log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
-            input_t external_bias = 0;//total_neighbour_real;
+            input_t external_bias = 0.;//total_neighbour_real;
             
             the_synapse_type->exc.synaptic_input_value = total_neighbour_exc_real; 
             //firing_rate_Ve + total_neighbour_exc_real;
@@ -426,7 +428,19 @@ static void neuron_impl_do_timestep_update(
             */
             total_neighbour_exc = 0;
             total_neighbour_inh = 0;
-
+            
+            //log_info("total_exc = %d \n total_inh = %d \n", total_neighbour_exc, total_neighbour_inh);
+            
+            bool exc = 0;
+            bool inh = 1;
+            uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
+            uint32_t concat_inh = firing_rate_inh_int<<1 | inh;
+            
+            spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
+            spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
+            
+            // Shape the existing input according to the included rule
+            synapse_types_shape_input(the_synapse_type);
             
             // update neuron parameters
             
@@ -442,20 +456,8 @@ static void neuron_impl_do_timestep_update(
                                           exc_syn_values,
                                           NUM_INHIBITORY_RECEPTORS,
                                           inh_syn_values);
-            
-            bool exc = 0;
-            bool inh = 1;
-            uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
-            uint32_t concat_inh = firing_rate_inh_int<<1 | inh;
-            
-            spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
-            spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
-            
-            // Shape the existing input according to the included rule
-            synapse_types_shape_input(the_synapse_type);
-            
-            
         }
+    
 
 #if LOG_LEVEL >= LOG_DEBUG
         meanfield_model_print_state_variables(this_meanfield);
