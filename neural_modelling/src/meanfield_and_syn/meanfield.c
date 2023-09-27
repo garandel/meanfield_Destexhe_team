@@ -190,7 +190,7 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
     uint32_t synapse_index = 0;
     uint32_t ring_buffer_index = 0;
     for (uint32_t s_i = n_synapse_types; s_i > 0; s_i--) {
-        uint32_t rb_shift = NULL;//ring_buffer_to_input_left_shifts[synapse_index];
+        uint32_t rb_shift = ring_buffer_to_input_left_shifts[synapse_index];
         uint32_t neuron_index = 0;
         for (uint32_t n_i = n_neurons_peak; n_i > 0; n_i--) {
             weight_t value = syns[ring_buffer_index];
@@ -198,7 +198,7 @@ void neuron_transfer(weight_t *syns) { // EXPORTED
                     log_error("Neuron index %u out of range", neuron_index);
                     rt_error(RTE_SWERR);
             }
-            input_t val_to_add = synapse_row_convert_weight_to_input(value, rb_shift); ///modif ici pour avoir les input en direct
+            input_t val_to_add = synapse_row_convert_weight_to_input(value, rb_shift);
                             
             neuron_impl_add_inputs(synapse_index, neuron_index, val_to_add);
                 

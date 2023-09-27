@@ -243,7 +243,6 @@ static inline input_t synapse_row_convert_weight_to_input(
         int_k_t input_type;
         s1615 output_type;
     } converter;
-    
     converter.input_type = (int_k_t) (weight) << left_shift;
 
     return converter.output_type;

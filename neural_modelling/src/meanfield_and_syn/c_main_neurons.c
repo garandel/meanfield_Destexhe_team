@@ -249,7 +249,7 @@ void timer_callback(uint timer_count, UNUSED uint unused) {
         
         // Add in the contributions from the last read item
         sum(synaptic_contributions[read_index]);
-        
+        //log_info("synaptic_contributions = %d
         read_index = !read_index;
     }
     

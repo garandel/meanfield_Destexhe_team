@@ -276,24 +276,33 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL argument = (pNetwork->Vthre - \
                      pNetwork->muV)/(REAL_CONST(1.4142137)*pNetwork->sV); 
     
-    REAL error_func = erfc(argument);// erfc(argument); //EXP(argument);//  with EXP is compiling 
     
-    
-    
+    REAL error_func = erfc(argument);
+    //EXP(argument);//  with EXP is compiling
+    //erfc(argument); look like working
+  
     //log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
-    
+  
     REAL Gl = pNetwork->Gl;
-    REAL Cm = pNetwork->Cm;
     
+    /*int_k_t Cm_int = bitsk(pNetwork->Cm);
+    int_k_t TvN_int = bitsk(pNetwork->TvN);
+    */
     
     //log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
-    REAL one_over_CmxTvN = (0,02001441); // 1/(Cm*pNetwork->TvN);// 
+    REAL one_over_CmxTvN = REAL_CONST(0.02);
+    //kdivi(1, Cm_int*TvN_int);
+    // 1/(Cm*pNetwork->TvN);
+    // REAL_CONST(0.02); //  WORK with const
     
-    pNetwork->Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;// /(Cm*pNetwork->TvN) ;
-    log_info("Fout_th = %5.5k \n", pNetwork->Fout_th);
+    REAL Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;
+    //log_info("Fout_th = %5.5k \n", Fout_th);
     
-    if (pNetwork->Fout_th < ACS_DBL_TINY){
-        pNetwork->Fout_th += ACS_DBL_TINY;
+    if (Fout_th < REAL_CONST(0.000031)){
+        pNetwork->Fout_th += REAL_CONST(0.000031);
+    }
+    else{
+        pNetwork->Fout_th = Fout_th;
     }
     
 }
@@ -318,9 +327,9 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepExtD = lastVe + input_this_timestep + ext_drive;// + total_exc;//
+    REAL lastVepExtD = lastVe + input_this_timestep + ext_drive + total_exc;//
     
-    REAL lastVi = meanfield->Vi;// + total_inh;
+    REAL lastVi = meanfield->Vi + total_inh;
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
     
@@ -414,8 +423,8 @@ state_t meanfield_model_state_update(
     uint16_t num_excitatory_inputs, const input_t *exc_input,
     uint16_t num_inhibitory_inputs, const input_t *inh_input) {
     
-    REAL total_exc = 0;
-    REAL total_inh = 0;
+    REAL total_exc = NULL;
+    REAL total_inh = NULL;
 
     for (int i =0; i<num_excitatory_inputs; i++) {
         total_exc += exc_input[i];
@@ -425,12 +434,12 @@ state_t meanfield_model_state_update(
         total_inh += inh_input[i];
     }
     
+    /*
     log_info("total_exc=%8.6k",total_exc);
     log_info("total_inh=%8.6k",total_inh);
-    
+    */
 
-    input_t input_this_timestep = external_bias;//total_exc + total_inh + external_bias;// + neuron->I_offset;
-    //log_info("input_this_timestep = %11.4k", input_this_timestep);
+    input_t input_this_timestep = external_bias;// + neuron->I_offset;
 
     // the best AR update so far
     RK2_midpoint_MF(meanfield->this_h,
@@ -444,7 +453,11 @@ state_t meanfield_model_state_update(
                     
     //meanfield->this_h = global_params->machine_timestep_ms;
     
-    //what is the best output for this function? Output of this function is used normally for thershold
+    /*
+     * what is the best output for this function? Output of this function is used
+     * normally for thersholdnnot relevant in MFs
+    */
+    
     return meanfield->Ve;
 }
 

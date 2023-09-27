@@ -348,11 +348,16 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     
     
     //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
+    /*
+     * Can implement here a preprocess between different population of neurons (i.e 
+     * MFs), before encounter "local" firing rate.
+     *
+     */
     if(diff == 0){
-        total_neighbour_exc += firing_rate;
+        total_neighbour_exc += firing_rate; // mulik(firing_rate,0.5); do weard result
     }
     else if(diff == 1){
-        total_neighbour_inh += firing_rate;
+        total_neighbour_inh += firing_rate; //mulik(firing_rate,0.5);
     }
     
 }

@@ -332,21 +332,25 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
             
-            //number.as_int = total_neighbour_exc;
-            s1615 total_neighbour_exc_real = kbits(total_neighbour_exc);// number.as_real;
+            number.as_int = total_neighbour_exc;
+            REAL total_neighbour_exc_real = number.as_real;
+            // kbits(total_neighbour_exc);
             
-            //number.as_int = total_neighbour_inh;
-            s1615 total_neighbour_inh_real = kbits(total_neighbour_inh); number.as_real;
+            number.as_int = total_neighbour_inh;
+            REAL total_neighbour_inh_real = number.as_real;
+            //kbits(total_neighbour_inh);
             
-            log_info("total_neighbour_exc_real = %5.5k", total_neighbour_exc_real);
-            log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
+            //log_info("total_neighbour_exc_real = %5.5k", total_neighbour_exc_real);
+            //log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
             input_t external_bias = 0;//total_neighbour_real;
             
-            the_synapse_type->exc.synaptic_input_value = total_neighbour_exc_real;// firing_rate_Ve + total_neighbour_real;//
-            //+total_neighbour_real;
+            the_synapse_type->exc.synaptic_input_value = total_neighbour_exc_real; 
+            //firing_rate_Ve + total_neighbour_exc_real;
+            //total_neighbour_exc_real;
             the_synapse_type->inh.synaptic_input_value = total_neighbour_inh_real;
-            
+            //firing_rate_Vi + total_neighbour_inh_real;
+            // total_neighbour_inh_real;
             
             
 
@@ -365,14 +369,7 @@ static void neuron_impl_do_timestep_update(
             //log_info("inh_syn_val=%5.5k",*inh_syn_values);
             
             
-            /*
-            // Call functions to obtain exc_input and inh_input
-            input_t *exc_input_values = input_type_get_input_value(
-                    exc_syn_values, input_types, NUM_EXCITATORY_RECEPTORS);
-            input_t *inh_input_values = input_type_get_input_value(
-                    inh_syn_values, input_types, NUM_INHIBITORY_RECEPTORS);
             
-            */
             
             
             // Operation post synaptic
@@ -405,17 +402,11 @@ static void neuron_impl_do_timestep_update(
                 neuron_recording_record_accum(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
             }
-            
-            
-            
-            
-            //TODO implement external bias
-            
-            //<- with this one that's work with mimic synapses coms
-            number.as_real = firing_rate_Ve;//*exc_syn_values;//
+          
+            number.as_real = firing_rate_Ve;// *exc_syn_values;//
             uint32_t firing_rate_exc_int = number.as_int; 
             
-            number.as_real = firing_rate_Vi;//*exc_syn_values;//
+            number.as_real = firing_rate_Vi;// *exc_syn_values;//
             uint32_t firing_rate_inh_int = number.as_int; 
             
             /*
@@ -438,17 +429,9 @@ static void neuron_impl_do_timestep_update(
 
             
             // update neuron parameters
-            /*
-            state_t result = meanfield_model_state_update(this_meanfield,
-                                                          pNetwork_types,
-                                                          Pfit_exc_types,
-                                                          Pfit_inh_types,
-                                                          external_bias,
-                                                          NUM_EXCITATORY_RECEPTORS,
-                                                          exc_syn_values,
-                                                          NUM_INHIBITORY_RECEPTORS,
-                                                          inh_syn_values);
-            */                                                          
+            
+            //state_t result = meanfield_model_state_update(...);
+                                                                      
             
             meanfield_model_state_update(this_meanfield,
                                           pNetwork_types,
@@ -468,8 +451,6 @@ static void neuron_impl_do_timestep_update(
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
             spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
             
-            //neuron_recording_record_bit(SPIKE_RECORDING_BITFIELD, meanfield_index);
-
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
             

@@ -260,16 +260,16 @@ static double erfc1(REAL x)
 
 static double erfc2(uint32_t ix, REAL x)
 {
-	s1615 R,S,s_s1615, R_over_S, second_term_int_over_x;
+	s1615 R,S,s_s1615, R_over_S;
 	REAL z;
-    int_k_t x_square, R_int, S_int, second_term_int;
+    int_k_t x_square, R_int, S_int;
 
 	if (ix < 0x3ff40000)  /* |x| < 1.25 */
 		return erfc1(x);
 
 	x = absk(x);//real_to_s1615(x)); //fabs(x);
-    //x_int = bitsk(x);
-    x_square = bitsk(x)*bitsk(x);// x_int*x_int;
+    
+    x_square = bitsk(x)*bitsk(x);// 
 	//s = kdivi(1, x_square); // 1/(x*x);
     
     s_s1615 = kdivi(1, x_square);// real_to_s1615(s);
@@ -293,10 +293,7 @@ static double erfc2(uint32_t ix, REAL x)
     
     R_over_S = kdivi(R_int, S_int);
     
-    //second_term_int = bitsk(expk((z-x)*(z+x)+R_over_S));
-    //second_term_int_over_x = kdivi(second_term_int,x_int);
-    //expk(-z*z-0.5625)*second_term_int_over_x;//expk((z-x)*(z+x)+R_over_S)/x; //EXP
-	return expk(-z*z-0.5625)*expk((z-x)*(z+x));//+R_over_S);///x; //EXP
+	return expk(-z*z-0.5625)*expk((z-x)*(z+x)+R_over_S)/x; //EXP
 }
 
 
@@ -323,10 +320,12 @@ double erfc(REAL x)
         
 		r = pp0+z_s1615*(pp1+z_s1615*(pp2+z_s1615*(pp3+z_s1615*pp4)));
 		s = 1.0+z_s1615*(qq1+z_s1615*(qq2+z_s1615*(qq3+z_s1615*(qq4+z_s1615*qq5))));
+        
         int_k_t r_int = bitsk(r);
         int_k_t s_int = bitsk(s);
-		y = kdivi(r_int, s_int);// r/s;
-		if (sign || ix < 0x3fd00000) {  /* x < 1/4 */
+        y = kdivi(r_int, s_int);// r/s;
+
+        if (sign || ix < 0x3fd00000) {  /* x < 1/4 */
 			return 1.0 - (x+x*y);
 		}
 		return 0.5 - (x - 0.5 + x*y);

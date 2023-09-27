@@ -477,21 +477,6 @@ bool population_table_get_first_address(
     // locate the position in the binary search / array
     log_info("Searching for key %d", spike);
     
-    /*
-    union _spike_t spikeP;
-    spikeP.pair = spike;
-    
-    spikeP.payload = cc[CC_TXDATA];
-    */
-    //log_info("sizeof spike_t = %d", sizeof(spike_t));
-    
-    //key_t clef = spike_key(spike);
-    payload_t donne = spike_payload(spike);
-    //log_info("cc[CC_TXDATA] = %d", cc[CC_TXDATA]);// think to remove it
-    //log_info("clef = %d",clef);
-    //log_info("data = %d", donne);
-    //log_info("payload = %5.5k" , spike.payload); 
-
     // check we don't have a complete miss
     uint32_t position;
     if (!population_table_position_in_the_master_pop_array(spike, &position)) {
@@ -523,7 +508,6 @@ bool population_table_get_first_address(
         last_neuron_id = local_neuron_id + get_core_sum(extra, spike);
         bit_field_id = local_neuron_id + get_bitfield_sum(extra, spike);
     } else {
-        //log_info("else");//remove it in futur
         last_neuron_id = get_neuron_id(entry, spike);
         bit_field_id = last_neuron_id;
     }
@@ -587,11 +571,7 @@ bool population_table_get_next_address(
                 *row_address = (synaptic_row_t) (get_direct_address(item) +
                     (last_neuron_id * sizeof(uint32_t)));
                 *n_bytes_to_transfer = 0;
-                log_info("spike table = 0x%.8x", spike);//remove it in future
-                
             } else {
-                log_info("not single");//remove it in future
-
                 uint32_t row_length = get_row_length(item);
                 uint32_t block_address = get_address(item);
                 uint32_t stride = (row_length + N_SYNAPSE_ROW_HEADER_WORDS);
