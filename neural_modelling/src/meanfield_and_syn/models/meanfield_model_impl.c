@@ -280,9 +280,7 @@ void TF(REAL Ve, REAL Vi, REAL W,
     REAL error_func = erfc(argument);
     //EXP(argument);//  with EXP is compiling
     //erfc(argument); look like working
-  
-    //log_info("argument = %5.5k and error_func = %5.5k", argument, error_func);
-  
+   
     REAL Gl = pNetwork->Gl;
     
     /*int_k_t Cm_int = bitsk(pNetwork->Cm);
@@ -329,18 +327,17 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL lastVe = meanfield->Ve;
     REAL lastVepInput = lastVe + input_this_timestep + ext_drive  + total_exc;
     // + total_exc; increase too much and so by circular go to 0 et so DIVBY0 error
-    //REAL_HALF(total_exc);//
+    
     REAL lastVi = meanfield->Vi;
     REAL lastVipInput = meanfield->Vi + total_inh;
     //+ total_inh; DIVBY0 error
-    //REAL_HALF(total_inh);
+    
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
     
     //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
     
-    //REAL lastW_exc = meanfield->w_exc;
-    //REAL lastW_inh = lastW_exc - b*lastVe;
+    
     
     
     REAL T_inv = meanfield->Timescale_inv;
@@ -398,19 +395,13 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL alpha_exc_2 = T_inv*(TF_exc_2 - lastVe_n2);
     REAL alpha_inh_2 = T_inv*(TF_inh_2 - lastVi_n2);
     
-    REAL Ve, Vi;
+    meanfield->Ve += h*alpha_exc_2;
+    meanfield->Vi += h*alpha_inh_2;
     
-    Ve += h*alpha_exc_2;
-    Vi += h*alpha_inh_2;
-    
-    if(Ve > REAL_CONST(250.)){
-        meanfield->Ve = REAL_CONST(200.);
-    }
-    if(Vi > REAL_CONST(250.)){
-        meanfield->Vi = REAL_CONST(200.);
-    }
-    
-        
+    /*
+    log_info("meanfield->Ve = %5.9k", meanfield->Ve);
+    log_info("meanfield->Vi = %5.9k", meanfield->Vi);
+    */
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
     REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
@@ -454,7 +445,7 @@ state_t meanfield_model_state_update(
     
     
    
-    log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
+    //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
 
 
     input_t input_this_timestep = external_bias;// + neuron->I_offset;

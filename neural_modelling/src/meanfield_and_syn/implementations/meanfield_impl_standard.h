@@ -283,8 +283,8 @@ static void neuron_impl_load_neuron_parameters(
 
 
 static union {
-    uint32_t as_int;
-    input_t as_real;
+    int_k_t as_int;
+    REAL as_real;
 } number;
 
 
@@ -332,12 +332,12 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
 
-            //total_neighbour_exc = total_neighbour_exc>>1;
+            
             number.as_int = total_neighbour_exc;
             REAL total_neighbour_exc_real = number.as_real;
             // kbits(total_neighbour_exc);
             
-            //total_neighbour_inh = total_neighbour_inh>>1;
+            
             number.as_int = total_neighbour_inh;
             REAL total_neighbour_inh_real = number.as_real;
             //kbits(total_neighbour_inh);
@@ -404,13 +404,22 @@ static void neuron_impl_do_timestep_update(
                 neuron_recording_record_accum(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
             }
+            
+            
+            static union {s87 as_s87; REAL as_real;} x;
           
-            number.as_real = firing_rate_Ve;// *exc_syn_values;//
-            uint32_t firing_rate_exc_int = number.as_int; 
+            x.as_real = firing_rate_Ve;// *exc_syn_values;//
+            s87 firing_rate_exc_s87 = x.as_s87;
+            int_hk_t firing_rate_exc_int = bitshk(firing_rate_exc_s87); 
             
+            x.as_real = firing_rate_Vi;// *exc_syn_values;//
+            s87 firing_rate_inh_s87 = x.as_s87;
+            int_hk_t firing_rate_inh_int = bitshk(firing_rate_inh_s87); 
+            
+            /*
             number.as_real = firing_rate_Vi;// *exc_syn_values;//
-            uint32_t firing_rate_inh_int = number.as_int; 
-            
+            int_k_t firing_rate_inh_int = number.as_int; 
+            */
             /*
             uint32_t firing_rate_vec[SYNAPSE_TYPE_COUNT];
             firing_rate_vec[0] = firing_rate_exc_int;
@@ -420,24 +429,33 @@ static void neuron_impl_do_timestep_update(
             
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             
-            /*
-            log_info("firing_int_exc = %d",firing_rate_exc_int);
-            log_info("firing_int_inh = %d",firing_rate_inh_int);
-            log_info("total_neighbour_exc = %d", total_neighbour_exc);
-            log_info("total_neighbour_inh = %d", total_neighbour_inh);
-            */
-            total_neighbour_exc = 0;
-            total_neighbour_inh = 0;
+            
+            //log_info("firing_int_exc = %d",firing_rate_exc_int);
+            //log_info("firing_int_inh = %d",firing_rate_inh_int);
+            
+            
+            //log_info("total_neighbour_exc = %d", total_neighbour_exc);
+            //log_info("total_neighbour_inh = %d", total_neighbour_inh);
+            
+            //total_neighbour_exc = 0;//HERE make some pblm
+            //total_neighbour_inh = 0;
             
             //log_info("total_exc = %d \n total_inh = %d \n", total_neighbour_exc, total_neighbour_inh);
-            
+            /*
             bool exc = 0;
             bool inh = 1;
             uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
             uint32_t concat_inh = firing_rate_inh_int<<1 | inh;
+            */
             
-            spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
-            spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
+            uint32_t concat = firing_rate_exc_int<<16 | firing_rate_inh_int;
+            
+            //log_info("concat_exc = %d", concat_exc);
+            //log_info("concat_inh = %d", concat_inh);
+            
+            spin1_send_mc_packet(key, concat, WITH_PAYLOAD);
+            //spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
+            //spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
             
             // Shape the existing input according to the included rule
             synapse_types_shape_input(the_synapse_type);
@@ -456,6 +474,7 @@ static void neuron_impl_do_timestep_update(
                                           exc_syn_values,
                                           NUM_INHIBITORY_RECEPTORS,
                                           inh_syn_values);
+            
         }
     
 
