@@ -137,8 +137,8 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
         one_over_DmuV0 = 1/DmuV0
         one_over_DsV0 = 1/DsV0
         one_over_DTvN0 = 1/DTvN0
-        one_over_Cm = 1/Cm
-        one_over_Gl = 1/Gl
+        #one_over_Cm = 1/Cm
+        #one_over_Gl = 1/Gl
         
         muGe_0 = q_exc * Tsyn_exc * (Ve+ext_drive) * (1.-gei) * pconnec*Ntot
         muGi_0 = q_inh * Tsyn_inh * Vi * gei * pconnec * Ntot

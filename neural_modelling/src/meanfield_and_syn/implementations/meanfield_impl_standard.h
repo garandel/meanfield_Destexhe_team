@@ -332,28 +332,36 @@ static void neuron_impl_do_timestep_update(
             //***********************************************************************
             
 
-            log_info("meanf_impl_std");
-            uint32_t last_total_neighbour_exc = pNetwork_types->exc_neighbour_contribution;
-            uint32_t last_total_neighbour_inh = pNetwork_types->inh_neighbour_contribution;
+            //log_info("meanf_impl_std");
             
-            uint32_t diff_neighbour_exc = (total_neighbour_exc - last_total_neighbour_exc);
-            uint32_t diff_neighbour_inh = (total_neighbour_inh - last_total_neighbour_inh);
             
+           
+            uint32_t last_total_neighbour_exc = 
+                pNetwork_types->exc_neighbour_contribution;
+            uint32_t last_total_neighbour_inh = 
+                pNetwork_types->inh_neighbour_contribution;
+
+            uint32_t diff_neighbour_exc = 
+                (total_neighbour_exc - last_total_neighbour_exc);
+            uint32_t diff_neighbour_inh = 
+                (total_neighbour_inh - last_total_neighbour_inh);
+
             pNetwork_types->exc_neighbour_contribution = total_neighbour_exc;
             pNetwork_types->inh_neighbour_contribution = total_neighbour_inh;
+  
             
-            number.as_int = diff_neighbour_exc;
+            number.as_int = diff_neighbour_exc; //total_neighbour_exc;//
             REAL total_neighbour_exc_real = number.as_real;
             // kbits(total_neighbour_exc);
             
-            number.as_int = diff_neighbour_inh;
+            number.as_int = diff_neighbour_inh; //total_neighbour_inh;//
             REAL total_neighbour_inh_real = number.as_real;
             //kbits(total_neighbour_inh);
             
             //log_info("total_neighbour_exc_real= %5.5k\n", total_neighbour_exc_real);
             //log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
-            input_t external_bias = 0.;//total_neighbour_real;
+            input_t external_bias = pNetwork_types->ext_drive;//total_neighbour_real;
             
             
             
@@ -421,6 +429,8 @@ static void neuron_impl_do_timestep_update(
             s87 firing_rate_inh_s87 = x.as_s87;
             int_hk_t firing_rate_inh_int = bitshk(firing_rate_inh_s87); 
             */
+   
+            log_info("firing_exc = %5.8k",firing_rate_Ve);
             
             number.as_real = firing_rate_Ve;// *exc_syn_values;//
             uint32_t firing_rate_exc_int = number.as_int; 
@@ -432,11 +442,12 @@ static void neuron_impl_do_timestep_update(
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             
             
-            //log_info("firing_int_exc = %d",firing_rate_exc_int);
+            log_info("firing_int_exc = %d",firing_rate_exc_int);
             //log_info("firing_int_inh = %d",firing_rate_inh_int);
-            log_info("total_neighbour_exc = %d", total_neighbour_exc);
-            log_info("last_total_neighbour_exc = %d", last_total_neighbour_exc);
-            log_info("diff_neighbour_exc = %d", diff_neighbour_exc);
+            
+            //log_info("total_neighbour_exc = %d", total_neighbour_exc);
+            //log_info("last_total_neighbour_exc = %d", last_total_neighbour_exc);
+            //log_info("diff_neighbour_exc = %d", diff_neighbour_exc);
             //log_info("total_neighbour_inh = %d", diff_neightbour_inh);
             
             
@@ -446,18 +457,18 @@ static void neuron_impl_do_timestep_update(
             
             //log_info("total_exc = %d \n total_inh = %d \n", total_neighbour_exc, total_neighbour_inh);
             
-            bool exc = 0;
-            bool inh = 1;
-            uint32_t concat_exc = firing_rate_exc_int<<1 | exc;
-            uint32_t concat_inh = firing_rate_inh_int<<1 | inh;
+            #define MASK_EXC ((uint32_t) 0x0)
+            #define MASK_INH ((uint32_t) 0x1)
+            //bool inh = 1;
+            uint32_t concat_exc = (firing_rate_exc_int<<1) | MASK_EXC;
+            uint32_t concat_inh = (firing_rate_inh_int<<1) | MASK_INH;
             
             
-            //uint32_t concat = firing_rate_exc_int<<16 | firing_rate_inh_int;
             
-            //log_info("concat_exc = %d", concat_exc);
+            
+            log_info("concat_exc = %d", concat_exc);
             //log_info("concat_inh = %d", concat_inh);
             
-            //spin1_send_mc_packet(key, concat, WITH_PAYLOAD);
             
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
             spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);

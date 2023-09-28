@@ -358,9 +358,13 @@ PBL avec REAL one_over_CmxTvN = (0,02001441); // 1/(Cm*pNetwork->TvN);//
 ADD weight on mixing of finring rate neuron_transfer meanfield.c
 synapse_types_exponential_impl.h  synapse_types_add_neuron_input
 
-REAL one_over_CmxTvN = REAL_CONST(0.02); ligne 293 de meanfield_model_impl.c
+REAL one_over_CmxTvN = REAL_CONST(0.02); ligne 293 de meanfield_model_impl.c 
+    => pas moyen de faire autrement 0.02 une bonne approximation devra être
+        rentrée à la main à chaque fois.
 
 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
 spynnakerForce4@
 
-Au pire passe par un pointeur pour total_neighbour_exc
+Au pire passe par un pointeur pour total_neighbour_exc => fait
+
+le seul problème est que inh et exc sont au même niveau ce qui n'est pas le cas dans la réalité

@@ -283,15 +283,12 @@ void TF(REAL Ve, REAL Vi, REAL W,
    
     REAL Gl = pNetwork->Gl;
     
-    /*int_k_t Cm_int = bitsk(pNetwork->Cm);
-    int_k_t TvN_int = bitsk(pNetwork->TvN);
-    */
-    
-    //log_info("Cm = %5.5k AND TvN = %5.5k", Cm, pNetwork->TvN);
+    //log_info("Cm = %5.5k AND TvN = %5.7k", Cm, pNetwork->TvN);
     REAL one_over_CmxTvN = REAL_CONST(0.02);
     //kdivi(1, Cm_int*TvN_int);
-    // 1/(Cm*pNetwork->TvN);
-    // REAL_CONST(0.02); //  WORK with const
+    // 1/(pNetwork->Cm;*pNetwork->TvN);
+    // REAL_CONST(0.02); //  WORK with const which is an approximation
+    //1/(Cm*TvN);
     
     REAL Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;
     //log_info("Fout_th = %5.5k \n", Fout_th);
