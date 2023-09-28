@@ -40,6 +40,9 @@ typedef struct ParamsFromNetwork_t {
     REAL Vthre;
     
     REAL Fout_th;
+    uint32_t exc_neighbour_contribution;
+    uint32_t inh_neighbour_contribution;
+
 } ParamsFromNetwork_t;
 
 

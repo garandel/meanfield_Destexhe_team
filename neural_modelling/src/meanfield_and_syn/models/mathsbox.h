@@ -2,8 +2,8 @@
 #define _MATHSBOX_H_
 
 
-#include <math.h>
-#include <stdfix-exp.h>
+//#include <math.h>
+//#include <stdfix-exp.h>
 #include <stdfix-full-iso.h>
 //#include "../../common/maths-util.h"
 

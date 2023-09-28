@@ -429,12 +429,10 @@ state_t meanfield_model_state_update(
     uint16_t num_excitatory_inputs, const input_t *exc_input,
     uint16_t num_inhibitory_inputs, const input_t *inh_input) {
     
-    
     REAL total_exc = 0.;
     REAL total_inh = 0.;
     
     
-
     for (int i =0; i<num_excitatory_inputs; i++) {
         total_exc = REAL_HALF(exc_input[i]);
         //log_info("total_exc = %6.6k i = %d \n",exc_input[i], i);

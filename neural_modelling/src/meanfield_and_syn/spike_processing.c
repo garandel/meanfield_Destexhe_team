@@ -327,27 +327,33 @@ static void multicast_packet_received_callback(uint key, UNUSED uint unused) {
         start_dma_loop();
     }
 }
-
+/*
 static inline int_k_t absolut_func(int_k_t x){
     if (x<0){
-        x=-x;
+        x=-1*x;
     }
     return x;
 }
-
-//#define MASK ((uint32_t) 0x1)
+*/
+#define MASK ((uint32_t) 0x1)
 //! \brief Called when a multicast packet is received
 //! \param[in] key: The key of the packet. The spike.
 //! \param[in] payload: the payload of the packet. The count.
 static void multicast_packet_pl_received_callback(uint key, uint payload) {
     p_per_ts_struct.packets_this_time_step += 1;
     
-    uint32_t firing_rate_exc = (payload)>>16;
-    uint32_t firing_rate_inh = ((payload) & UINT16_MAX);
-    log_info("Received spike %x with firing_rate_exc %d and firing_rate_inh %d at %d, DMA Busy = %d",
-        key, firing_rate_exc, firing_rate_inh, time, dma_busy);
+    //log_info("%d",sizeof(payload));
     
-    //uint32_t diff = (payload >> 0) & MASK;
+    //int_k_t firing_rate_exc = (payload)>>16;
+    //int_k_t firing_rate_inh = ((payload) & UINT16_MAX);
+    //log_info("Received spike %x with firing_rate_exc %d and firing_rate_inh %d at %d, DMA Busy = %d",
+    //    key, firing_rate_exc, firing_rate_inh, time, dma_busy);
+    
+    uint32_t firing_rate = (payload)>>1;
+    log_info("Received spike %x with firing_rate %d at %d, DMA Busy = %d",
+        key, firing_rate, time, dma_busy);
+    
+    uint32_t diff = (payload >> 0) & MASK;
     //log_info("diff = %d", diff);
     
     
@@ -358,23 +364,25 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
      * MFs), before encounter "local" firing rate.
      *
      */
+    /*
     total_neighbour_exc += firing_rate_exc;
     total_neighbour_inh += firing_rate_inh;
     total_neighbour_exc = absolut_func(total_neighbour_exc);
     total_neighbour_inh = absolut_func(total_neighbour_inh);
+    */
     
     //log_info("total_neighbour_inh = %d", total_neighbour_inh);
-    /*
+    
     if(diff == 0){
         total_neighbour_exc += firing_rate; // mulik(firing_rate,0.5); do weard result
-        total_neighbour_exc = absolut_func(total_neighbour_exc);
+    //    total_neighbour_exc = absolut_func(total_neighbour_exc);
     }
     else if(diff == 1){
         total_neighbour_inh += firing_rate; //mulik(firing_rate,0.5);
-        total_neighbour_inh = absolut_func(total_neighbour_inh);
-        log_info("total_neighbour_inh = %d", total_neighbour_inh);
+        //total_neighbour_inh = absolut_func(total_neighbour_inh);
+        //log_info("total_neighbour_inh = %d", total_neighbour_inh);
     }
-    */
+    
 }
 
 //! \brief Called when a DMA completes
@@ -485,10 +493,10 @@ void spike_processing_clear_input_buffer(timer_t time) {
     recording_record(p_per_ts_region, &p_per_ts_struct, sizeof(p_per_ts_struct));
     p_per_ts_struct.packets_this_time_step = 0;
     
-    log_info("total_neighbour_exc = %d", total_neighbour_exc);
-    log_info("total_neighbour_inh = %d", total_neighbour_inh);
-    total_neighbour_exc = ACS_DBL_TINY;
-    total_neighbour_inh = ACS_DBL_TINY;
+    //log_info("total_neighbour_exc = %d", total_neighbour_exc);
+    //log_info("total_neighbour_inh = %d", total_neighbour_inh);
+    //total_neighbour_exc = 0;
+    //total_neighbour_inh = 0;
     //total_neighbour = 0;
    
     // Record the count whether clearing or not for provenance

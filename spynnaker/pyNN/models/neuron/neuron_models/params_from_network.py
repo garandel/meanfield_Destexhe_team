@@ -57,6 +57,9 @@ VTHRE = "Vthre"
 
 FOUT_TH = "Fout_th"
 
+EXC_NEIGHBOUR_CONTRIBUTION = "exc_neighbour_contribution"
+INH_NEIGHBOUR_CONTRIBUTION = "inh_neighbour_contribution"
+
 UNITS = {
     ###--Syn connec--###
     PCONNEC: "",
@@ -87,6 +90,8 @@ UNITS = {
     ONE_OVER_DTVN0 : "",
     VTHRE : "",
     FOUT_TH : "",
+    EXC_NEIGHBOUR_CONTRIBUTION : "",
+    INH_NEIGHBOUR_CONTRIBUTION : "",
 }
 
 
@@ -102,6 +107,7 @@ class ParamsFromNetwork(AbstractInputType):
         "_Vthre", "_muV", "_muV0", "_one_over_DmuV0", "_sV",
         "_sV0", "_one_over_DsV0",
         "_muGn", "_TvN", "_TvN0", "_one_over_DTvN0", "_Vthre", "_Fout_th",
+        "_exc_neighbour_contribution", "_inh_neighbour_contribution"
     ]
 
     def __init__(self, pconnec,
@@ -115,7 +121,9 @@ class ParamsFromNetwork(AbstractInputType):
                  sV, sV0, one_over_DsV0,
                  muGn,
                  TvN, TvN0, one_over_DTvN0,
-                 Vthre, Fout_th):
+                 Vthre, Fout_th, 
+                 exc_neighbour_contribution,
+                 inh_neighbour_contribution,):
         """
         :param a: :math:`a`
         :type a: float, iterable(float), ~pyNN.random.RandomDistribution or
@@ -151,7 +159,9 @@ class ParamsFromNetwork(AbstractInputType):
              DataType.S1615,   # TvN0
              DataType.S1615,   # one_over_DTvN0
              DataType.S1615,   # Vthre
-             DataType.S1615])   # Fout_th
+             DataType.S1615,   # Fout_th
+             DataType.UINT32,  #exc_neighbour_contribution
+             DataType.UINT32,])#inh_neighbour_contribution   
         
         self.__pconnec = pconnec
         self._q_exc = q_exc
@@ -180,6 +190,8 @@ class ParamsFromNetwork(AbstractInputType):
         self._one_over_DTvN0 = one_over_DTvN0
         self._Vthre = Vthre
         self._Fout_th = Fout_th
+        self._exc_neighbour_contribution = exc_neighbour_contribution
+        self._inh_neighbour_contribution = inh_neighbour_contribution
 
     @overrides(AbstractStandardNeuronComponent.get_n_cpu_cycles)
     def get_n_cpu_cycles(self, n_neurons):
@@ -220,6 +232,8 @@ class ParamsFromNetwork(AbstractInputType):
         state_variables[TVN] = self._TvN
         state_variables[VTHRE] = self._Vthre
         state_variables[FOUT_TH] = self._Fout_th
+        state_variables[EXC_NEIGHBOUR_CONTRIBUTION] = self._exc_neighbour_contribution
+        state_variables[INH_NEIGHBOUR_CONTRIBUTION] = self._inh_neighbour_contribution
 
     @overrides(AbstractStandardNeuronComponent.get_units)
     def get_units(self, variable):
@@ -268,7 +282,9 @@ class ParamsFromNetwork(AbstractInputType):
                 parameters[TVN0],
                 parameters[ONE_OVER_DTVN0],
                 state_variables[VTHRE],
-                state_variables[FOUT_TH]
+                state_variables[FOUT_TH],
+                state_variables[EXC_NEIGHBOUR_CONTRIBUTION],
+                state_variables[INH_NEIGHBOUR_CONTRIBUTION]
         ]
 
     @overrides(AbstractStandardNeuronComponent.update_values)
@@ -283,7 +299,9 @@ class ParamsFromNetwork(AbstractInputType):
         sV, _sV0, _one_over_DsV0,
         muGn,
         TvN, _TvN0, _one_over_DTvN0,
-        Vthre, Fout_th) = values
+        Vthre, Fout_th,
+        exc_neighbour_contribution,
+        inh_neighbour_contribution) = values
 
         # Copy the changed data only
         state_variables[MUV] = muV
@@ -292,6 +310,8 @@ class ParamsFromNetwork(AbstractInputType):
         state_variables[TVN] = TvN
         state_variables[VTHRE] = Vthre
         state_variables[FOUT_TH] = Fout_th
+        state_variables[EXC_NEIGHBOUR_CONTRIBUTION] = exc_neighbour_contribution
+        state_variables[INH_NEIGHBOUR_CONTRIBUTION] = inh_neighbour_contribution
         
     @overrides(AbstractInputType.get_global_weight_scale)
     def get_global_weight_scale(self):
@@ -459,3 +479,19 @@ class ParamsFromNetwork(AbstractInputType):
         :rtype: float
         """
         return self._Fout_th
+    
+    @property
+    def exc_neighbour_contribution(self):
+        """ Settable model parameter: :math:`d`
+
+        :rtype: float
+        """
+        return self._exc_neighbour_contribution
+    
+    @property
+    def inh_neighbour_contribution(self):
+        """ Settable model parameter: :math:`d`
+
+        :rtype: float
+        """
+        return self._inh_neighbour_contribution

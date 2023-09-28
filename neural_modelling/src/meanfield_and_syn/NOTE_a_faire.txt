@@ -362,3 +362,5 @@ REAL one_over_CmxTvN = REAL_CONST(0.02); ligne 293 de meanfield_model_impl.c
 
 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
 spynnakerForce4@
+
+Au pire passe par un pointeur pour total_neighbour_exc

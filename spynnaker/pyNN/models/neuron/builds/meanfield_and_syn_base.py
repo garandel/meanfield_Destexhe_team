@@ -39,6 +39,8 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
     @default_initial_values({"Ve", "Vi", "w_exc", "w_inh", "Fout_th",
                              "muV", "sV", "muGn",
                              "TvN", "Vthre",
+                             "exc_neighbour_contribution",
+                             "inh_neighbour_contribution",
                              "err_func", "isyn_exc", "isyn_inh"})
     def __init__(self,
                  a_exc=4., 
@@ -91,6 +93,9 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
 
                  Vthre=-50., #normaly 1e-3 SI unit
                  Fout_th=0.,
+                 
+                 exc_neighbour_contribution = 0,
+                 inh_neighbour_contribution = 0,
 
                  p0_exc= -0.051552,
                  p1_exc=  0.004552,
@@ -163,7 +168,9 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
                                                 sV, sV0, one_over_DsV0,
                                                 muGn,
                                                 TvN, TvN0, one_over_DTvN0,
-                                                Vthre, Fout_th)
+                                                Vthre, Fout_th,
+                                                exc_neighbour_contribution,
+                                                inh_neighbour_contribution)
         p_fit_polynomial_exc = pFitPolynomialExc(p0_exc, p1_exc, p2_exc,
                                               p3_exc, p4_exc, p5_exc, 
                                               p6_exc, p7_exc, p8_exc,
