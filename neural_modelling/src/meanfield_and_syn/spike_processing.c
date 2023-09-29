@@ -353,11 +353,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     uint32_t diff = (payload >> 0) & MASK;
     log_info("Received spike %x type %d with firing_rate %d at %d, DMA Busy = %d",
         key, diff, firing_rate, time, dma_busy);
-    
-    
-    //log_info("diff = %d", diff);
-    
-    //log_info("count = %d", p_per_ts_struct.packets_this_time_step);
+ 
     /*
      * Can implement here a preprocess between different population of neurons (i.e 
      * MFs), before encounter "local" firing rate.

@@ -322,7 +322,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     //log_info("input_this_timestep = %11.4k", input_this_timestep);
 
     REAL lastVe = meanfield->Ve;
-    REAL lastVepInput = lastVe + input_this_timestep + ext_drive  + total_exc;
+    REAL lastVepInput = lastVe + input_this_timestep + ext_drive + total_exc;
     // + total_exc; increase too much and so by circular go to 0 et so DIVBY0 error
     
     REAL lastVi = meanfield->Vi;
@@ -374,9 +374,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL lastTF_inh_1 = pNetwork->Fout_th;
     
     h=h*0.001;
-        
-    //REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVepInput);
-    //REAL lastVe_n2 = lastVepInput + REAL_HALF(h*alpha_exc_1);
+    
     REAL alpha_exc_1 = T_inv*(lastTF_exc_1 - lastVe);
     REAL lastVe_n2 = lastVe + REAL_HALF(h*alpha_exc_1);
     
@@ -399,9 +397,9 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     log_info("meanfield->Ve = %5.9k", meanfield->Ve);
     log_info("meanfield->Vi = %5.9k", meanfield->Vi);
     */
-    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
+    REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
-    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVepInput + a_exc*(lastmuV-El_exc);
+    REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
  
     meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
 
@@ -431,11 +429,11 @@ state_t meanfield_model_state_update(
     
     
     for (int i =0; i<num_excitatory_inputs; i++) {
-        total_exc = REAL_HALF(exc_input[i]);
+        total_exc = REAL_HALF(exc_input[i]); // exc_input[i]; //
         //log_info("total_exc = %6.6k i = %d \n",exc_input[i], i);
     }
     for (int i =0; i<num_inhibitory_inputs; i++) {
-        total_inh = REAL_HALF(inh_input[i]);
+        total_inh =  REAL_HALF(inh_input[i]); // inh_input[i];//
     }
     
     

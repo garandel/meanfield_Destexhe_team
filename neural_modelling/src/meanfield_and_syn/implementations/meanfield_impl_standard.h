@@ -38,6 +38,7 @@
 #include <debug.h>
 #include <bit_field.h>
 #include <recording.h>
+#include <stdfix-full-iso.h>
 
 
 
@@ -283,10 +284,18 @@ static void neuron_impl_load_neuron_parameters(
 
 
 static union {
-    uint32_t as_int;
+    int32_t as_int;
     REAL as_real;
 } number;
 
+static inline uint32_t abs_int(int32_t r){
+    
+    if (r < 0) {
+	r = (r == INT32_MIN) ? INT32_MAX : -r;
+    }
+    
+    return r;
+}
 
 //! Key from meanfield.c
 extern uint32_t key;
@@ -334,8 +343,6 @@ static void neuron_impl_do_timestep_update(
 
             //log_info("meanf_impl_std");
             
-            
-           
             uint32_t last_total_neighbour_exc = 
                 pNetwork_types->exc_neighbour_contribution;
             uint32_t last_total_neighbour_inh = 
@@ -361,7 +368,8 @@ static void neuron_impl_do_timestep_update(
             //log_info("total_neighbour_exc_real= %5.5k\n", total_neighbour_exc_real);
             //log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
-            input_t external_bias = pNetwork_types->ext_drive;//total_neighbour_real;
+            input_t external_bias = 
+                pNetwork_types->afferent_exc_fraction;
             
             
             
@@ -430,22 +438,32 @@ static void neuron_impl_do_timestep_update(
             int_hk_t firing_rate_inh_int = bitshk(firing_rate_inh_s87); 
             */
    
-            log_info("firing_exc = %5.8k",firing_rate_Ve);
+            //log_info("firing_exc = %5.8k",firing_rate_Ve);
             
-            number.as_real = firing_rate_Ve;// *exc_syn_values;//
+            
+            
+                
+            /*
+            number.as_real = absk(firing_rate_Ve)+ACS_DBL_TINY;// *exc_syn_values;//
             uint32_t firing_rate_exc_int = number.as_int; 
             
-            number.as_real = firing_rate_Vi;// *exc_syn_values;//
+            number.as_real = absk(firing_rate_Vi)+ACS_DBL_TINY;// *exc_syn_values;//
             uint32_t firing_rate_inh_int = number.as_int; 
+            */
+            number.as_real = firing_rate_Ve;// *exc_syn_values;//
+            int32_t firing_rate_exc_int = number.as_int; 
+            
+            number.as_real = firing_rate_Vi;// *exc_syn_values;//
+            int32_t firing_rate_inh_int = number.as_int; 
             
             
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             
             
-            log_info("firing_int_exc = %d",firing_rate_exc_int);
+            //log_info("firing_int_exc = %d",firing_rate_exc_int);
             //log_info("firing_int_inh = %d",firing_rate_inh_int);
             
-            //log_info("total_neighbour_exc = %d", total_neighbour_exc);
+            log_info("total_neighbour_exc = %d", total_neighbour_exc);
             //log_info("last_total_neighbour_exc = %d", last_total_neighbour_exc);
             //log_info("diff_neighbour_exc = %d", diff_neighbour_exc);
             //log_info("total_neighbour_inh = %d", diff_neightbour_inh);
@@ -460,14 +478,14 @@ static void neuron_impl_do_timestep_update(
             #define MASK_EXC ((uint32_t) 0x0)
             #define MASK_INH ((uint32_t) 0x1)
             //bool inh = 1;
-            uint32_t concat_exc = (firing_rate_exc_int<<1) | MASK_EXC;
-            uint32_t concat_inh = (firing_rate_inh_int<<1) | MASK_INH;
+            uint32_t concat_exc = abs_int((firing_rate_exc_int<<1) | MASK_EXC);
+            uint32_t concat_inh = abs_int((firing_rate_inh_int<<1) | MASK_INH);
             
             
             
             
             log_info("concat_exc = %d", concat_exc);
-            //log_info("concat_inh = %d", concat_inh);
+            log_info("concat_inh = %d", concat_inh);
             
             
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
