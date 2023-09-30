@@ -337,11 +337,10 @@ static void neuron_impl_do_timestep_update(
             state_t adaptation_W = meanfield_model_get_adaptation_W(this_meanfield);
                         
             //***********************************************************************
-            //!!Add to mimic an input from synapses (just to test) will be remove!!!*
+            //!!Add to mimic an input from "synapses"!!!*
             //***********************************************************************
             
 
-            //log_info("meanf_impl_std");
             
             uint32_t last_total_neighbour_exc = 
                 pNetwork_types->exc_neighbour_contribution;
@@ -357,16 +356,11 @@ static void neuron_impl_do_timestep_update(
             pNetwork_types->inh_neighbour_contribution = total_neighbour_inh;
   
             
-            number.as_int = diff_neighbour_exc; //total_neighbour_exc;//
+            number.as_int = diff_neighbour_exc; 
             REAL total_neighbour_exc_real = number.as_real;
-            // kbits(total_neighbour_exc);
             
-            number.as_int = diff_neighbour_inh; //total_neighbour_inh;//
+            number.as_int = diff_neighbour_inh; 
             REAL total_neighbour_inh_real = number.as_real;
-            //kbits(total_neighbour_inh);
-            
-            //log_info("total_neighbour_exc_real= %5.5k\n", total_neighbour_exc_real);
-            //log_info("total_neighbour_inh_real = %5.5k", total_neighbour_inh_real);
             
             input_t external_bias = 
                 pNetwork_types->afferent_exc_fraction;
@@ -388,13 +382,6 @@ static void neuron_impl_do_timestep_update(
             input_t *inh_syn_values =
                     synapse_types_get_inhibitory_input(inh_values, the_synapse_type);
             
-            //log_info("exc_syn_adds=%08x", exc_syn_values);
-            //log_info("exc_syn_val=%5.5k",*exc_syn_values);
-            
-            
-            
-            
-            
             // Operation post synaptic
             
             // Sum g_syn contributions from all receptors for recording
@@ -411,10 +398,6 @@ static void neuron_impl_do_timestep_update(
                 log_info("inh_syn_values=%8.6k",inh_syn_values[i]);
             }
             */
-            
-            
-            
-            
 
             // Do recording if on the first step 
             if (i_step == n_steps_per_timestep) {
@@ -426,30 +409,6 @@ static void neuron_impl_do_timestep_update(
                         W_RECORDING_INDEX, meanfield_index, adaptation_W);
             }
             
-            /*
-            static union {s87 as_s87; REAL as_real;} x;
-          
-            x.as_real = firing_rate_Ve;// *exc_syn_values;//
-            s87 firing_rate_exc_s87 = x.as_s87;
-            int_hk_t firing_rate_exc_int = bitshk(firing_rate_exc_s87); 
-            
-            x.as_real = firing_rate_Vi;// *exc_syn_values;//
-            s87 firing_rate_inh_s87 = x.as_s87;
-            int_hk_t firing_rate_inh_int = bitshk(firing_rate_inh_s87); 
-            */
-   
-            //log_info("firing_exc = %5.8k",firing_rate_Ve);
-            
-            
-            
-                
-            /*
-            number.as_real = absk(firing_rate_Ve)+ACS_DBL_TINY;// *exc_syn_values;//
-            uint32_t firing_rate_exc_int = number.as_int; 
-            
-            number.as_real = absk(firing_rate_Vi)+ACS_DBL_TINY;// *exc_syn_values;//
-            uint32_t firing_rate_inh_int = number.as_int; 
-            */
             number.as_real = firing_rate_Ve;// *exc_syn_values;//
             int32_t firing_rate_exc_int = number.as_int; 
             
@@ -457,37 +416,22 @@ static void neuron_impl_do_timestep_update(
             int32_t firing_rate_inh_int = number.as_int; 
             
             
-            //! faire opération juste avant d'envoyer r_int avec r_int*weight
+            //! FUTUR : ad weight mult by firing rate
             
             
             log_info("firing_int_exc = %d",firing_rate_exc_int);
-            //log_info("firing_int_inh = %d",firing_rate_inh_int);
             
             //log_info("total_neighbour_exc = %d", total_neighbour_exc);
             //log_info("last_total_neighbour_exc = %d", last_total_neighbour_exc);
             //log_info("diff_neighbour_exc = %d", diff_neighbour_exc);
             //log_info("total_neighbour_inh = %d", diff_neightbour_inh);
-            
-            
-            
-            //total_neighbour_exc = 0;//HERE make some pblm
-            //total_neighbour_inh = 0;
-            
-            //log_info("total_exc = %d \n total_inh = %d \n", total_neighbour_exc, total_neighbour_inh);
-            
+                                    
             #define MASK_EXC ((uint32_t) 0x0)
             #define MASK_INH ((uint32_t) 0x1)
             //bool inh = 1;
             uint32_t concat_exc = abs_int((firing_rate_exc_int<<1) | MASK_EXC);
             uint32_t concat_inh = abs_int((firing_rate_inh_int<<1) | MASK_INH);
-            
-            
-            
-            
-            //log_info("concat_exc = %d", concat_exc);
-            //log_info("concat_inh = %d", concat_inh);
-            
-            
+
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
             spin1_send_mc_packet(key, concat_inh, WITH_PAYLOAD);
             
@@ -495,9 +439,6 @@ static void neuron_impl_do_timestep_update(
             //synapse_types_shape_input(the_synapse_type);
             
             // update neuron parameters
-            
-            //state_t result = meanfield_model_state_update(...);
-                                                                      
             
             meanfield_model_state_update(this_meanfield,
                                           pNetwork_types,

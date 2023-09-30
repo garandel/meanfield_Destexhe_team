@@ -37,7 +37,7 @@
 
 #include "../../meanfield_and_syn/models/params_from_network.h"
 #include "../../meanfield_and_syn/models/P_fit_polynomial.h"
-
+extern uint32_t time;
 
 //! The global parameters of the Izhekevich neuron model
 static const global_neuron_params_t *global_params;
@@ -211,8 +211,6 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
     
     pNetwork->muV = muV ;
 
-    //REAL muGn = muG/Gl;
-    //pNetwork->muGn = muGn; //to uncomment in order to stock it
     REAL Tm = Cm/muG;
     REAL Ue = Qe*(Ee-muV)/muG;
     REAL Ui = Qi*(Ei-muV)/muG;
@@ -226,11 +224,11 @@ void get_fluct_regime_varsup(REAL Ve, REAL Vi, REAL W,
 
     REAL Tv = (Tv_num_e + Tv_num_i) / (Tv_denom_e + Tv_denom_i);
 
-    pNetwork->TvN = Tv*Gl/Cm; // TvN is adimensional so usefull var
+    pNetwork->TvN = Tv*Gl/Cm; 
     
     REAL sV_sqr = REAL_CONST(0.50000)*((Tv_denom_e + Tv_denom_i));
     
-    pNetwork->sV =  square_root_of(sV_sqr);  // sV_sqr; //  sqrtk(sV_sqr);//  kbits(sV_sqr);
+    pNetwork->sV =  square_root_of(sV_sqr);
 
 }
 
@@ -283,15 +281,15 @@ void TF(REAL Ve, REAL Vi, REAL W,
    
     REAL Gl = pNetwork->Gl;
     
-    //log_info("Cm = %5.5k AND TvN = %5.7k", Cm, pNetwork->TvN);
     REAL one_over_CmxTvN = REAL_CONST(0.02);
     //kdivi(1, Cm_int*TvN_int);
-    // 1/(pNetwork->Cm;*pNetwork->TvN);
+    // 1/(pNetwork->Cm*pNetwork->TvN); //overflowed ITCM solution
     // REAL_CONST(0.02); //  WORK with const which is an approximation
-    //1/(Cm*TvN);
+    //REAL Cm = pNetwork->Cm;   //|
+    //REAL TvN = pNetwork->TvN; //|overflowed ITCM solution
+    //1/(Cm*TvN);               //|
     
     REAL Fout_th = error_func * (HALF*Gl) * one_over_CmxTvN;
-    //log_info("Fout_th = %5.5k \n", Fout_th);
     
     if (Fout_th < REAL_CONST(0.000031)){
         pNetwork->Fout_th += REAL_CONST(0.000031);
@@ -311,7 +309,7 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
                      REAL input_this_timestep){
     
     /* 
-     * will add exc_aff=0, inh_aff=0, pure_exc_aff=0
+     * FUTUR : add exc_aff=0, inh_aff=0, pure_exc_aff=0
      */
     REAL a_exc = meanfield->a_exc;
     REAL b_exc = meanfield->b_exc;
@@ -319,8 +317,6 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL tauw_exc = meanfield->tauw_exc;
     REAL ext_drive = pNetwork->ext_drive;
     
-    //log_info("input_this_timestep = %11.4k", input_this_timestep);
-
     REAL lastVe = meanfield->Ve;
     REAL lastVepInput = lastVe + input_this_timestep + ext_drive + total_exc;
     
@@ -330,11 +326,6 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
-    
-    //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
-    
-    
-    
     
     REAL T_inv = meanfield->Timescale_inv;
     
@@ -438,17 +429,20 @@ state_t meanfield_model_state_update(
     
     for (int i =0; i<num_excitatory_inputs; i++) {
         total_exc = REAL_HALF(exc_input[i]); // exc_input[i]; //
-        //log_info("total_exc = %6.6k i = %d \n",exc_input[i], i);
     }
     for (int i =0; i<num_inhibitory_inputs; i++) {
         total_inh =  REAL_HALF(inh_input[i]); // inh_input[i];//
     }
     
-    
-   
-    //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
+    /*
+    //meanfield->this_h = global_params->machine_timestep_ms;
 
-
+    input_t input_this_timestep = external_bias;
+    if(time == 3000){
+        input_this_timestep = meanfield->Ve *200;
+        log_info("3000");
+    }
+    */
     input_t input_this_timestep = external_bias;
 
     // the best AR update so far
@@ -461,7 +455,6 @@ state_t meanfield_model_state_update(
                     total_inh,
                     input_this_timestep);
                     
-    //meanfield->this_h = global_params->machine_timestep_ms;
     
     /*
      * what is the best output for this function? Output of this function is used

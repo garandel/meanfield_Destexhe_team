@@ -70,12 +70,12 @@ class MeanfieldAndSynBase(AbstractPyNNMeanfieldModelStandard):
                  Ntot=10000.,
                  gei=0.2,
                  ext_drive=2.5,
-                 afferent_exc_fraction=1.,
+                 afferent_exc_fraction=0.,
 
                  Gl=10., #normaly 1e-9 SI unit nS
                  Cm=200., #normaly 1e-12 SI unit
-                 El_exc=-70., #normaly 1e-3 SI unit mV
-                 El_inh=-65., #normaly 1e-3 SI unit mV
+                 El_exc=-0.07, #normaly 1e-3 SI unit mV
+                 El_inh=-0.065, #normaly 1e-3 SI unit mV
 
                  muV=0.,
                  muV0=-0.06, #normaly in mV
