@@ -323,11 +323,10 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
 
     REAL lastVe = meanfield->Ve;
     REAL lastVepInput = lastVe + input_this_timestep + ext_drive + total_exc;
-    // + total_exc; increase too much and so by circular go to 0 et so DIVBY0 error
     
     REAL lastVi = meanfield->Vi;
-    REAL lastVipInput = meanfield->Vi + total_inh;
-    //+ total_inh; DIVBY0 error
+    REAL lastVipInput = meanfield->Vi + total_inh + ext_drive;
+    
     
     REAL lastWe = meanfield->w_exc;
     REAL lastWi = meanfield->w_inh;
@@ -351,21 +350,29 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
  *         AND reduce h don't give big changes
  *      IF need memory will investigate but not now in 23 feb 2022
  ***********************************************************************/
-    /*
+    
     h=h*0.001;
+    TF(lastVepInput, lastVipInput, lastWe, pNetwork, Pfit_exc);
+    REAL lastmuV = pNetwork->muV;
+    REAL lastTF_exc = pNetwork->Fout_th;
+    
+    TF(lastVepInput, lastVipInput, lastWi, pNetwork, Pfit_inh);
+    REAL lastTF_inh = pNetwork->Fout_th;
+    
     REAL k1_exc = (lastTF_exc - lastVe)*T_inv;
     meanfield->Ve =  lastVe + h*k1_exc ;
 
     REAL k1_inh = (lastTF_inh - lastVi)*T_inv;
     meanfield->Vi = lastVi + h*k1_inh ;
     
-    REAL k1_W = -lastW/tauw + b * lastVe;
-    meanfield->w = lastW + h*k1_W;
-    */
+    REAL k1_W = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
+    meanfield->w_exc = lastWe + h*k1_W;
+    
     
 /************************************************
  *  RUNGE-KUTTA 2nd order Midpoint Try precision*
  ***********************************************/
+    /*
     TF(lastVepInput, lastVipInput, lastWe, pNetwork, Pfit_exc);    
     REAL lastmuV = pNetwork->muV;
     REAL lastTF_exc_1 = pNetwork->Fout_th;
@@ -390,18 +397,19 @@ void RK2_midpoint_MF(REAL h, meanfield_t *meanfield,
     REAL alpha_exc_2 = T_inv*(TF_exc_2 - lastVe_n2);
     REAL alpha_inh_2 = T_inv*(TF_inh_2 - lastVi_n2);
     
-    meanfield->Ve += h*alpha_exc_2;
-    meanfield->Vi += h*alpha_inh_2;
+    meanfield->Ve = lastVe + h*alpha_exc_2;
+    meanfield->Vi = lastVi + h*alpha_inh_2;
     
-    /*
-    log_info("meanfield->Ve = %5.9k", meanfield->Ve);
-    log_info("meanfield->Vi = %5.9k", meanfield->Vi);
-    */
+    
+    //log_info("meanfield->Ve = %5.9k", meanfield->Ve);
+    //log_info("meanfield->Vi = %5.9k", meanfield->Vi);
+    
     REAL k1_We = -lastWe/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
     REAL alpha_we = lastWe + h*k1_We;
     REAL k2_We = -alpha_we/tauw_exc + b_exc * lastVe + a_exc*(lastmuV-El_exc);
  
-    meanfield->w_exc += REAL_HALF(h*(k1_We+k2_We));
+    meanfield->w_exc = lastWe + REAL_HALF(h*(k1_We+k2_We));
+    */
 
 }
 
@@ -441,7 +449,7 @@ state_t meanfield_model_state_update(
     //log_info("total_exc = %5.8k \n total_inh = %5.8k \n", total_exc, total_inh);
 
 
-    input_t input_this_timestep = external_bias;// + neuron->I_offset;
+    input_t input_this_timestep = external_bias;
 
     // the best AR update so far
     RK2_midpoint_MF(meanfield->this_h,

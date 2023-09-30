@@ -354,17 +354,7 @@ static void multicast_packet_pl_received_callback(uint key, uint payload) {
     log_info("Received spike %x type %d with firing_rate %d at %d, DMA Busy = %d",
         key, diff, firing_rate, time, dma_busy);
  
-    /*
-     * Can implement here a preprocess between different population of neurons (i.e 
-     * MFs), before encounter "local" firing rate.
-     *
-     */
-    /*
-    total_neighbour_exc += firing_rate_exc;
-    total_neighbour_inh += firing_rate_inh;
-    total_neighbour_exc = absolut_func(total_neighbour_exc);
-    total_neighbour_inh = absolut_func(total_neighbour_inh);
-    */
+    
     
     //log_info("total_neighbour_inh = %d", total_neighbour_inh);
     

@@ -460,10 +460,10 @@ static void neuron_impl_do_timestep_update(
             //! faire opération juste avant d'envoyer r_int avec r_int*weight
             
             
-            //log_info("firing_int_exc = %d",firing_rate_exc_int);
+            log_info("firing_int_exc = %d",firing_rate_exc_int);
             //log_info("firing_int_inh = %d",firing_rate_inh_int);
             
-            log_info("total_neighbour_exc = %d", total_neighbour_exc);
+            //log_info("total_neighbour_exc = %d", total_neighbour_exc);
             //log_info("last_total_neighbour_exc = %d", last_total_neighbour_exc);
             //log_info("diff_neighbour_exc = %d", diff_neighbour_exc);
             //log_info("total_neighbour_inh = %d", diff_neightbour_inh);
@@ -484,8 +484,8 @@ static void neuron_impl_do_timestep_update(
             
             
             
-            log_info("concat_exc = %d", concat_exc);
-            log_info("concat_inh = %d", concat_inh);
+            //log_info("concat_exc = %d", concat_exc);
+            //log_info("concat_inh = %d", concat_inh);
             
             
             spin1_send_mc_packet(key, concat_exc, WITH_PAYLOAD);
